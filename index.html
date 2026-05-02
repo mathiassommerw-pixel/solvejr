@@ -3,242 +3,281 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Solvejr — Find sol i København</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>Solvejr — Find sol i Danmark</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --sun: #F5A623; --sun-warm: #E8863A; --sun-pale: #FFF3DC;
-  --shadow: #2B3A4E; --shadow-light: #E8EEF5; --white: #FAFAF8;
-  --text: #1A2332; --text-muted: #6B7A8D; --border: rgba(27,35,50,0.08);
-  --panel-w: 380px; --bar-h: 64px;
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--sun:#F5A623;--sun-warm:#E8863A;--sun-pale:#FFF3DC;--white:#FAFAF8;--text:#1A2332;--muted:#6B7A8D;--border:rgba(27,35,50,0.08);--light:#E8EEF5;--panel:380px;--bar:64px}
 html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background:var(--white);color:var(--text)}
-#bar{position:fixed;top:0;left:0;right:0;height:var(--bar-h);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:0 20px;z-index:1000;box-shadow:0 1px 24px rgba(0,0,0,0.06)}
+#bar{position:fixed;top:0;left:0;right:0;height:var(--bar);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 20px;z-index:1000;box-shadow:0 1px 24px rgba(0,0,0,0.06)}
 .brand{display:flex;align-items:center;gap:10px;flex-shrink:0;text-decoration:none}
-.brand-sun{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,var(--sun));box-shadow:0 0 0 3px rgba(245,166,35,0.15),0 0 16px rgba(245,166,35,0.3);animation:glow 3s ease-in-out infinite;flex-shrink:0}
-@keyframes glow{0%,100%{box-shadow:0 0 0 3px rgba(245,166,35,0.15),0 0 16px rgba(245,166,35,0.3)}50%{box-shadow:0 0 0 6px rgba(245,166,35,0.1),0 0 28px rgba(245,166,35,0.4)}}
-.brand-name{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--text);letter-spacing:-0.5px}
+.brand-sun{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,var(--sun));box-shadow:0 0 0 4px rgba(245,166,35,0.15);animation:glow 3s ease-in-out infinite;flex-shrink:0}
+@keyframes glow{0%,100%{box-shadow:0 0 0 4px rgba(245,166,35,0.15)}50%{box-shadow:0 0 0 8px rgba(245,166,35,0.08)}}
+.brand-name{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--text);letter-spacing:-.5px}
 .brand-name em{color:var(--sun);font-style:normal}
-#search-wrap{flex:1;max-width:460px;display:flex;align-items:center;background:var(--shadow-light);border-radius:50px;padding:0 6px 0 18px;gap:8px;border:1.5px solid transparent;transition:border-color 0.2s,background 0.2s}
-#search-wrap:focus-within{background:white;border-color:var(--sun);box-shadow:0 0 0 3px rgba(245,166,35,0.12)}
-#search-input{flex:1;border:none;outline:none;background:transparent;font-family:'Outfit',sans-serif;font-size:0.92rem;color:var(--text);padding:10px 0}
-#search-input::placeholder{color:var(--text-muted)}
-#search-btn{background:var(--sun);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background 0.2s,transform 0.15s}
-#search-btn:hover{background:var(--sun-warm);transform:scale(1.06)}
-#search-btn svg{width:15px;height:15px;fill:white}
-#time-ctrl{display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--shadow-light);border-radius:50px;padding:6px 16px 6px 12px}
-.time-label{font-size:0.7rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em}
-#time-display{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--text);min-width:3.2rem;text-align:center;letter-spacing:-0.5px}
-#time-slider{width:100px;-webkit-appearance:none;height:3px;border-radius:2px;background:linear-gradient(to right,var(--sun) var(--pct,50%),#D0D8E4 var(--pct,50%));outline:none;cursor:pointer}
-#time-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--sun);border:2.5px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer}
-#live-btn{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:7px 14px;border-radius:50px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:0.78rem;font-weight:600;background:var(--shadow-light);color:var(--text-muted);transition:all 0.2s;white-space:nowrap}
-#live-btn.on{background:var(--sun);color:white;box-shadow:0 2px 12px rgba(245,166,35,0.4)}
-.live-dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse-dot 1.5s ease-in-out infinite}
-@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
-#map{position:fixed;top:var(--bar-h);left:0;right:var(--panel-w);bottom:0}
-#panel{position:fixed;top:var(--bar-h);right:0;bottom:0;width:var(--panel-w);background:var(--white);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-#panel-top{padding:24px 24px 16px;border-bottom:1px solid var(--border);background:white}
-.place-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:4px}
-.place-sub{font-size:0.8rem;color:var(--text-muted)}
-.sun-indicator{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 14px;border-radius:14px;border:1.5px solid;transition:all 0.4s}
-.sun-indicator.sun{background:var(--sun-pale);border-color:rgba(245,166,35,0.3);color:#8B5E00}
-.sun-indicator.shade{background:#EDF0F5;border-color:rgba(43,58,78,0.15);color:#4A5568}
-.sun-indicator-icon{font-size:1.4rem}
-.sun-indicator-text{flex:1}
-.sun-indicator-title{font-weight:600;font-size:0.9rem}
-.sun-indicator-sub{font-size:0.75rem;opacity:0.7;margin-top:1px}
-.quality-badge{display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:3px 10px;border-radius:50px;font-size:0.7rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
-.quality-badge.precise{background:#E8F5E9;color:#2E7D32}
-.quality-badge.approx{background:#FFF8E1;color:#F57F17}
-#panel-body{flex:1;overflow-y:auto;padding:20px 24px}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.stat-card{background:var(--shadow-light);border-radius:14px;padding:14px;border:1px solid var(--border)}
-.stat-label{font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:4px}
-.stat-value{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:var(--text)}
-.stat-unit{font-family:'Outfit',sans-serif;font-size:0.75rem;font-weight:400;color:var(--text-muted)}
-.section-title{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:10px}
-.arc-container{background:var(--shadow-light);border-radius:16px;padding:12px;margin-bottom:20px}
-#arc-canvas{width:100%;border-radius:8px}
-.place-list{display:flex;flex-direction:column;gap:8px}
-.place-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:white;border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:all 0.2s;text-align:left;width:100%}
-.place-item:hover{border-color:var(--sun);box-shadow:0 4px 16px rgba(245,166,35,0.1);transform:translateY(-1px)}
-.place-item.sun-now{border-color:rgba(245,166,35,0.4);background:#FFFBF2}
-.place-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.place-dot.sun{background:var(--sun);box-shadow:0 0 6px rgba(245,166,35,0.5)}
-.place-dot.shade{background:#A0AEC0}
-.place-item-info{flex:1;min-width:0}
-.place-item-name{font-weight:600;font-size:0.88rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.place-item-type{font-size:0.73rem;color:var(--text-muted);margin-top:1px}
-.place-item-sun{font-size:0.75rem;font-weight:600}
-.place-item-sun.sun{color:var(--sun-warm)}
-.place-item-sun.shade{color:#90A0B0}
-.hint-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;text-align:center;height:100%}
-.hint-icon{font-size:3rem;margin-bottom:1rem;opacity:0.4}
-.hint-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text-muted);margin-bottom:0.5rem}
-.hint-text{font-size:0.82rem;color:var(--text-muted);line-height:1.6;opacity:0.7}
-#toast{position:fixed;bottom:24px;left:calc(50% - var(--panel-w)/2);transform:translateX(-50%);background:var(--text);color:white;padding:10px 20px;border-radius:50px;font-size:0.82rem;font-weight:500;z-index:9999;opacity:0;transition:opacity 0.3s,transform 0.3s;transform:translateX(-50%) translateY(8px);pointer-events:none}
+#sw{flex:1;max-width:460px;display:flex;align-items:center;background:var(--light);border-radius:50px;padding:0 6px 0 18px;gap:8px;border:1.5px solid transparent;transition:.2s}
+#sw:focus-within{background:white;border-color:var(--sun);box-shadow:0 0 0 3px rgba(245,166,35,0.12)}
+#si{flex:1;border:none;outline:none;background:transparent;font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--text);padding:10px 0}
+#si::placeholder{color:var(--muted)}
+#sb{background:var(--sun);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.2s}
+#sb:hover{background:var(--sun-warm);transform:scale(1.06)}
+#sb svg{width:15px;height:15px;fill:white}
+#tc{display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--light);border-radius:50px;padding:6px 16px 6px 12px}
+.tlbl{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+#tdis{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--text);min-width:3.2rem;text-align:center}
+#ts{width:100px;-webkit-appearance:none;height:3px;border-radius:2px;background:linear-gradient(to right,var(--sun) var(--p,50%),#D0D8E4 var(--p,50%));outline:none;cursor:pointer}
+#ts::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--sun);border:2.5px solid white;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+#lb{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:7px 14px;border-radius:50px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;background:var(--light);color:var(--muted);transition:.2s;white-space:nowrap}
+#lb.on{background:var(--sun);color:white;box-shadow:0 2px 12px rgba(245,166,35,.4)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+#shadow-toggle{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);cursor:pointer;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;background:white;color:var(--muted);transition:.2s;white-space:nowrap}
+#shadow-toggle.on{background:#1A2332;color:white;border-color:#1A2332}
+#map{position:fixed;top:var(--bar);left:0;right:var(--panel);bottom:0}
+#panel{position:fixed;top:var(--bar);right:0;bottom:0;width:var(--panel);background:var(--white);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+#ptop{padding:20px 20px 14px;border-bottom:1px solid var(--border);background:white}
+.pname{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:3px}
+.psub{font-size:.78rem;color:var(--muted)}
+.sind{display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px 13px;border-radius:12px;border:1.5px solid;transition:.4s}
+.sind.sun{background:var(--sun-pale);border-color:rgba(245,166,35,.3);color:#8B5E00}
+.sind.shade{background:#EDF0F5;border-color:rgba(43,58,78,.15);color:#4A5568}
+.sind-icon{font-size:1.3rem}
+.sind-text{flex:1}
+.sind-title{font-weight:600;font-size:.88rem}
+.sind-sub{font-size:.73rem;opacity:.7;margin-top:1px}
+.qbadge{display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:3px 10px;border-radius:50px;font-size:.68rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.qbadge.dhm{background:#E3F2FD;color:#1565C0}
+.qbadge.ast{background:#FFF8E1;color:#F57F17}
+#pbody{flex:1;overflow-y:auto;padding:18px 20px}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
+.scard{background:var(--light);border-radius:12px;padding:12px;border:1px solid var(--border)}
+.slbl{font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:3px}
+.sval{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--text)}
+.sunit{font-family:'Outfit',sans-serif;font-size:.72rem;color:var(--muted)}
+.stitle{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+.arc-box{background:var(--light);border-radius:14px;padding:11px;margin-bottom:18px}
+.plist{display:flex;flex-direction:column;gap:7px}
+.pitem{display:flex;align-items:center;gap:11px;padding:11px 13px;background:white;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:.2s;text-align:left;width:100%}
+.pitem:hover{border-color:var(--sun);box-shadow:0 4px 16px rgba(245,166,35,.1);transform:translateY(-1px)}
+.pitem.snow{border-color:rgba(245,166,35,.4);background:#FFFBF2}
+.pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.pdot.sun{background:var(--sun);box-shadow:0 0 6px rgba(245,166,35,.5)}
+.pdot.shade{background:#A0AEC0}
+.pinfo{flex:1;min-width:0}
+.pname2{font-weight:600;font-size:.86rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ptype{font-size:.71rem;color:var(--muted);margin-top:1px}
+.psun{font-size:.73rem;font-weight:600}
+.psun.sun{color:var(--sun-warm)}
+.psun.shade{color:#90A0B0}
+.hint{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center;height:100%}
+.hint-icon{font-size:2.8rem;margin-bottom:1rem;opacity:.35}
+.hint-ttl{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--muted);margin-bottom:.4rem}
+.hint-txt{font-size:.8rem;color:var(--muted);line-height:1.6;opacity:.7}
+#toast{position:fixed;bottom:22px;left:calc(50% - var(--panel)/2);transform:translateX(-50%) translateY(8px);background:var(--text);color:white;padding:9px 18px;border-radius:50px;font-size:.8rem;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-#loading{position:fixed;inset:0;background:rgba(250,250,248,0.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(4px);transition:opacity 0.4s}
+#loading{position:fixed;inset:0;background:rgba(250,250,248,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(4px);transition:opacity .4s}
 #loading.hidden{opacity:0;pointer-events:none}
-.loading-sun{width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,var(--sun));animation:spin-glow 2s ease-in-out infinite;margin-bottom:20px}
-@keyframes spin-glow{0%,100%{transform:scale(1);box-shadow:0 0 0 8px rgba(245,166,35,0.15)}50%{transform:scale(1.1);box-shadow:0 0 0 16px rgba(245,166,35,0.08)}}
-.loading-text{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--text-muted)}
-@media(max-width:768px){:root{--panel-w:0px}#map{right:0}#panel{display:none}}
+.lsun{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,var(--sun));animation:lglow 2s ease-in-out infinite;margin-bottom:18px}
+@keyframes lglow{0%,100%{transform:scale(1);box-shadow:0 0 0 8px rgba(245,166,35,.15)}50%{transform:scale(1.1);box-shadow:0 0 0 16px rgba(245,166,35,.08)}}
+.ltxt{font-family:'Playfair Display',serif;font-size:1rem;color:var(--muted)}
 </style>
 </head>
 <body>
-<div id="loading"><div class="loading-sun"></div><div class="loading-text">Indlæser Solvejr…</div></div>
+<div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
 <div id="bar">
   <a class="brand" href="#"><div class="brand-sun"></div><div class="brand-name">Sol<em>vejr</em></div></a>
-  <div id="search-wrap">
-    <svg style="width:15px;height:15px;fill:var(--text-muted);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
-    <input type="text" id="search-input" placeholder="Søg adresse, café eller restaurant…" autocomplete="off">
-    <button id="search-btn"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
+  <div id="sw">
+    <svg style="width:15px;height:15px;fill:var(--muted);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
+    <input type="text" id="si" placeholder="Søg adresse, café eller restaurant…" autocomplete="off">
+    <button id="sb"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
   </div>
-  <div id="time-ctrl">
-    <div class="time-label">Tid</div>
-    <div id="time-display">12:00</div>
-    <input type="range" id="time-slider" min="0" max="1440" value="720" step="5">
-  </div>
-  <button id="live-btn" class="on"><span class="live-dot"></span> Live</button>
+  <div id="tc"><div class="tlbl">Tid</div><div id="tdis">12:00</div><input type="range" id="ts" min="0" max="1440" value="720" step="5"></div>
+  <button id="lb" class="on"><span class="dot"></span> Live</button>
+  <button id="shadow-toggle" class="on">🏙️ Skygger</button>
 </div>
 <div id="map"></div>
 <div id="panel">
-  <div id="panel-top">
-    <div class="place-name" id="panel-name">Solvejr</div>
-    <div class="place-sub" id="panel-sub">Find sol i Danmark</div>
-    <div id="sun-indicator" class="sun-indicator shade" style="display:none">
-      <div class="sun-indicator-icon" id="si-icon">🌙</div>
-      <div class="sun-indicator-text">
-        <div class="sun-indicator-title" id="si-title">Ingen sol</div>
-        <div class="sun-indicator-sub" id="si-sub"></div>
-      </div>
+  <div id="ptop">
+    <div class="pname" id="pn">Solvejr</div>
+    <div class="psub" id="ps">Find sol i Danmark</div>
+    <div id="si2" class="sind shade" style="display:none">
+      <div class="sind-icon" id="sic">🌙</div>
+      <div class="sind-text"><div class="sind-title" id="sit">Ingen sol</div><div class="sind-sub" id="sis"></div></div>
     </div>
-    <div id="quality-badge" style="display:none"></div>
+    <div id="qb" style="display:none"></div>
   </div>
-  <div id="panel-body">
-    <div class="hint-state" id="hint-state">
+  <div id="pbody">
+    <div class="hint" id="hint">
       <div class="hint-icon">🌞</div>
-      <div class="hint-title">Søg en adresse</div>
-      <div class="hint-text">Find caféer og restauranter med sol akkurat nu — eller skru i tidslinjen for at planlægge fremad</div>
+      <div class="hint-ttl">Søg en adresse</div>
+      <div class="hint-txt">Find caféer og restauranter med sol lige nu — eller skru i tidslinjen for at planlægge fremad</div>
     </div>
-    <div id="data-state" style="display:none">
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">Solopgang</div><div class="stat-value" id="stat-rise">—</div></div>
-        <div class="stat-card"><div class="stat-label">Solnedgang</div><div class="stat-value" id="stat-set">—</div></div>
-        <div class="stat-card"><div class="stat-label">Solhøjde</div><div class="stat-value" id="stat-alt">—<span class="stat-unit">°</span></div></div>
-        <div class="stat-card"><div class="stat-label">Retning</div><div class="stat-value" id="stat-az">—</div></div>
+    <div id="ds" style="display:none">
+      <div class="sgrid">
+        <div class="scard"><div class="slbl">Solopgang</div><div class="sval" id="sr">—</div></div>
+        <div class="scard"><div class="slbl">Solnedgang</div><div class="sval" id="ss">—</div></div>
+        <div class="scard"><div class="slbl">Solhøjde</div><div class="sval" id="sa">—<span class="sunit">°</span></div></div>
+        <div class="scard"><div class="slbl">Retning</div><div class="sval" id="saz">—</div></div>
       </div>
-      <div class="section-title">Solbane i dag</div>
-      <div class="arc-container"><canvas id="arc-canvas" width="310" height="130"></canvas></div>
-      <div class="section-title" id="nearby-title" style="display:none">Steder i nærheden</div>
-      <div class="place-list" id="place-list"></div>
+      <div class="stitle">Solbane i dag</div>
+      <div class="arc-box"><canvas id="arc" width="310" height="120"></canvas></div>
+      <div class="stitle" id="nbt" style="display:none">Steder i nærheden</div>
+      <div class="plist" id="pl"></div>
     </div>
   </div>
 </div>
 <div id="toast"></div>
 <script>
+const DFT='e807bdf1dd535ce2356f498fc79bccaf';
 function toRad(d){return d*Math.PI/180}function toDeg(r){return r*180/Math.PI}
-function getSolarPos(lat,lon,date){const jd=date.getTime()/86400000+2440587.5,n=jd-2451545,L=(280.46+0.9856474*n)%360,g=toRad(((357.528+0.9856003*n)%360+360)%360),lam=toRad(L+1.915*Math.sin(g)+0.02*Math.sin(2*g)),eps=toRad(23.439-0.0000004*n),sinDec=Math.sin(eps)*Math.sin(lam),cosDec=Math.cos(Math.asin(sinDec)),utcH=date.getUTCHours()+date.getUTCMinutes()/60+date.getUTCSeconds()/3600,lmst=((6.697375+0.0657098242*n+utcH+lon/15)%24+24)%24,ha=toRad((lmst-12)*15),latR=toRad(lat),sinAlt=Math.sin(latR)*sinDec+Math.cos(latR)*cosDec*Math.cos(ha),alt=toDeg(Math.asin(Math.max(-1,Math.min(1,sinAlt)))),cosAz=(sinDec-Math.sin(latR)*sinAlt)/(Math.cos(latR)*Math.cos(toRad(alt)));let az=toDeg(Math.acos(Math.max(-1,Math.min(1,cosAz))));if(Math.sin(ha)>0)az=360-az;return{alt,az}}
-function getRiseset(lat,lon,ds){let rise=null,set=null,prev=null;for(let m=0;m<=1440;m+=5){const d=new Date(ds+'T00:00:00Z');d.setUTCMinutes(d.getUTCMinutes()-60+m);const{alt}=getSolarPos(lat,lon,d);if(prev!==null){if(prev<0&&alt>=0&&!rise)rise=m/60-0.04;if(prev>=0&&alt<0&&!set)set=m/60-0.04}prev=alt}return{rise,set}}
-function sunAtHour(lat,lon,ds,h){const d=new Date(ds+'T00:00:00+01:00');d.setMinutes(d.getMinutes()+h*60);return getSolarPos(lat,lon,d)}
+function gsp(lat,lon,date){const jd=date.getTime()/86400000+2440587.5,n=jd-2451545,L=(280.46+0.9856474*n)%360,g=toRad(((357.528+0.9856003*n)%360+360)%360),lam=toRad(L+1.915*Math.sin(g)+.02*Math.sin(2*g)),eps=toRad(23.439-.0000004*n),sinDec=Math.sin(eps)*Math.sin(lam),cosDec=Math.cos(Math.asin(sinDec)),utcH=date.getUTCHours()+date.getUTCMinutes()/60+date.getUTCSeconds()/3600,lmst=((6.697375+0.0657098242*n+utcH+lon/15)%24+24)%24,ha=toRad((lmst-12)*15),latR=toRad(lat),sinAlt=Math.sin(latR)*sinDec+Math.cos(latR)*cosDec*Math.cos(ha),alt=toDeg(Math.asin(Math.max(-1,Math.min(1,sinAlt)))),cosAz=(sinDec-Math.sin(latR)*sinAlt)/(Math.cos(latR)*Math.cos(toRad(alt)));let az=toDeg(Math.acos(Math.max(-1,Math.min(1,cosAz))));if(Math.sin(ha)>0)az=360-az;return{alt,az}}
+function grs(lat,lon,ds){let rise=null,set=null,prev=null;for(let m=0;m<=1440;m+=5){const d=new Date(ds+'T00:00:00Z');d.setUTCMinutes(d.getUTCMinutes()-60+m);const{alt}=gsp(lat,lon,d);if(prev!==null){if(prev<0&&alt>=0&&!rise)rise=m/60-.04;if(prev>=0&&alt<0&&!set)set=m/60-.04}prev=alt}return{rise,set}}
+function sah(lat,lon,ds,h){const d=new Date(ds+'T00:00:00+01:00');d.setMinutes(d.getMinutes()+h*60);return gsp(lat,lon,d)}
 function fmt(h){if(h===null)return'—';return String(Math.floor(h)).padStart(2,'0')+':'+String(Math.round((h%1)*60)).padStart(2,'0')}
-function azLabel(az){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(az/22.5)%16]}
+function azl(az){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(az/22.5)%16]}
 const TODAY=new Date().toISOString().slice(0,10);
-let gmap,gc,markers=[],selectedLat=null,selectedLon=null,isLive=true,curH=new Date().getHours()+new Date().getMinutes()/60;
-function showToast(msg,dur=2800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
-function timeStr(h){return String(Math.floor(h)).padStart(2,'0')+':'+String(Math.round((h%1)*60)%60).padStart(2,'0')}
-function updateSlider(h){const s=document.getElementById('time-slider');s.value=Math.round(h*60);s.style.setProperty('--pct',(h/24*100).toFixed(1)+'%');document.getElementById('time-display').textContent=timeStr(h)}
-async function updatePanel(lat,lon,name,sub){
-  selectedLat=lat;selectedLon=lon;
-  document.getElementById('panel-name').textContent=name||'Valgt sted';
-  document.getElementById('panel-sub').textContent=sub||lat.toFixed(4)+', '+lon.toFixed(4);
-  const now=new Date(TODAY+'T'+timeStr(curH)+':00+01:00');
-  const{alt,az}=getSolarPos(lat,lon,now);
-  const{rise,set}=getRiseset(lat,lon,TODAY);
-  const hasSun=alt>3;
-  const ind=document.getElementById('sun-indicator');
-  ind.style.display='flex';
-  ind.className='sun-indicator '+(hasSun?'sun':'shade');
-  document.getElementById('si-icon').textContent=hasSun?'☀️':(alt>0?'🏙️':'🌙');
-  document.getElementById('si-title').textContent=hasSun?'Sol på stedet':(alt>0?'I skygge':'Ingen sol nu');
-  document.getElementById('si-sub').textContent=hasSun?'Solen er '+alt.toFixed(1)+'° oppe fra '+azLabel(az):(alt>0?'Solen er oppe men lavt':'Solopgang: '+fmt(rise));
-  const qb=document.getElementById('quality-badge');
-  qb.style.display='inline-flex';qb.className='quality-badge approx';qb.textContent='≈ Astronomisk beregning';
-  document.getElementById('stat-rise').textContent=fmt(rise);
-  document.getElementById('stat-set').textContent=fmt(set);
-  document.getElementById('stat-alt').innerHTML=alt.toFixed(1)+'<span class="stat-unit">°</span>';
-  document.getElementById('stat-az').textContent=azLabel(az);
-  drawArc(lat,lon,curH);
-  document.getElementById('hint-state').style.display='none';
-  document.getElementById('data-state').style.display='block';
+let gmap,gc,markers=[],slat=null,slon=null,isLive=true,curH=new Date().getHours()+new Date().getMinutes()/60;
+let shadowLayer=null,showShadows=true;
+
+function toast(msg,dur=2800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+function ts2(h){return String(Math.floor(h)).padStart(2,'0')+':'+String(Math.round((h%1)*60)%60).padStart(2,'0')}
+const tsl=document.getElementById('ts'),tdi=document.getElementById('tdis');
+function setT(h){tsl.value=Math.round(h*60);tdi.textContent=ts2(h);tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%')}
+
+// Shadow WMS layer from Dataforsyningen
+function buildShadowUrl(dateStr,hour){
+  const d=new Date(dateStr+'T'+String(Math.floor(hour)).padStart(2,'0')+':'+String(Math.round((hour%1)*60)%60).padStart(2,'0')+':00+01:00');
+  const iso=d.toISOString();
+  return `https://api.dataforsyningen.dk/dhm_skygge_3d?service=WMS&version=1.3.0&request=GetMap&layers=dhm_skygge_3d&styles=&CRS=EPSG:3857&width=256&height=256&format=image/png&transparent=true&time=${encodeURIComponent(iso)}&token=${DFT}`;
 }
+
+function updateShadowLayer(){
+  if(!gmap)return;
+  if(shadowLayer){shadowLayer.setMap(null);shadowLayer=null}
+  if(!showShadows)return;
+  const url=buildShadowUrl(TODAY,curH);
+  shadowLayer=new google.maps.ImageMapType({
+    getTileUrl:(coord,zoom)=>{
+      const n=Math.pow(2,zoom);
+      const lon1=coord.x/n*360-180;
+      const lat1=toDeg(Math.atan(Math.sinh(Math.PI*(1-2*coord.y/n))));
+      const lon2=(coord.x+1)/n*360-180;
+      const lat2=toDeg(Math.atan(Math.sinh(Math.PI*(1-2*(coord.y+1)/n))));
+      // Convert to EPSG:3857
+      const toM=l=>l*20037508.34/180;
+      const latToM=lat=>Math.log(Math.tan((90+lat)*Math.PI/360))/Math.PI*20037508.34;
+      const minx=toM(lon1),miny=latToM(lat2),maxx=toM(lon2),maxy=latToM(lat1);
+      return `https://api.dataforsyningen.dk/dhm_skygge_3d?service=WMS&version=1.3.0&request=GetMap&layers=dhm_skygge_3d&styles=&CRS=EPSG:3857&BBOX=${minx},${miny},${maxx},${maxy}&width=256&height=256&format=image/png&transparent=true&token=${DFT}`;
+    },
+    tileSize:new google.maps.Size(256,256),
+    opacity:0.5,
+    name:'Skygger'
+  });
+  gmap.overlayMapTypes.clear();
+  gmap.overlayMapTypes.push(shadowLayer);
+}
+
+document.getElementById('shadow-toggle').addEventListener('click',()=>{
+  showShadows=!showShadows;
+  document.getElementById('shadow-toggle').classList.toggle('on',showShadows);
+  updateShadowLayer();
+  toast(showShadows?'🏙️ Skygger slået til':'🌞 Skygger slået fra');
+});
+
 function drawArc(lat,lon,ch){
-  const cv=document.getElementById('arc-canvas'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height,cx=W/2,cy=H-12,r=Math.min(cx-16,H-24);
+  const cv=document.getElementById('arc'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height,cx=W/2,cy=H-10,r=Math.min(cx-14,H-18);
   ctx.clearRect(0,0,W,H);
-  ctx.beginPath();ctx.moveTo(12,cy);ctx.lineTo(W-12,cy);ctx.strokeStyle='#D0D8E4';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(10,cy);ctx.lineTo(W-10,cy);ctx.strokeStyle='#D0D8E4';ctx.lineWidth=1.5;ctx.stroke();
   const pts=[];
-  for(let h=0;h<=24;h+=0.2){const{alt,az}=sunAtHour(lat,lon,TODAY,h);if(alt>0){const ang=Math.PI-(az/180)*Math.PI,rr=r*(1-alt/90);pts.push({x:cx+rr*Math.cos(ang),y:cy-r*(alt/90)})}}
+  for(let h=0;h<=24;h+=.2){const{alt,az}=sah(lat,lon,TODAY,h);if(alt>0){const ang=Math.PI-(az/180)*Math.PI,rr=r*(1-alt/90);pts.push({x:cx+rr*Math.cos(ang),y:cy-r*(alt/90)})}}
   if(pts.length>1){
-    const grad=ctx.createLinearGradient(0,0,0,cy);grad.addColorStop(0,'rgba(245,166,35,0.2)');grad.addColorStop(1,'rgba(245,166,35,0)');
-    ctx.beginPath();ctx.moveTo(pts[0].x,cy);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,cy);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+    const g=ctx.createLinearGradient(0,0,0,cy);g.addColorStop(0,'rgba(245,166,35,.2)');g.addColorStop(1,'rgba(245,166,35,0)');
+    ctx.beginPath();ctx.moveTo(pts[0].x,cy);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,cy);ctx.closePath();ctx.fillStyle=g;ctx.fill();
     ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle='#F5A623';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();
   }
-  const{alt,az}=sunAtHour(lat,lon,TODAY,ch);
-  if(alt>0){const ang=Math.PI-(az/180)*Math.PI,rr=r*(1-alt/90),sx=cx+rr*Math.cos(ang),sy=cy-r*(alt/90);ctx.beginPath();ctx.arc(sx,sy,8,0,2*Math.PI);ctx.fillStyle='#F5A623';ctx.shadowColor='rgba(245,166,35,0.6)';ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0}
-  ctx.fillStyle='#A0AEC0';ctx.font='10px Outfit,sans-serif';ctx.textAlign='center';ctx.fillText('Ø',16,cy-4);ctx.fillText('V',W-16,cy-4);ctx.fillText('S',cx,cy-4);
+  const{alt,az}=sah(lat,lon,TODAY,ch);
+  if(alt>0){const ang=Math.PI-(az/180)*Math.PI,rr=r*(1-alt/90),sx=cx+rr*Math.cos(ang),sy=cy-r*(alt/90);ctx.beginPath();ctx.arc(sx,sy,7,0,2*Math.PI);ctx.fillStyle='#F5A623';ctx.shadowColor='rgba(245,166,35,.6)';ctx.shadowBlur=12;ctx.fill();ctx.shadowBlur=0}
 }
-function mkIcon(hasSun){return{path:google.maps.SymbolPath.CIRCLE,scale:10,fillColor:hasSun?'#F5A623':'#8A9BB0',fillOpacity:1,strokeColor:'white',strokeWeight:2.5}}
-function refreshMarkers(){markers.forEach(m=>{const{alt}=sunAtHour(m._lat,m._lon,TODAY,curH);m.setIcon(mkIcon(alt>3))})}
+
+function upPanel(lat,lon,name,sub){
+  slat=lat;slon=lon;
+  document.getElementById('pn').textContent=name||'Valgt sted';
+  document.getElementById('ps').textContent=sub||lat.toFixed(4)+', '+lon.toFixed(4);
+  const now=new Date(TODAY+'T'+ts2(curH)+':00+01:00');
+  const{alt,az}=gsp(lat,lon,now);
+  const{rise,set}=grs(lat,lon,TODAY);
+  const hasSun=alt>3;
+  const ind=document.getElementById('si2');ind.style.display='flex';
+  ind.className='sind '+(hasSun?'sun':'shade');
+  document.getElementById('sic').textContent=hasSun?'☀️':(alt>0?'🏙️':'🌙');
+  document.getElementById('sit').textContent=hasSun?'Sol på stedet':(alt>0?'Lavt sol/mulig skygge':'Ingen sol nu');
+  document.getElementById('sis').textContent=hasSun?'Solen er '+alt.toFixed(1)+'° oppe fra '+azl(az):(alt>0?'Tjek skyggekort på kortet':'Solopgang: '+fmt(rise));
+  const qb=document.getElementById('qb');qb.style.display='inline-flex';
+  qb.className='qbadge '+(showShadows?'dhm':'ast');
+  qb.textContent=showShadows?'🏗️ DHM Skyggekort aktivt':'≈ Astronomisk beregning';
+  document.getElementById('sr').textContent=fmt(rise);
+  document.getElementById('ss').textContent=fmt(set);
+  document.getElementById('sa').innerHTML=alt.toFixed(1)+'<span class="sunit">°</span>';
+  document.getElementById('saz').textContent=azl(az);
+  drawArc(lat,lon,curH);
+  document.getElementById('hint').style.display='none';
+  document.getElementById('ds').style.display='block';
+}
+
+function mkI(s){return{path:google.maps.SymbolPath.CIRCLE,scale:10,fillColor:s?'#F5A623':'#8A9BB0',fillOpacity:1,strokeColor:'white',strokeWeight:2.5}}
+function refMk(){markers.forEach(m=>{const{alt}=sah(m._lat,m._lon,TODAY,curH);m.setIcon(mkI(alt>3))})}
+
 async function searchNearby(lat,lng){
   markers.forEach(m=>m.setMap(null));markers=[];
-  document.getElementById('place-list').innerHTML='';
-  document.getElementById('nearby-title').style.display='none';
+  document.getElementById('pl').innerHTML='';
+  document.getElementById('nbt').style.display='none';
   try{
     const{Place}=await google.maps.importLibrary('places');
-    const types=['cafe','restaurant','bar'],typeLabels={cafe:'Café',restaurant:'Restaurant',bar:'Bar'},seen=new Set(),allPlaces=[];
+    const types=['cafe','restaurant','bar'],tl={cafe:'Café',restaurant:'Restaurant',bar:'Bar'},seen=new Set(),all=[];
     for(const type of types){
-      try{
-        const{places}=await Place.searchNearby({fields:['displayName','location','formattedAddress'],locationRestriction:{center:{lat,lng},radius:600},includedPrimaryTypes:[type],maxResultCount:6});
-        if(places)places.forEach(p=>{if(seen.has(p.displayName))return;seen.add(p.displayName);allPlaces.push({name:p.displayName,address:p.formattedAddress,lat:p.location.lat(),lng:p.location.lng(),type:typeLabels[type]})});
-      }catch(e){}
+      try{const{places}=await Place.searchNearby({fields:['displayName','location','formattedAddress'],locationRestriction:{center:{lat,lng},radius:600},includedPrimaryTypes:[type],maxResultCount:6});
+      if(places)places.forEach(p=>{if(seen.has(p.displayName))return;seen.add(p.displayName);all.push({name:p.displayName,address:p.formattedAddress,lat:p.location.lat(),lng:p.location.lng(),type:tl[type]})})}catch(e){}
     }
-    const list=document.getElementById('place-list');let sunCount=0;
-    for(const place of allPlaces){
-      const{alt}=sunAtHour(place.lat,place.lng,TODAY,curH),hasSun=alt>3;
-      if(hasSun)sunCount++;
-      const m=new google.maps.Marker({position:{lat:place.lat,lng:place.lng},map:gmap,title:place.name,icon:mkIcon(hasSun)});
-      m._lat=place.lat;m._lon=place.lng;markers.push(m);
-      m.addListener('click',()=>{updatePanel(place.lat,place.lng,place.name,place.type+(place.address?' · '+place.address.split(',')[0]:''))});
+    const list=document.getElementById('pl');let suns=0;
+    for(const p of all){
+      const{alt}=sah(p.lat,p.lng,TODAY,curH),hs=alt>3;if(hs)suns++;
+      const m=new google.maps.Marker({position:{lat:p.lat,lng:p.lng},map:gmap,title:p.name,icon:mkI(hs)});
+      m._lat=p.lat;m._lon=p.lng;markers.push(m);
+      m.addListener('click',()=>{upPanel(p.lat,p.lng,p.name,p.type+(p.address?' · '+p.address.split(',')[0]:''))});
       const btn=document.createElement('button');
-      btn.className='place-item'+(hasSun?' sun-now':'');
-      btn.innerHTML='<div class="place-dot '+(hasSun?'sun':'shade')+'"></div><div class="place-item-info"><div class="place-item-name">'+place.name+'</div><div class="place-item-type">'+place.type+'</div></div><div class="place-item-sun '+(hasSun?'sun':'shade')+'">'+(hasSun?'☀️ Sol nu':'🌙 Skygge')+'</div>';
-      btn.addEventListener('click',()=>{gmap.panTo({lat:place.lat,lng:place.lng});updatePanel(place.lat,place.lng,place.name,place.type+(place.address?' · '+place.address.split(',')[0]:''))});
+      btn.className='pitem'+(hs?' snow':'');
+      btn.innerHTML='<div class="pdot '+(hs?'sun':'shade')+'"></div><div class="pinfo"><div class="pname2">'+p.name+'</div><div class="ptype">'+p.type+'</div></div><div class="psun '+(hs?'sun':'shade')+'">'+(hs?'☀️ Sol nu':'🌙 Skygge')+'</div>';
+      btn.addEventListener('click',()=>{gmap.panTo({lat:p.lat,lng:p.lng});upPanel(p.lat,p.lng,p.name,p.type+(p.address?' · '+p.address.split(',')[0]:''))});
       list.appendChild(btn);
     }
-    if(allPlaces.length>0){document.getElementById('nearby-title').style.display='block';showToast('☀️ '+sunCount+' i sol  ·  🌙 '+(allPlaces.length-sunCount)+' i skygge')}
-    else showToast('Ingen steder fundet i nærheden');
-  }catch(e){showToast('Fejl: '+e.message)}
+    if(all.length){document.getElementById('nbt').style.display='block';toast('☀️ '+suns+' i sol  ·  🌙 '+(all.length-suns)+' i skygge')}
+    else toast('Ingen steder fundet i nærheden');
+  }catch(e){toast('Fejl: '+e.message)}
 }
+
 window.initMap=function(){
-  gmap=new google.maps.Map(document.getElementById('map'),{center:{lat:55.676,lng:12.568},zoom:14,styles:[{featureType:'all',elementType:'geometry',stylers:[{color:'#F2EDE6'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#C8DDEF'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#FFFFFF'}]},{featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#FAE5C8'}]},{featureType:'road.highway',elementType:'geometry',stylers:[{color:'#F5D5A8'}]},{featureType:'park',elementType:'geometry',stylers:[{color:'#D5EDBD'}]},{featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},{featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]},{elementType:'labels.text.fill',stylers:[{color:'#7A6A58'}]},{elementType:'labels.text.stroke',stylers:[{color:'#FAFAF8',weight:2}]}],disableDefaultUI:true,zoomControl:true,zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_CENTER},clickableIcons:false});
+  gmap=new google.maps.Map(document.getElementById('map'),{
+    center:{lat:55.676,lng:12.568},zoom:14,
+    styles:[{featureType:'all',elementType:'geometry',stylers:[{color:'#F2EDE6'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#C8DDEF'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#FFF'}]},{featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#FAE5C8'}]},{featureType:'road.highway',elementType:'geometry',stylers:[{color:'#F5D5A8'}]},{featureType:'park',elementType:'geometry',stylers:[{color:'#D5EDBD'}]},{featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},{featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]},{elementType:'labels.text.fill',stylers:[{color:'#7A6A58'}]},{elementType:'labels.text.stroke',stylers:[{color:'#FAFAF8',weight:2}]}],
+    disableDefaultUI:true,zoomControl:true,zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_CENTER},clickableIcons:false
+  });
   gc=new google.maps.Geocoder();
-  gmap.addListener('click',e=>{const lat=e.latLng.lat(),lng=e.latLng.lng();updatePanel(lat,lng);searchNearby(lat,lng)});
-  document.getElementById('search-btn').addEventListener('click',doSearch);
-  document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()});
-  if(navigator.geolocation){navigator.geolocation.getCurrentPosition(pos=>{gmap.setCenter({lat:pos.coords.latitude,lng:pos.coords.longitude});updatePanel(pos.coords.latitude,pos.coords.longitude,'Din placering','GPS-position');searchNearby(pos.coords.latitude,pos.coords.longitude)},()=>searchNearby(55.676,12.568))}
+  updateShadowLayer();
+  gmap.addListener('click',e=>{const lat=e.latLng.lat(),lng=e.latLng.lng();upPanel(lat,lng);searchNearby(lat,lng)});
+  document.getElementById('sb').addEventListener('click',doSearch);
+  document.getElementById('si').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()});
+  if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{gmap.setCenter({lat:p.coords.latitude,lng:p.coords.longitude});upPanel(p.coords.latitude,p.coords.longitude,'Din placering','GPS');searchNearby(p.coords.latitude,p.coords.longitude)},()=>searchNearby(55.676,12.568))}
   else searchNearby(55.676,12.568);
   document.getElementById('loading').classList.add('hidden');
 };
-function doSearch(){const q=document.getElementById('search-input').value.trim();if(!q)return;gc.geocode({address:q.includes(',')?q:q+', Danmark'},(results,status)=>{if(status==='OK'&&results[0]){const loc=results[0].geometry.location;gmap.setCenter(loc);gmap.setZoom(15);updatePanel(loc.lat(),loc.lng(),results[0].formatted_address.split(',')[0],results[0].formatted_address);searchNearby(loc.lat(),loc.lng())}else showToast('Adresse ikke fundet')})}
-const slider=document.getElementById('time-slider');
-slider.addEventListener('input',()=>{curH=parseInt(slider.value)/60;document.getElementById('time-display').textContent=timeStr(curH);slider.style.setProperty('--pct',(curH/24*100).toFixed(1)+'%');isLive=false;document.getElementById('live-btn').classList.remove('on');refreshMarkers();if(selectedLat!==null)updatePanel(selectedLat,selectedLon,document.getElementById('panel-name').textContent,document.getElementById('panel-sub').textContent)});
-document.getElementById('live-btn').addEventListener('click',()=>{isLive=!isLive;document.getElementById('live-btn').classList.toggle('on',isLive);if(isLive)syncLive()});
-function syncLive(){if(!isLive)return;const now=new Date();curH=now.getHours()+now.getMinutes()/60;updateSlider(curH);refreshMarkers();if(selectedLat!==null)updatePanel(selectedLat,selectedLon,document.getElementById('panel-name').textContent,document.getElementById('panel-sub').textContent)}
-setInterval(()=>{if(isLive)syncLive()},60000);
-updateSlider(curH);
+
+function doSearch(){const q=document.getElementById('si').value.trim();if(!q)return;gc.geocode({address:q.includes(',')?q:q+', Danmark'},(r,s)=>{if(s==='OK'&&r[0]){const loc=r[0].geometry.location;gmap.setCenter(loc);gmap.setZoom(15);upPanel(loc.lat(),loc.lng(),r[0].formatted_address.split(',')[0],r[0].formatted_address);searchNearby(loc.lat(),loc.lng())}else toast('Adresse ikke fundet')})}
+
+tsl.addEventListener('input',()=>{curH=parseInt(tsl.value)/60;tdi.textContent=ts2(curH);tsl.style.setProperty('--p',(curH/24*100).toFixed(1)+'%');isLive=false;document.getElementById('lb').classList.remove('on');refMk();updateShadowLayer();if(slat!==null)upPanel(slat,slon,document.getElementById('pn').textContent,document.getElementById('ps').textContent)});
+document.getElementById('lb').addEventListener('click',()=>{isLive=!isLive;document.getElementById('lb').classList.toggle('on',isLive);if(isLive)syncL()});
+function syncL(){if(!isLive)return;const n=new Date();curH=n.getHours()+n.getMinutes()/60;setT(curH);refMk();updateShadowLayer();if(slat!==null)upPanel(slat,slon,document.getElementById('pn').textContent,document.getElementById('ps').textContent)}
+setInterval(()=>{if(isLive)syncL()},60000);
+setT(curH);
 window.gm_authFailure=function(){document.getElementById('map').innerHTML='<div style="display:flex;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:1rem;font-family:Outfit,sans-serif;color:#6B7A8D"><div style="font-size:2.5rem">⚠️</div><b>Google Maps fejl</b></div>';document.getElementById('loading').classList.add('hidden')};
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrKdTkGmPgclGBEiwOKsgmkkAbTYUN07Q&libraries=places&callback=initMap&loading=async" async defer></script>
