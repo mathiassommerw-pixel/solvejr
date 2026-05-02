@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Solvejr — Find sol i Danmark</title>
+<title>Solvejr â Find sol i Danmark</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -83,17 +83,17 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 </style>
 </head>
 <body>
-<div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
+<div id="loading"><div class="lsun"></div><div class="ltxt">IndlÃ¦ser Solvejrâ¦</div></div>
 <div id="bar">
   <a class="brand" href="#"><div class="brand-sun"></div><div class="brand-name">Sol<em>vejr</em></div></a>
   <div id="sw">
     <svg style="width:15px;height:15px;fill:var(--muted);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
-    <input type="text" id="si" placeholder="Søg adresse, café eller restaurant…" autocomplete="off">
+    <input type="text" id="si" placeholder="SÃ¸g adresse, cafÃ© eller restaurantâ¦" autocomplete="off">
     <button id="sb"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
   </div>
   <div id="tc"><div class="tlbl">Tid</div><div id="tdis">12:00</div><input type="range" id="ts" min="0" max="1440" value="720" step="5"></div>
   <button id="lb" class="on"><span class="dot"></span> Live</button>
-  <button id="shadow-toggle" class="on">🏙️ Skygger</button>
+  
 </div>
 <div id="map"></div>
 <div id="panel">
@@ -101,27 +101,27 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
     <div class="pname" id="pn">Solvejr</div>
     <div class="psub" id="ps">Find sol i Danmark</div>
     <div id="si2" class="sind shade" style="display:none">
-      <div class="sind-icon" id="sic">🌙</div>
+      <div class="sind-icon" id="sic">ð</div>
       <div class="sind-text"><div class="sind-title" id="sit">Ingen sol</div><div class="sind-sub" id="sis"></div></div>
     </div>
     <div id="qb" style="display:none"></div>
   </div>
   <div id="pbody">
     <div class="hint" id="hint">
-      <div class="hint-icon">🌞</div>
-      <div class="hint-ttl">Søg en adresse</div>
-      <div class="hint-txt">Find caféer og restauranter med sol lige nu — eller skru i tidslinjen for at planlægge fremad</div>
+      <div class="hint-icon">ð</div>
+      <div class="hint-ttl">SÃ¸g en adresse</div>
+      <div class="hint-txt">Find cafÃ©er og restauranter med sol lige nu â eller skru i tidslinjen for at planlÃ¦gge fremad</div>
     </div>
     <div id="ds" style="display:none">
       <div class="sgrid">
-        <div class="scard"><div class="slbl">Solopgang</div><div class="sval" id="sr">—</div></div>
-        <div class="scard"><div class="slbl">Solnedgang</div><div class="sval" id="ss">—</div></div>
-        <div class="scard"><div class="slbl">Solhøjde</div><div class="sval" id="sa">—<span class="sunit">°</span></div></div>
-        <div class="scard"><div class="slbl">Retning</div><div class="sval" id="saz">—</div></div>
+        <div class="scard"><div class="slbl">Solopgang</div><div class="sval" id="sr">â</div></div>
+        <div class="scard"><div class="slbl">Solnedgang</div><div class="sval" id="ss">â</div></div>
+        <div class="scard"><div class="slbl">SolhÃ¸jde</div><div class="sval" id="sa">â<span class="sunit">Â°</span></div></div>
+        <div class="scard"><div class="slbl">Retning</div><div class="sval" id="saz">â</div></div>
       </div>
       <div class="stitle">Solbane i dag</div>
       <div class="arc-box"><canvas id="arc" width="310" height="120"></canvas></div>
-      <div class="stitle" id="nbt" style="display:none">Steder i nærheden</div>
+      <div class="stitle" id="nbt" style="display:none">Steder i nÃ¦rheden</div>
       <div class="plist" id="pl"></div>
     </div>
   </div>
@@ -133,8 +133,8 @@ function toRad(d){return d*Math.PI/180}function toDeg(r){return r*180/Math.PI}
 function gsp(lat,lon,date){const jd=date.getTime()/86400000+2440587.5,n=jd-2451545,L=(280.46+0.9856474*n)%360,g=toRad(((357.528+0.9856003*n)%360+360)%360),lam=toRad(L+1.915*Math.sin(g)+.02*Math.sin(2*g)),eps=toRad(23.439-.0000004*n),sinDec=Math.sin(eps)*Math.sin(lam),cosDec=Math.cos(Math.asin(sinDec)),utcH=date.getUTCHours()+date.getUTCMinutes()/60+date.getUTCSeconds()/3600,lmst=((6.697375+0.0657098242*n+utcH+lon/15)%24+24)%24,ha=toRad((lmst-12)*15),latR=toRad(lat),sinAlt=Math.sin(latR)*sinDec+Math.cos(latR)*cosDec*Math.cos(ha),alt=toDeg(Math.asin(Math.max(-1,Math.min(1,sinAlt)))),cosAz=(sinDec-Math.sin(latR)*sinAlt)/(Math.cos(latR)*Math.cos(toRad(alt)));let az=toDeg(Math.acos(Math.max(-1,Math.min(1,cosAz))));if(Math.sin(ha)>0)az=360-az;return{alt,az}}
 function grs(lat,lon,ds){let rise=null,set=null,prev=null;for(let m=0;m<=1440;m+=5){const d=new Date(ds+'T00:00:00Z');d.setUTCMinutes(d.getUTCMinutes()-60+m);const{alt}=gsp(lat,lon,d);if(prev!==null){if(prev<0&&alt>=0&&!rise)rise=m/60-.04;if(prev>=0&&alt<0&&!set)set=m/60-.04}prev=alt}return{rise,set}}
 function sah(lat,lon,ds,h){const d=new Date(ds+'T00:00:00+01:00');d.setMinutes(d.getMinutes()+h*60);return gsp(lat,lon,d)}
-function fmt(h){if(h===null)return'—';return String(Math.floor(h)).padStart(2,'0')+':'+String(Math.round((h%1)*60)).padStart(2,'0')}
-function azl(az){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(az/22.5)%16]}
+function fmt(h){if(h===null)return'â';return String(Math.floor(h)).padStart(2,'0')+':'+String(Math.round((h%1)*60)).padStart(2,'0')}
+function azl(az){return['N','NNÃ','NÃ','ÃNÃ','Ã','ÃSÃ','SÃ','SSÃ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(az/22.5)%16]}
 const TODAY=new Date().toISOString().slice(0,10);
 let gmap,gc,markers=[],slat=null,slon=null,isLive=true,curH=new Date().getHours()+new Date().getMinutes()/60;
 let shadowLayer=null,showShadows=true;
@@ -181,7 +181,7 @@ document.getElementById('shadow-toggle').addEventListener('click',()=>{
   showShadows=!showShadows;
   document.getElementById('shadow-toggle').classList.toggle('on',showShadows);
   updateShadowLayer();
-  toast(showShadows?'🏙️ Skygger slået til':'🌞 Skygger slået fra');
+  toast(showShadows?'ðï¸ Skygger slÃ¥et til':'ð Skygger slÃ¥et fra');
 });
 
 function drawArc(lat,lon,ch){
@@ -209,15 +209,15 @@ function upPanel(lat,lon,name,sub){
   const hasSun=alt>3;
   const ind=document.getElementById('si2');ind.style.display='flex';
   ind.className='sind '+(hasSun?'sun':'shade');
-  document.getElementById('sic').textContent=hasSun?'☀️':(alt>0?'🏙️':'🌙');
-  document.getElementById('sit').textContent=hasSun?'Sol på stedet':(alt>0?'Lavt sol/mulig skygge':'Ingen sol nu');
-  document.getElementById('sis').textContent=hasSun?'Solen er '+alt.toFixed(1)+'° oppe fra '+azl(az):(alt>0?'Tjek skyggekort på kortet':'Solopgang: '+fmt(rise));
+  document.getElementById('sic').textContent=hasSun?'âï¸':(alt>0?'ðï¸':'ð');
+  document.getElementById('sit').textContent=hasSun?'Sol pÃ¥ stedet':(alt>0?'Lavt sol/mulig skygge':'Ingen sol nu');
+  document.getElementById('sis').textContent=hasSun?'Solen er '+alt.toFixed(1)+'Â° oppe fra '+azl(az):(alt>0?'Tjek skyggekort pÃ¥ kortet':'Solopgang: '+fmt(rise));
   const qb=document.getElementById('qb');qb.style.display='inline-flex';
   qb.className='qbadge '+(showShadows?'dhm':'ast');
-  qb.textContent=showShadows?'🏗️ DHM Skyggekort aktivt':'≈ Astronomisk beregning';
+  qb.textContent=showShadows?'ðï¸ DHM Skyggekort aktivt':'â Astronomisk beregning';
   document.getElementById('sr').textContent=fmt(rise);
   document.getElementById('ss').textContent=fmt(set);
-  document.getElementById('sa').innerHTML=alt.toFixed(1)+'<span class="sunit">°</span>';
+  document.getElementById('sa').innerHTML=alt.toFixed(1)+'<span class="sunit">Â°</span>';
   document.getElementById('saz').textContent=azl(az);
   drawArc(lat,lon,curH);
   document.getElementById('hint').style.display='none';
@@ -233,7 +233,7 @@ async function searchNearby(lat,lng){
   document.getElementById('nbt').style.display='none';
   try{
     const{Place}=await google.maps.importLibrary('places');
-    const types=['cafe','restaurant','bar'],tl={cafe:'Café',restaurant:'Restaurant',bar:'Bar'},seen=new Set(),all=[];
+    const types=['cafe','restaurant','bar'],tl={cafe:'CafÃ©',restaurant:'Restaurant',bar:'Bar'},seen=new Set(),all=[];
     for(const type of types){
       try{const{places}=await Place.searchNearby({fields:['displayName','location','formattedAddress'],locationRestriction:{center:{lat,lng},radius:600},includedPrimaryTypes:[type],maxResultCount:6});
       if(places)places.forEach(p=>{if(seen.has(p.displayName))return;seen.add(p.displayName);all.push({name:p.displayName,address:p.formattedAddress,lat:p.location.lat(),lng:p.location.lng(),type:tl[type]})})}catch(e){}
@@ -243,15 +243,15 @@ async function searchNearby(lat,lng){
       const{alt}=sah(p.lat,p.lng,TODAY,curH),hs=alt>3;if(hs)suns++;
       const m=new google.maps.Marker({position:{lat:p.lat,lng:p.lng},map:gmap,title:p.name,icon:mkI(hs)});
       m._lat=p.lat;m._lon=p.lng;markers.push(m);
-      m.addListener('click',()=>{upPanel(p.lat,p.lng,p.name,p.type+(p.address?' · '+p.address.split(',')[0]:''))});
+      m.addListener('click',()=>{upPanel(p.lat,p.lng,p.name,p.type+(p.address?' Â· '+p.address.split(',')[0]:''))});
       const btn=document.createElement('button');
       btn.className='pitem'+(hs?' snow':'');
-      btn.innerHTML='<div class="pdot '+(hs?'sun':'shade')+'"></div><div class="pinfo"><div class="pname2">'+p.name+'</div><div class="ptype">'+p.type+'</div></div><div class="psun '+(hs?'sun':'shade')+'">'+(hs?'☀️ Sol nu':'🌙 Skygge')+'</div>';
-      btn.addEventListener('click',()=>{gmap.panTo({lat:p.lat,lng:p.lng});upPanel(p.lat,p.lng,p.name,p.type+(p.address?' · '+p.address.split(',')[0]:''))});
+      btn.innerHTML='<div class="pdot '+(hs?'sun':'shade')+'"></div><div class="pinfo"><div class="pname2">'+p.name+'</div><div class="ptype">'+p.type+'</div></div><div class="psun '+(hs?'sun':'shade')+'">'+(hs?'âï¸ Sol nu':'ð Skygge')+'</div>';
+      btn.addEventListener('click',()=>{gmap.panTo({lat:p.lat,lng:p.lng});upPanel(p.lat,p.lng,p.name,p.type+(p.address?' Â· '+p.address.split(',')[0]:''))});
       list.appendChild(btn);
     }
-    if(all.length){document.getElementById('nbt').style.display='block';toast('☀️ '+suns+' i sol  ·  🌙 '+(all.length-suns)+' i skygge')}
-    else toast('Ingen steder fundet i nærheden');
+    if(all.length){document.getElementById('nbt').style.display='block';toast('âï¸ '+suns+' i sol  Â·  ð '+(all.length-suns)+' i skygge')}
+    else toast('Ingen steder fundet i nÃ¦rheden');
   }catch(e){toast('Fejl: '+e.message)}
 }
 
@@ -278,7 +278,7 @@ document.getElementById('lb').addEventListener('click',()=>{isLive=!isLive;docum
 function syncL(){if(!isLive)return;const n=new Date();curH=n.getHours()+n.getMinutes()/60;setT(curH);refMk();updateShadowLayer();if(slat!==null)upPanel(slat,slon,document.getElementById('pn').textContent,document.getElementById('ps').textContent)}
 setInterval(()=>{if(isLive)syncL()},60000);
 setT(curH);
-window.gm_authFailure=function(){document.getElementById('map').innerHTML='<div style="display:flex;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:1rem;font-family:Outfit,sans-serif;color:#6B7A8D"><div style="font-size:2.5rem">⚠️</div><b>Google Maps fejl</b></div>';document.getElementById('loading').classList.add('hidden')};
+window.gm_authFailure=function(){document.getElementById('map').innerHTML='<div style="display:flex;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:1rem;font-family:Outfit,sans-serif;color:#6B7A8D"><div style="font-size:2.5rem">â ï¸</div><b>Google Maps fejl</b></div>';document.getElementById('loading').classList.add('hidden')};
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrKdTkGmPgclGBEiwOKsgmkkAbTYUN07Q&libraries=places&callback=initMap&loading=async" async defer></script>
 </body>
