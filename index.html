@@ -255,7 +255,7 @@ async function searchNearby(lat,lng){
   }catch(e){toast('Fejl: '+e.message)}
 }
 
-window.initMap=function(){
+function initMap(){
   gmap=new google.maps.Map(document.getElementById('map'),{
     center:{lat:55.676,lng:12.568},zoom:14,
     styles:[{featureType:'all',elementType:'geometry',stylers:[{color:'#F2EDE6'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#C8DDEF'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#FFF'}]},{featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#FAE5C8'}]},{featureType:'road.highway',elementType:'geometry',stylers:[{color:'#F5D5A8'}]},{featureType:'park',elementType:'geometry',stylers:[{color:'#D5EDBD'}]},{featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},{featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]},{elementType:'labels.text.fill',stylers:[{color:'#7A6A58'}]},{elementType:'labels.text.stroke',stylers:[{color:'#FAFAF8',weight:2}]}],
@@ -280,6 +280,6 @@ setInterval(()=>{if(isLive)syncL()},60000);
 setT(curH);
 window.gm_authFailure=function(){document.getElementById('map').innerHTML='<div style="display:flex;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:1rem;font-family:Outfit,sans-serif;color:#6B7A8D"><div style="font-size:2.5rem">â ï¸</div><b>Google Maps fejl</b></div>';document.getElementById('loading').classList.add('hidden')};
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrKdTkGmPgclGBEiwOKsgmkkAbTYUN07Q&libraries=places&callback=initMap&loading=async" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrKdTkGmPgclGBEiwOKsgmkkAbTYUN07Q&libraries=places&callback=initMap" async defer></script>
 </body>
 </html>
