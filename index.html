@@ -24,6 +24,123 @@ function showPin(lat, lon, nm) {
   MAP.flyTo([lat,lon], 17, {animate:true, duration:0.9});
 }
 
+
+var DETAIL_SVC = null;
+function getDetailSvc(){
+  if(!DETAIL_SVC) DETAIL_SVC = new google.maps.places.PlacesService(document.createElement('div'));
+  return DETAIL_SVC;
+}
+
+function loadPlaceDetail(p, onMobile) {
+  var svc = getDetailSvc();
+  svc.getDetails({
+    placeId: p.placeId,
+    fields: ['name','rating','user_ratings_total','formatted_address','formatted_phone_number',
+             'opening_hours','photos','website','price_level','outdoor_seating',
+             'serves_beer','serves_wine','serves_breakfast','serves_lunch','serves_dinner','types']
+  }, function(d, st) {
+    if(st !== 'OK' || !d) { renderDetail(p, null, onMobile); return; }
+    // Merge data
+    p.outdoor = typeof d.outdoor_seating !== 'undefined' ? d.outdoor_seating : p.outdoor;
+    p.website = d.website || null;
+    p.phone = d.formatted_phone_number || null;
+    p.openNow = d.opening_hours ? d.opening_hours.open_now : null;
+    p.hours = d.opening_hours ? d.opening_hours.weekday_text : null;
+    // Hent op til 5 billeder
+    var photos = [];
+    if(d.photos && d.photos.length) {
+      d.photos.slice(0,6).forEach(function(ph){
+        try { photos.push(ph.getUrl({maxWidth:600,maxHeight:400})); } catch(e){}
+      });
+    }
+    p.photos = photos;
+    renderDetail(p, d, onMobile);
+  });
+}
+
+function renderDetail(p, d, onMobile) {
+  var isSun = shAt(p.lat, p.lon, CRH).alt > 4;
+  var sp = shAt(p.lat, p.lon, CRH);
+  var rs = rS(p.lat, p.lon);
+
+  // Billeder
+  var galleryHtml = '';
+  if(p.photos && p.photos.length) {
+    galleryHtml = '<div class="d-gallery">';
+    p.photos.forEach(function(url, i) {
+      galleryHtml += '<img src="'+url+'" alt="" loading="lazy">';
+    });
+    galleryHtml += '</div>';
+  } else if(p.photo) {
+    galleryHtml = '<div class="d-gallery"><img src="'+p.photo+'" alt=""></div>';
+  } else {
+    galleryHtml = '<div style="height:120px;background:var(--lt);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin-bottom:12px">🍽️</div>';
+  }
+
+  // Chips
+  var chips = '';
+  if(p.rating) chips += '<span class="d-chip"><span style="color:var(--warm);font-weight:700">★ '+p.rating.toFixed(1)+'</span> ('+p.reviews+')</span>';
+  if(p.price !== null && PRICE[p.price]) chips += '<span class="d-chip">'+PRICE[p.price]+'</span>';
+  chips += '<span class="d-chip">'+p.type+'</span>';
+  if(isSun) chips += '<span class="d-chip sun">☀️ Sol nu</span>';
+  if(p.outdoor === true) chips += '<span class="d-chip out">🌳 Udeservering</span>';
+  else if(p.outdoor === false) chips += '<span class="d-chip inn">🏠 Kun indendørs</span>';
+
+  // Åbningstider
+  var openHtml = '';
+  if(p.openNow !== null) {
+    openHtml = '<div class="d-stat">'+(p.openNow ? '<span class="d-open">● Åben nu</span>' : '<span class="d-closed">● Lukket nu</span>')+'</div>';
+  }
+
+  // Website / telefon
+  var linksHtml = '';
+  if(p.website) linksHtml += '<a href="'+p.website+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:.76rem;color:var(--sun);font-weight:600;text-decoration:none;margin-right:12px">🌐 Website</a>';
+  if(p.phone) linksHtml += '<a href="tel:'+p.phone+'" style="display:inline-flex;align-items:center;gap:5px;font-size:.76rem;color:var(--sun);font-weight:600;text-decoration:none">📞 Ring</a>';
+
+  var content =
+    galleryHtml +
+    '<div style="padding:0 16px 16px">' +
+      '<div class="d-name">'+p.name+'</div>' +
+      '<div class="d-addr">'+(p.addr||'')+'</div>' +
+      openHtml +
+      (linksHtml ? '<div style="margin-bottom:10px">'+linksHtml+'</div>' : '') +
+      '<div class="d-sind '+(isSun?'sun':'shade')+'" style="margin-bottom:12px">'+
+        '<div class="d-sind-ico">'+(isSun?'☀️':'🌙')+'</div>'+
+        '<div><div class="d-sind-ttl">'+(isSun?'Sol på stedet':'Skygge/aften')+'</div>'+
+        '<div class="d-sind-sub">'+sp.alt.toFixed(1)+'° · '+azN(sp.az)+'</div></div>'+
+      '</div>'+
+      '<div class="d-chips">'+chips+'</div>'+
+      '<div class="sgrid" style="margin-bottom:12px">'+
+        '<div class="scard"><div class="slbl">Solopgang</div><div class="sval">'+fH(rs.ri)+'</div></div>'+
+        '<div class="scard"><div class="slbl">Solnedgang</div><div class="sval">'+fH(rs.se)+'</div></div>'+
+        '<div class="scard"><div class="slbl">Solhøjde</div><div class="sval">'+sp.alt.toFixed(1)+'<span class="sunit">°</span></div></div>'+
+        '<div class="scard"><div class="slbl">Retning</div><div class="sval">'+azN(sp.az)+'</div></div>'+
+      '</div>'+
+      '<div class="sectit" style="margin-bottom:6px">Solbane i dag</div>'+
+      '<div class="d-arc"><canvas id="darc" width="'+(onMobile?'260':'256')+'" height="90"></canvas></div>'+
+    '</div>';
+
+  if(onMobile) {
+    document.getElementById('dsbody').innerHTML = content;
+    var ds = document.getElementById('dsheet');
+    ds.style.display = 'flex';
+    requestAnimationFrame(function(){ ds.classList.add('open'); });
+  } else {
+    document.getElementById('dp-body').innerHTML = content;
+    var dp = document.getElementById('detail-panel');
+    dp.classList.add('open');
+    document.getElementById('map').classList.add('with-detail');
+  }
+  setTimeout(function(){ drawArc(p.lat, p.lon, 'darc'); }, 80);
+  showPin(p.lat, p.lon, p.name);
+}
+
+// Luk desktop detail panel
+document.getElementById('dp-close').addEventListener('click', function(){
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('map').classList.remove('with-detail');
+});
+
 </script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -171,7 +288,23 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 
 .search-pin{width:32px;height:32px;border-radius:50% 50% 50% 0;background:var(--sun);border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.3);transform:rotate(-45deg);position:relative}
 .search-pin::after{content:'';width:10px;height:10px;background:#fff;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
-.spin-wrap{width:32px;height:44px;display:flex;flex-direction:column;align-items:center}.spin-dot{width:26px;height:26px;border-radius:50%;background:var(--sun);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.3)}.spin-tail{width:3px;height:14px;background:var(--sun);border-radius:0 0 2px 2px;margin-top:-1px}</style>
+.spin-wrap{width:32px;height:44px;display:flex;flex-direction:column;align-items:center}.spin-dot{width:26px;height:26px;border-radius:50%;background:var(--sun);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.3)}.spin-tail{width:3px;height:14px;background:var(--sun);border-radius:0 0 2px 2px;margin-top:-1px}
+.d-gallery{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.d-gallery::-webkit-scrollbar{display:none}
+.d-gallery img{width:120px;height:90px;object-fit:cover;border-radius:10px;flex-shrink:0;cursor:pointer}
+.d-gallery img:first-child{width:100%;height:160px;border-radius:12px}
+.d-stat{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--mut);margin-bottom:6px}
+.d-stat strong{color:var(--txt)}
+.d-open{color:#2E7D32;font-weight:600}.d-closed{color:#C62828;font-weight:600}
+.d-loading{text-align:center;padding:20px;color:var(--mut);font-size:.85rem}
+/* Desktop detail panel */
+#detail-panel{position:fixed;top:var(--bh);right:var(--pw);bottom:0;width:320px;background:#fff;border-left:1px solid var(--bdr);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:3;display:flex;flex-direction:column;overflow:hidden;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
+#detail-panel.open{transform:translateX(0)}
+#dp-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--lt);border:none;cursor:pointer;font-size:.9rem;color:var(--mut);z-index:4;display:flex;align-items:center;justify-content:center}
+#dp-body{overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
+/* Juster map og panel bredde når detail åbent */
+#map.with-detail{right:calc(var(--pw) + 320px)}
+</style>
 </head>
 <body>
 <div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
@@ -197,6 +330,11 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 
 <!-- MAP -->
 <div id="map"></div>
+<!-- DESKTOP DETAIL PANEL -->
+<div id="detail-panel">
+  <button id="dp-close">✕</button>
+  <div id="dp-body"><div class="d-loading">Henter info…</div></div>
+</div>
 
 <!-- DESKTOP PANEL -->
 <div id="panel">
@@ -422,7 +560,8 @@ function updMarkers(){
 }
 
 // ── Mobil detail sheet ─────────────────────────────
-function showDetail(p){
+function showDetail(p){ document.getElementById("dsbody").innerHTML='<div class="d-loading">Henter info…</div>'; var ds=document.getElementById("dsheet"); ds.style.display="flex"; requestAnimationFrame(function(){ds.classList.add("open");}); loadPlaceDetail(p, true); return; /* original nedenfor */
+function _showDetailOrig(p){
   var isSun=shAt(p.lat,p.lon,CRH).alt>4;
   var sp=shAt(p.lat,p.lon,CRH),rs=rS(p.lat,p.lon);
   var imgH=p.photo?'<div class="d-img"><img src="'+p.photo+'" alt=""></div>':'<div class="d-img">🍽️</div>';
@@ -459,6 +598,7 @@ function showDetail(p){
   setTimeout(function(){drawArc(p.lat,p.lon,'darc')},80);
   showPin(p.lat,p.lon,p.name);
   MAP.flyTo([p.lat,p.lon],17,{animate:true,duration:0.7});
+}
 }
 document.getElementById('dcl').addEventListener('click',function(){
   var ds=document.getElementById('dsheet');ds.classList.remove('open');
@@ -583,7 +723,7 @@ function renderAll(all){
     var btn=document.createElement('button');
     btn.className='pitem'+(isSun?' snow':'');
     btn.innerHTML=imgH+'<div class="pinner"><div class="pdot '+(isSun?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.name+'</div><div class="ptyp">'+p.type+'</div>'+(meta.length?'<div class="pmeta">'+meta.join(' · ')+'</div>':'')+'</div><div class="psun2 '+(isSun?'sun':'shade')+'">'+(isSun?'☀️<br>Sol':'🌙<br>Skygge')+'</div></div>';
-    btn.addEventListener('click',function(){showPin(p.lat,p.lon,p.name);upPanel(p.lat,p.lon,p.name);updSh();});
+    btn.addEventListener('click',function(){upPanel(p.lat,p.lon,p.name);updSh();loadPlaceDetail(p,false);});
     dpl.appendChild(btn);
 
     // ── Mobil kort ──
