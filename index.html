@@ -746,11 +746,8 @@ function start(lat,lon,nm){
   SLA=lat;SLO=lon;
   MAP.flyTo([lat,lon],16,{animate:true,duration:1});
   upPanel(lat,lon,nm);updSh();
-  // Søg fra GPS-positionen efter kortet er landet
-  MAP.once('moveend',function(){
-    var c=MAP.getCenter();
-    near(c.lat,c.lng);
-  });
+  // Søg fra GPS-positionen direkte efter flyTo er færdigt
+  setTimeout(function(){near(lat,lon);},1200);
 }
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(
