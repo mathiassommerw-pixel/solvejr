@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--sun:#F5A623;--warm:#E8863A;--pale:#FFF3DC;--bg:#FAFAF8;--txt:#1A2332;--mut:#6B7A8D;--bdr:rgba(27,35,50,.09);--lt:#EEF1F6;--pw:370px;--bh:60px}
@@ -253,19 +254,33 @@ function sunPos(lat,lon,date){
   return{alt:alt,az:az};
 }
 function shAt(lat,lon,h){
-  var d=new Date(TOD+'T00:00:00Z');
-  d.setUTCMinutes(Math.round(h*60)+new Date().getTimezoneOffset());
-  return sunPos(lat,lon,d);
+  if(typeof SunCalc==='undefined'){
+    // Fallback: simpel beregning
+    var d=new Date(TOD+'T00:00:00Z');
+    d.setUTCMinutes(Math.round(h*60)+new Date().getTimezoneOffset());
+    return sunPos(lat,lon,d);
+  }
+  var d=new Date(TOD+'T00:00:00');
+  d.setHours(Math.floor(h), Math.round((h%1)*60), 0, 0);
+  var pos=SunCalc.getPosition(d,lat,lon);
+  return{alt:pos.altitude*180/Math.PI, az:((pos.azimuth*180/Math.PI)+180+360)%360};
 }
 function rS(lat,lon){
-  var ri=null,se=null,pv=null;
-  for(var m=0;m<=1440;m+=3){
-    var d=new Date(TOD+'T00:00:00Z');d.setUTCMinutes(m+new Date().getTimezoneOffset());
-    var a=sunPos(lat,lon,d).alt;
-    if(pv!==null){if(pv<0&&a>=0&&!ri)ri=m/60;if(pv>=0&&a<0&&!se)se=m/60;}
-    pv=a;
+  if(typeof SunCalc==='undefined'){
+    var tz=new Date().getTimezoneOffset(),ri=null,se=null,pv=null;
+    for(var m=0;m<=1440;m+=3){
+      var d=new Date(TOD+'T00:00:00Z');d.setUTCMinutes(m+tz);
+      var a=sunPos(lat,lon,d).alt;
+      if(pv!==null){if(pv<0&&a>=0&&!ri)ri=m/60;if(pv>=0&&a<0&&!se)se=m/60;}
+      pv=a;
+    }
+    return{ri:ri,se:se};
   }
-  return{ri:ri,se:se};
+  var d=new Date(TOD);
+  var times=SunCalc.getTimes(d,lat,lon);
+  var ri=times.sunrise.getHours()+times.sunrise.getMinutes()/60;
+  var se=times.sunset.getHours()+times.sunset.getMinutes()/60;
+  return{ri:isNaN(ri)?null:ri, se:isNaN(se)?null:se};
 }
 function fH(h){if(h===null)return'&#8212;';return pad(Math.floor(h))+':'+pad(Math.round(h%1*60)%60)}
 function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(a/22.5)%16]}
@@ -275,9 +290,17 @@ function updSh(){
   if(!MAP||SLA===null)return;
   if(SHL){MAP.removeLayer(SHL);SHL=null;}
   var month=pad(new Date(TOD).getMonth()+1);
-  // Brug lokal time direkte som shady.dk - ingen solhøjde check
+  // Brug lokal time direkte til tiles - præcis som shady.dk
   var h=Math.min(21,Math.max(6,Math.round(CRH)));
-  var z=MAP.getZoom(),op=z<=16?0.65:Math.max(0,0.65-(z-16)*0.25);
+  // Beregn faktisk solhøjde med SunCalc for opacity
+  var now=new Date(TOD+'T00:00:00');
+  now.setHours(Math.floor(CRH), Math.round((CRH%1)*60), 0, 0);
+  var sunAlt = SunCalc ? SunCalc.getPosition(now, SLA, SLO).altitude * 180/Math.PI : 10;
+  // Fade: fuld opacity over 6°, ingen under -6°
+  var fade = Math.max(0, Math.min(1, (sunAlt + 6) / 12));
+  if(fade <= 0)return;
+  var z=MAP.getZoom(), baseOp=z<=16?0.65:Math.max(0,0.65-(z-16)*0.25);
+  var op=baseOp*fade;
   if(op<=0)return;
   SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
     {tms:true,opacity:op,attribution:'',maxNativeZoom:16,maxZoom:22});
@@ -286,7 +309,7 @@ function updSh(){
   MAP._shz=function(){
     if(!SHL)return;
     var z2=MAP.getZoom(),op2=z2<=16?0.65:Math.max(0,0.65-(z2-16)*0.25);
-    if(op2<=0){MAP.removeLayer(SHL);SHL=null;}else SHL.setOpacity(op2);
+    if(op2<=0){MAP.removeLayer(SHL);SHL=null;}else SHL.setOpacity(op2*fade);
   };
   MAP.on('zoomend',MAP._shz);
 }
