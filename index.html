@@ -166,7 +166,7 @@ function near(lat,lng){
       if(status==='OK'&&res)res.forEach(function(p){
         if(al.find(function(x){return x.n===p.name}))return;
         var ph=null;try{if(p.photos&&p.photos.length)ph=p.photos[0].getUrl({maxWidth:140,maxHeight:140})}catch(e){}
-        var rt=p.rating?p.rating.toFixed(1):null,rv=p.user_ratings_total||0;
+        var rt=p.rating?p.rating.toFixed(1):null,rv=p.user_ratings_total||0,pl=p.price_level;
         al.push({n:p.name,la:p.geometry.location.lat(),ln:p.geometry.location.lng(),t:tl[t],ph:ph,rt:rt,rv:rv});
       });
       dn++;
@@ -183,7 +183,9 @@ function near(lat,lng){
           var imgHtml=p.ph?'<img class="pimg" src="'+p.ph+'" alt="'+p.n+'" loading="lazy">'
                          :'<div class="pimg-ph">🍽️</div>';
           var stars='';if(p.rt){for(var i=0;i<5;i++)stars+=i<Math.round(p.rt)?'★':'☆';}
-          var ratHtml=p.rt?'<div class="prat">'+stars+' '+p.rt+'<span> ('+p.rv+')</span></div>':'';
+          var priceStr=typeof p.pl==='number'?['Gratis','€','€€','€€€','€€€€'][p.pl]:'';
+          var priceHtml=priceStr?'<span style="color:var(--mut);margin-left:5px;font-size:.7rem">'+priceStr+'</span>':'';
+          var ratHtml=p.rt?'<div class="prat">'+stars+' '+p.rt+priceHtml+'<span> ('+p.rv+')</span></div>':(priceStr?'<div class="prat">'+priceHtml+'</div>'):'';
           b.innerHTML=imgHtml+'<div class="pinner"><div class="pdot '+(hs?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.n+'</div><div class="ptyp">'+p.t+'</div>'+ratHtml+'</div><div class="psun2 '+(hs?'sun':'shade')+'">'+(hs?'☀️<br>Sol':'🌙<br>Skygge')+'</div></div>';
           b.addEventListener('click',function(){MAP.setView([p.la,p.ln],17);showPin(p.la,p.ln,p.n);upP(p.la,p.ln,p.n,p.t)});
           li.appendChild(b);
@@ -233,11 +235,11 @@ function srch(){
 document.getElementById('sbtn').addEventListener('click',srch);
 document.getElementById('sinp').addEventListener('keydown',function(e){if(e.key==='Enter'){document.getElementById('sug').style.display='none';srch()}});
 window.addEventListener('load',function(){
-  MAP=L.map('map',{zoomControl:true,attributionControl:false}).setView([55.676,12.568],15);
+  MAP=L.map('map',{zoomControl:true,attributionControl:false}).setView([55.676,12.568],17);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(MAP);
   updSh();
   MAP.on('click',function(e){if(PIN){MAP.removeLayer(PIN);PIN=null}upP(e.latlng.lat,e.latlng.lng);near(e.latlng.lat,e.latlng.lng)});
-  if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(p){MAP.setView([p.coords.latitude,p.coords.longitude],16);upP(p.coords.latitude,p.coords.longitude,'Din placering','GPS');near(p.coords.latitude,p.coords.longitude)},function(){near(55.676,12.568)})}
+  if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(p){MAP.setView([p.coords.latitude,p.coords.longitude],17);upP(p.coords.latitude,p.coords.longitude,'Din placering','GPS');near(p.coords.latitude,p.coords.longitude)},function(){near(55.676,12.568)})}
   else near(55.676,12.568);
   document.getElementById('loading').classList.add('hidden');
 });
