@@ -536,29 +536,48 @@ function near(lat,lon){
   MARKERS.forEach(function(m){m.mk.remove();});MARKERS=[];
   document.getElementById('pl').innerHTML='';
   document.getElementById('nltl').style.display='none';
-  document.getElementById('msbody').innerHTML='';
+  document.getElementById('msbody').innerHTML='<div style="padding:16px;color:var(--mut);font-size:.8rem">Henter steder i KBH...</div>';
   document.getElementById('mscount').textContent='Henter steder...';
+  
   var svc=new google.maps.places.PlacesService(document.createElement('div'));
   var types=['cafe','restaurant','bar'];
   var tlbl={cafe:'Café',restaurant:'Restaurant',bar:'Bar'};
-  var all=[],done=0;
-  types.forEach(function(t){
-    svc.nearbySearch({location:{lat:lat,lng:lon},radius:600,type:t},function(res,st){
-      if(st==='OK'&&res){
+  var all=[];
+  var totalDone=0;
+  // Søg fra KBH centrum - 13km dækker hele skyggekortets område
+  var searchCenter={lat:55.676,lon:12.568};
+  var totalSearches=types.length;
+  
+  function fetchPage(type, req) {
+    svc.nearbySearch(req, function(res, st, pagination) {
+      if(st==='OK' && res) {
         res.forEach(function(r){
-          if(all.find(function(x){return x.name===r.name;}))return;
+          if(all.find(function(x){return x.name===r.name && Math.abs(x.lat-r.geometry.location.lat())<0.001;}))return;
           var ph=null;
           try{if(r.photos&&r.photos.length)ph=r.photos[0].getUrl({maxWidth:140,maxHeight:140});}catch(e){}
           all.push({
             name:r.name,lat:r.geometry.location.lat(),lon:r.geometry.location.lng(),
-            type:tlbl[t],photo:ph,rating:r.rating||null,reviews:r.user_ratings_total||0,
+            type:tlbl[type],photo:ph,rating:r.rating||null,reviews:r.user_ratings_total||0,
             price:typeof r.price_level==='number'?r.price_level:null,
             addr:r.vicinity||'',placeId:r.place_id
           });
         });
+        // Hent næste side hvis den findes
+        if(pagination&&pagination.hasNextPage) {
+          setTimeout(function(){pagination.nextPage();}, 200);
+          return;
+        }
       }
-      done++;
-      if(done===types.length)renderAll(all);
+      totalDone++;
+      if(totalDone===totalSearches) renderAll(all);
+    });
+  }
+  
+  types.forEach(function(t){
+    fetchPage(t, {
+      location:{lat:searchCenter.lat, lng:searchCenter.lon},
+      radius:13000,
+      type:t
     });
   });
 }
