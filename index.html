@@ -271,23 +271,66 @@ function fH(h){if(h===null)return'&#8212;';return pad(Math.floor(h))+':'+pad(Mat
 function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(a/22.5)%16]}
 
 // ── Skyggekort ────────────────────────────────────
+
+var _SHL_H = -1; // sidst loadede time
+var _SHL_PRELOAD = {}; // pre-loadede layers
+
 function updSh(){
-  if(!MAP)return;
-  if(SHL){MAP.removeLayer(SHL);SHL=null}
-  var p=shAt(SLA||55.676,SLO||12.568,CRH);
-  if(p.alt<=1)return;
+  if(!MAP||SLA===null)return;
+  var p=shAt(SLA,SLO,CRH);
+  if(p.alt<=1){
+    if(SHL){MAP.removeLayer(SHL);SHL=null;_SHL_H=-1;}
+    return;
+  }
   var month=pad(new Date(TOD).getMonth()+1);
   var h=Math.min(21,Math.max(6,Math.round(CRH)));
+  
+  // Kun opdater hvis timen er ændret
+  if(h===_SHL_H&&SHL)return;
+  _SHL_H=h;
+  
+  // Fjern gammelt lag
+  if(SHL){MAP.removeLayer(SHL);SHL=null;}
+  
   var z=MAP.getZoom(),op=z<=16?0.65:Math.max(0,0.65-(z-16)*0.25);
   if(op<=0)return;
-  SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
-    {tms:true,opacity:op,attribution:'',maxNativeZoom:16,maxZoom:22});
-  SHL.addTo(MAP);
+  
+  // Brug pre-loaded lag hvis det findes
+  var key=month+'-'+pad(h);
+  if(_SHL_PRELOAD[key]){
+    SHL=_SHL_PRELOAD[key];
+    SHL.setOpacity(op);
+    SHL.addTo(MAP);
+  } else {
+    SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
+      {tms:true,opacity:op,attribution:'',maxNativeZoom:16,maxZoom:22});
+    SHL.addTo(MAP);
+    _SHL_PRELOAD[key]=SHL;
+  }
+  
+  // Pre-load næste og forrige time
+  [h-1,h+1].forEach(function(hh){
+    if(hh<6||hh>21)return;
+    var k=month+'-'+pad(hh);
+    if(!_SHL_PRELOAD[k]){
+      _SHL_PRELOAD[k]=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(hh)+'/{z}/{x}/{y}.png',
+        {tms:true,opacity:0,attribution:'',maxNativeZoom:16,maxZoom:22});
+      // Tilføj midlertidigt for at starte tile download, fjern igen
+      _SHL_PRELOAD[k].addTo(MAP);
+      setTimeout(function(){
+        if(_SHL_PRELOAD[k]&&_SHL_PRELOAD[k]!==SHL){
+          _SHL_PRELOAD[k].setOpacity(0);
+        }
+      },100);
+    }
+  });
+  
   MAP.off('zoomend',MAP._shz);
   MAP._shz=function(){
     if(!SHL)return;
     var z2=MAP.getZoom(),op2=z2<=16?0.65:Math.max(0,0.65-(z2-16)*0.25);
-    if(op2<=0){MAP.removeLayer(SHL);SHL=null;}else SHL.setOpacity(op2);
+    if(op2<=0){MAP.removeLayer(SHL);SHL=null;_SHL_H=-1;}
+    else SHL.setOpacity(op2);
   };
   MAP.on('zoomend',MAP._shz);
 }
@@ -316,9 +359,14 @@ function syncUI(h){
   ms.value=Math.round(h*60);
   ms.style.background='linear-gradient(to right,#F5A623 '+pct+',#C8D1DC '+pct+')';
 }
+var _upPanelTimer=null;
 function setT(h){
   CRH=h;syncUI(h);updSh();updMk();
-  if(SLA!==null)upPanel(SLA,SLO,document.getElementById('pname').textContent);
+  // Debounce upPanel - det er tungt (beregner solopgang/ned)
+  clearTimeout(_upPanelTimer);
+  _upPanelTimer=setTimeout(function(){
+    if(SLA!==null)upPanel(SLA,SLO,document.getElementById('pname').textContent);
+  },150);
 }
 document.getElementById('tsl').addEventListener('input',function(){
   LIV=false;document.getElementById('lbtn').classList.remove('on');
