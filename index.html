@@ -319,7 +319,7 @@ function updSh(){
   var op=z<=16?0.65:Math.max(0,0.65-(z-16)*0.25);
   if(op<=0)return;
   SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
-    {tms:true,opacity:op,attribution:'',maxNativeZoom:16,maxZoom:22});
+    {tms:true,opacity:op,attribution:'© <a href="https://osm.org/copyright">OpenStreetMap</a>',maxNativeZoom:16,maxZoom:22});
   SHL.addTo(MAP);
   MAP.off('zoomend',MAP._shz);
   MAP._shz=function(){
@@ -653,7 +653,7 @@ document.getElementById('sinp').addEventListener('keydown',function(e){if(e.key=
 
 // ── Leaflet ────────────────────────────────────────
 MAP=L.map('map',{zoomControl:false}).setView([56.0,10.2],7);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:22}).addTo(MAP);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:22}).addTo(MAP);
 L.control.zoom({position:'topright'}).addTo(MAP);
 MAP.on('click',function(e){
   SLA=e.latlng.lat;SLO=e.latlng.lng;
