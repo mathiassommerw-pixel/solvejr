@@ -183,51 +183,39 @@ function updSh(){
   if(!MAP)return;
   if(SHL){MAP.removeLayer(SHL);SHL=null}
   var u='RNCJMUBOCH',p='Mswvigtig88!';
-  // Resolutioner for View1 (meter pr pixel i EPSG:25832)
-  var res=[1638.4,819.2,409.6,204.8,102.4,51.2,25.6,12.8,6.4,3.2,1.6,0.8,0.4,0.2];
-  var ox=120000,oy=6500000; // View1 topleft i EPSG:25832
-  // Konverter WebMercator til UTM32 (approx for Danmark)
-  function wm2utm(x,y){
-    var lon=x/20037508.34*180;
-    var lat=Math.atan(Math.exp(y/20037508.34*Math.PI))*360/Math.PI-90;
-    // UTM32: approx (fungerer for DK)
-    var a=6378137,e2=0.00669438,k0=0.9996,E0=500000,N0=0;
+  // Datafordeler resolutioner: 1638.4/2^z m/px, max zoom 13
+  var ox=120000,oy=6500000;
+  function wm2utm(wx,wy){
+    var lon=wx/20037508.34*180;
+    var lat=Math.atan(Math.exp(wy/20037508.34*Math.PI))*360/Math.PI-90;
+    var a=6378137,e2=0.00669438,k0=0.9996,E0=500000;
     var lonr=(lon-9)*Math.PI/180,latr=lat*Math.PI/180;
-    var N=a/Math.sqrt(1-e2*Math.sin(latr)*Math.sin(latr));
-    var T=Math.tan(latr)*Math.tan(latr),C=e2*Math.cos(latr)*Math.cos(latr)/(1-e2);
+    var N=a/Math.sqrt(1-e2*Math.pow(Math.sin(latr),2));
+    var T=Math.pow(Math.tan(latr),2),C=e2*Math.pow(Math.cos(latr),2)/(1-e2);
     var A=Math.cos(latr)*lonr;
     var M=a*((1-e2/4-3*e2*e2/64)*latr-(3*e2/8+3*e2*e2/32)*Math.sin(2*latr)+(15*e2*e2/256)*Math.sin(4*latr));
-    var utmX=k0*(N*(A+(1-T+C)*A*A*A/6))+E0;
-    var utmY=k0*(M+N*Math.tan(latr)*(A*A/2+(5-T+9*C)*A*A*A*A/24))+N0;
-    return{x:utmX,y:utmY}
+    return{
+      x:k0*(N*(A+(1-T+C)*A*A*A/6))+E0,
+      y:k0*(M+N*Math.tan(latr)*(A*A/2+(5-T+9*C)*A*A*A*A/24))
+    };
   }
   var DF=L.TileLayer.extend({
     getTileUrl:function(coords){
-      var tileSize=256;
-      // WebMercator bounds for denne tile
+      // Leaflet zoom -> Datafordeler zoom (max 13)
+      var dfz=Math.min(13,Math.max(0,coords.z-4));
+      var res=1638.4/Math.pow(2,dfz);
+      // WebMercator tile center -> lat/lon -> UTM32
       var n=Math.pow(2,coords.z);
-      var lon0=(coords.x/n)*360-180;
-      var lon1=((coords.x+1)/n)*360-180;
-      var lat0=Math.atan(Math.sinh(Math.PI*(1-2*coords.y/n)))*180/Math.PI;
-      var lat1=Math.atan(Math.sinh(Math.PI*(1-2*(coords.y+1)/n)))*180/Math.PI;
-      // WM center
-      var cx=(coords.x+0.5)/n*2*Math.PI-Math.PI;
-      var cy=Math.log(Math.tan(Math.PI/4+Math.atan(Math.sinh(Math.PI*(1-2*(coords.y+0.5)/n)))/2));
-      var wmx=cx*20037508.34/Math.PI;
-      var wmy=cy*20037508.34/Math.PI;
-      // Konverter til UTM32
-      var utm=wm2utm(wmx,wmy);
-      // Find WMTS zoom level baseret pa Leaflet zoom
-      var dfz=Math.min(13,Math.max(0,coords.z-2));
-      var r=res[dfz];
-      // Beregn tile row/col
-      var col=Math.floor((utm.x-ox)/(r*256));
-      var row=Math.floor((oy-utm.y)/(r*256));
-      if(col<0||row<0)return '';
+      var wx=((coords.x+0.5)/n*2-1)*20037508.34;
+      var wy=(1-2*(coords.y+0.5)/n)*20037508.34;
+      var utm=wm2utm(wx,wy);
+      var col=Math.floor((utm.x-ox)/(res*256));
+      var row=Math.floor((oy-utm.y)/(res*256));
+      if(col<0||row<0||col>17188||row>11719)return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
       return 'https://wmts.datafordeler.dk/DHMSkyggekort/dhm_terraen_skyggekort/1.0.0/WMTS?username='+u+'&password='+p+'&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=dhm_terraen_skyggekort&STYLE=default&FORMAT=image/jpeg&TILEMATRIXSET=View1&TILEMATRIX='+dfz+'&TILEROW='+row+'&TILECOL='+col;
     }
   });
-  SHL=new DF('',{opacity:0.7,attribution:'Skygger © SDFE',tileSize:256,maxZoom:19,minZoom:5});
+  SHL=new DF('',{opacity:0.7,attribution:'Skygger © SDFE',tileSize:256,maxZoom:19,minZoom:0});
   SHL.addTo(MAP);
 }
 function showPin(lat,lng,nm){
