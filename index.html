@@ -5,6 +5,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--sun:#F5A623;--warm:#E8863A;--pale:#FFF3DC;--bg:#FAFAF8;--txt:#1A2332;--mut:#6B7A8D;--bdr:rgba(27,35,50,.08);--lt:#EEF1F6;--pw:370px;--bh:60px}
@@ -186,7 +187,7 @@ var tsl=document.getElementById('tsl'),tdis=document.getElementById('tdis');
 function setTime(h){
   CRH=h;tsl.value=Math.round(h*60);tdis.textContent=ts(h);
   tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%');
-  updateLight();updateMarkers();
+  updateLight();updateMarkers();if(CLA!==null)fetchBuildingsAndShadow(CLA,CLO);
   if(CLA!==null)updPanel(CLA,CLO,document.getElementById('pname').textContent);
 }
 tsl.addEventListener('input',function(){LIVE=false;document.getElementById('lbtn').classList.remove('on');setTime(parseInt(this.value)/60);});
@@ -269,6 +270,90 @@ function loadNearby(lat,lon){
     });
   });
 }
+
+// ── Shadow Simulation ─────────────────────────────
+var SHADOW_SOURCE_ID = 'building-shadows';
+var SHADOW_LAYER_ID = 'building-shadow-layer';
+
+function deg2rad(d){return d*Math.PI/180}
+
+function calcShadowPolygon(buildingCoords, height, sunAz, sunAlt) {
+  if(sunAlt <= 0) return null;
+  // Skyggelængde = højde / tan(solhøjde)
+  var shadowLen = height / Math.tan(deg2rad(sunAlt));
+  // Skyggeretning er modsat solens azimut
+  var shadowDir = (sunAz + 180) % 360;
+  var shadowDirRad = deg2rad(shadowDir);
+  // 1 meter ≈ 0.00001 grader lat, 0.000009 grader lon ved 56°N
+  var dLat = Math.cos(shadowDirRad) * shadowLen * 0.000009;
+  var dLon = Math.sin(shadowDirRad) * shadowLen * 0.000009;
+  
+  // Byg skyggepolygon: original bygning + offset
+  var ring = buildingCoords[0];
+  var offsetRing = ring.map(function(pt) { return [pt[0]+dLon, pt[1]+dLat]; });
+  // Kombiner til konveks hylster
+  var allPts = ring.concat(offsetRing);
+  try {
+    var fc = turf.featureCollection(allPts.map(function(p){return turf.point(p)}));
+    var hull = turf.convex(fc);
+    return hull ? hull.geometry.coordinates : null;
+  } catch(e) { return null; }
+}
+
+function fetchBuildingsAndShadow(lat, lon) {
+  if(!MAP || !window.turf) return;
+  var p = sunAt(lat, lon, CRH);
+  if(p.alt <= 0) {
+    // Fjern skygger om natten
+    if(MAP.getSource(SHADOW_SOURCE_ID)) {
+      MAP.getSource(SHADOW_SOURCE_ID).setData({type:'FeatureCollection',features:[]});
+    }
+    return;
+  }
+  
+  // Hent bygninger fra Overpass API
+  var bbox = lat-0.008+','+( lon-0.012)+','+(lat+0.008)+','+(lon+0.012);
+  var query = '[out:json][timeout:10];(way["building"]('+bbox+'););out geom;';
+  
+  fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(query))
+  .then(function(r){return r.json()})
+  .then(function(data){
+    var shadows = [];
+    data.elements.forEach(function(el){
+      if(el.type !== 'way' || !el.geometry) return;
+      var height = parseFloat(el.tags && (el.tags.height || el.tags['building:height'])) || 
+                   (parseFloat(el.tags && el.tags['building:levels']) || 3) * 3;
+      var coords = el.geometry.map(function(g){return [g.lon, g.lat]});
+      if(coords.length < 4) return;
+      var shadowCoords = calcShadowPolygon([coords], height, p.az, p.alt);
+      if(shadowCoords) {
+        shadows.push({
+          type:'Feature',
+          geometry:{type:'Polygon',coordinates:shadowCoords},
+          properties:{height:height}
+        });
+      }
+    });
+    
+    var fc = {type:'FeatureCollection', features: shadows};
+    if(MAP.getSource(SHADOW_SOURCE_ID)) {
+      MAP.getSource(SHADOW_SOURCE_ID).setData(fc);
+    } else {
+      MAP.addSource(SHADOW_SOURCE_ID, {type:'geojson', data:fc});
+      MAP.addLayer({
+        id: SHADOW_LAYER_ID,
+        type: 'fill',
+        source: SHADOW_SOURCE_ID,
+        paint: {
+          'fill-color': '#1a2332',
+          'fill-opacity': 0.35
+        }
+      }, '3d-buildings');
+    }
+  })
+  .catch(function(e){console.log('Overpass fejl:', e.message)});
+}
+
 var sugT=null;
 document.getElementById('sinp').addEventListener('input',function(){
   var q=this.value.trim(),box=document.getElementById('sug');
@@ -288,7 +373,7 @@ document.getElementById('sinp').addEventListener('input',function(){
             var lat=pl.geometry.location.lat(),lon=pl.geometry.location.lng(),nm=pl.name||pl.formatted_address.split(',')[0];
             document.getElementById('sinp').value=nm;document.getElementById('sug').style.display='none';
             MAP.flyTo({center:[lon,lat],zoom:17,duration:900,pitch:55});
-            updPanel(lat,lon,nm);loadNearby(lat,lon);
+            updPanel(lat,lon,nm);loadNearby(lat,lon);fetchBuildingsAndShadow(lat,lon);
           });
         });
       });
@@ -308,7 +393,7 @@ function doSearch(){
 document.getElementById('sbtn').addEventListener('click',doSearch);
 document.getElementById('sinp').addEventListener('keydown',function(e){if(e.key==='Enter'){document.getElementById('sug').style.display='none';doSearch();}});
 mapboxgl.accessToken=MBKEY;
-MAP=new mapboxgl.Map({container:'map',style:'mapbox://styles/mapbox/standard',center:[10.2,56.0],zoom:6.5,pitch:45,bearing:0,antialias:true});
+MAP=new mapboxgl.Map({container:'map',style:'mapbox://styles/mapbox/light-v11',center:[10.2,56.0],zoom:6.5,pitch:45,bearing:0,antialias:true});
 MAP.addControl(new mapboxgl.NavigationControl({showCompass:true}),'top-right');
 MAP.on('load',function(){
   MAP.addLayer({id:'3d-buildings',source:'composite','source-layer':'building',filter:['==','extrude','true'],type:'fill-extrusion',minzoom:13,paint:{
@@ -328,6 +413,7 @@ MAP.on('load',function(){
     );
   }else{MAP.flyTo({center:[12.568,55.676],zoom:15,pitch:55,duration:1200});updPanel(55.676,12.568,'København');loadNearby(55.676,12.568);}
   document.getElementById('loading').classList.add('gone');
+  fetchBuildingsAndShadow(55.676, 12.568);
 });
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
