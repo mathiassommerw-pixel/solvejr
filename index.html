@@ -24,98 +24,6 @@ function showPin(lat, lon, nm) {
   MAP.flyTo([lat,lon], 17, {animate:true, duration:0.9});
 }
 
-
-// ── Place Detail ──────────────────────────────────
-function loadPlaceDetail(p, onMobile) {
-  var dpb = onMobile ? document.getElementById('dsbody') : document.getElementById('dp-body');
-  dpb.innerHTML = '<div class="d-loading">Henter info…</div>';
-  if(!onMobile) {
-    document.getElementById('detail-panel').classList.add('open');
-    document.getElementById('map').classList.add('wpanel');
-  }
-  var svc = new google.maps.places.PlacesService(document.createElement('div'));
-  svc.getDetails({
-    placeId: p.placeId,
-    fields: ['name','rating','user_ratings_total','formatted_address',
-             'formatted_phone_number','opening_hours','photos','website','price_level']
-  }, function(d, st) {
-    if(st === 'OK' && d) {
-      if(d.photos && d.photos.length) {
-        p.photos = d.photos.slice(0,6).map(function(ph){
-          try{return ph.getUrl({maxWidth:600,maxHeight:400})}catch(e){return null}
-        }).filter(Boolean);
-      }
-      p.openNow = d.opening_hours ? d.opening_hours.open_now : null;
-      p.website = d.website || null;
-      p.phone = d.formatted_phone_number || null;
-    }
-    renderDetail(p, onMobile);
-  });
-}
-
-function renderDetail(p, onMobile) {
-  var isSun = shAt(p.lat, p.lon, CRH).alt > 4;
-  var sp = shAt(p.lat, p.lon, CRH);
-  var rs = rS(p.lat, p.lon);
-  var W = onMobile ? 260 : 240;
-
-  var gallery = '';
-  if(p.photos && p.photos.length) {
-    gallery = '<div class="d-gallery">';
-    p.photos.forEach(function(url){ gallery += '<img src="'+url+'" alt="" loading="lazy">'; });
-    gallery += '</div>';
-  } else if(p.photo) {
-    gallery = '<div class="d-gallery"><img src="'+p.photo+'" alt="" style="width:100%;height:170px;object-fit:cover"></div>';
-  } else {
-    gallery = '<div style="height:100px;background:var(--lt);display:flex;align-items:center;justify-content:center;font-size:2rem">🍽️</div>';
-  }
-
-  var chips = '';
-  if(p.rating) chips += '<span class="d-chip"><span style="color:var(--warm);font-weight:700">★ '+p.rating.toFixed(1)+'</span> ('+p.reviews+')</span>';
-  if(p.price !== null && p.price !== undefined && PRICE[p.price]) chips += '<span class="d-chip">'+PRICE[p.price]+'</span>';
-  chips += '<span class="d-chip">'+p.type+'</span>';
-  if(isSun) chips += '<span class="d-chip sun">☀️ Sol nu</span>';
-
-  var links = '';
-  if(p.website) links += '<a href="'+p.website+'" target="_blank">🌐 Website</a>';
-  if(p.phone) links += '<a href="tel:'+p.phone+'">📞 '+p.phone+'</a>';
-
-  var openHtml = '';
-  if(p.openNow === true) openHtml = '<div class="d-open">● Åben nu</div>';
-  else if(p.openNow === false) openHtml = '<div class="d-closed">● Lukket nu</div>';
-
-  var content = gallery +
-    '<div style="padding:12px 14px 20px">' +
-      '<div class="d-name">'+p.name+'</div>' +
-      '<div class="d-addr" style="margin-top:3px;margin-bottom:8px">'+(p.addr||'')+'</div>' +
-      openHtml +
-      (links ? '<div class="d-links">'+links+'</div>' : '') +
-      '<div class="d-sind '+(isSun?'sun':'shade')+'" style="margin-bottom:10px">'+
-        '<div class="d-sind-ico">'+(isSun?'☀️':'🌙')+'</div>'+
-        '<div><div class="d-sind-ttl">'+(isSun?'Sol på stedet':'Skygge/aften')+'</div>'+
-        '<div class="d-sind-sub">'+sp.alt.toFixed(1)+'° · '+azN(sp.az)+'</div></div>'+
-      '</div>'+
-      '<div class="d-chips" style="margin-bottom:10px">'+chips+'</div>'+
-      '<div class="sgrid" style="margin-bottom:10px">'+
-        '<div class="scard"><div class="slbl">Solopgang</div><div class="sval">'+fH(rs.ri)+'</div></div>'+
-        '<div class="scard"><div class="slbl">Solnedgang</div><div class="sval">'+fH(rs.se)+'</div></div>'+
-        '<div class="scard"><div class="slbl">Solhøjde</div><div class="sval">'+sp.alt.toFixed(1)+'<span class="sunit">°</span></div></div>'+
-        '<div class="scard"><div class="slbl">Retning</div><div class="sval">'+azN(sp.az)+'</div></div>'+
-      '</div>'+
-      '<div class="sectit" style="margin-bottom:6px">Solbane i dag</div>'+
-      '<div class="arcbox"><canvas id="darc" width="'+W+'" height="85"></canvas></div>'+
-    '</div>';
-
-  var dpb = onMobile ? document.getElementById('dsbody') : document.getElementById('dp-body');
-  dpb.innerHTML = content;
-  setTimeout(function(){ drawArc(p.lat, p.lon, 'darc'); }, 80);
-}
-
-document.getElementById('dp-close').addEventListener('click', function(){
-  document.getElementById('detail-panel').classList.remove('open');
-  document.getElementById('map').classList.remove('wpanel');
-});
-
 </script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -264,11 +172,11 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 #detail-panel{position:fixed;top:var(--bh);right:var(--pw);bottom:0;width:310px;background:#fff;border-left:1px solid var(--bdr);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:3;display:flex;flex-direction:column;overflow:hidden;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
 #detail-panel.open{transform:translateX(0)}
 #dp-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--lt);border:none;cursor:pointer;font-size:.9rem;color:var(--mut);z-index:4;display:flex;align-items:center;justify-content:center}
-#dp-body{overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
+#dp-body{overflow-y:auto;flex:1}
 #map.wpanel{right:calc(var(--pw) + 310px)}
-.d-gallery{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:0}
+.d-gallery{overflow-x:auto;display:flex;gap:6px;margin-bottom:0;scrollbar-width:none}
 .d-gallery::-webkit-scrollbar{display:none}
-.d-gallery img{height:130px;width:auto;border-radius:0;flex-shrink:0;object-fit:cover}
+.d-gallery img{height:130px;width:auto;flex-shrink:0;object-fit:cover}
 .d-gallery img:first-child{width:100%;height:170px;object-fit:cover}
 .d-open{color:#2E7D32;font-weight:600;font-size:.78rem;margin-bottom:8px}
 .d-closed{color:#C62828;font-weight:600;font-size:.78rem;margin-bottom:8px}
@@ -301,10 +209,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 
 <!-- MAP -->
 <div id="map"></div>
-<div id="detail-panel">
-  <button id="dp-close">✕</button>
-  <div id="dp-body"><div class="d-loading">Vælg et sted</div></div>
-</div>
+<div id="detail-panel"><button id="dp-close">✕</button><div id="dp-body"><div class="d-loading">Vælg et sted</div></div></div>
 
 <!-- DESKTOP PANEL -->
 <div id="panel">
@@ -537,40 +442,46 @@ function showDetail(p){
   requestAnimationFrame(function(){ds.classList.add('open');});
   showPin(p.lat,p.lon,p.name);
   loadPlaceDetail(p,true);
-  return;}
-function _showDetailUnused(p){
-  var isSun=shAt(p.lat,p.lon,CRH).alt>4;
-  var sp=shAt(p.lat,p.lon,CRH),rs=rS(p.lat,p.lon);
-  var imgH=p.photo?'<div class="d-img"><img src="'+p.photo+'" alt=""></div>':'<div class="d-img">🍽️</div>';
+}
+function loadPlaceDetail(p,onMobile){
+  var svc=new google.maps.places.PlacesService(document.createElement('div'));
+  svc.getDetails({placeId:p.placeId,fields:['name','rating','user_ratings_total','formatted_address','formatted_phone_number','opening_hours','photos','website','price_level']},function(d,st){
+    if(st==='OK'&&d){
+      if(d.photos&&d.photos.length)p.photos=d.photos.slice(0,6).map(function(ph){try{return ph.getUrl({maxWidth:600,maxHeight:400})}catch(e){return null}}).filter(Boolean);
+      p.openNow=d.opening_hours?d.opening_hours.open_now:null;
+      p.website=d.website||null;
+      p.phone=d.formatted_phone_number||null;
+    }
+    renderDetail(p,onMobile);
+  });
+}
+function renderDetail(p,onMobile){
+  var isSun=shAt(p.lat,p.lon,CRH).alt>4,sp=shAt(p.lat,p.lon,CRH),rs=rS(p.lat,p.lon),W=onMobile?260:240;
+  var g='';
+  if(p.photos&&p.photos.length){g='<div class="d-gallery">';p.photos.forEach(function(u){g+='<img src="'+u+'" alt="" loading="lazy">';});g+='</div>';}
+  else if(p.photo){g='<div class="d-gallery"><img src="'+p.photo+'" alt="" style="width:100%;height:170px;object-fit:cover"></div>';}
+  else{g='<div style="height:100px;background:var(--lt);display:flex;align-items:center;justify-content:center;font-size:2rem">🍽️</div>';}
   var chips='';
   if(p.rating)chips+='<span class="d-chip"><span style="color:var(--warm);font-weight:700">★ '+p.rating.toFixed(1)+'</span> ('+p.reviews+')</span>';
-  if(p.price!==null&&PRICE[p.price])chips+='<span class="d-chip">'+PRICE[p.price]+'</span>';
+  if(p.price!==null&&p.price!==undefined&&PRICE[p.price])chips+='<span class="d-chip">'+PRICE[p.price]+'</span>';
   chips+='<span class="d-chip">'+p.type+'</span>';
   if(isSun)chips+='<span class="d-chip sun">☀️ Sol nu</span>';
-  document.getElementById('dsbody').innerHTML=
-    imgH+
-    '<div class="d-name">'+p.name+'</div>'+
-    '<div class="d-addr">'+(p.addr||'')+'</div>'+
-    '<div class="d-sind '+(isSun?'sun':'shade')+'">'+
-      '<div class="d-sind-ico">'+(isSun?'☀️':'🌙')+'</div>'+
-      '<div><div class="d-sind-ttl">'+(isSun?'Sol på stedet':'Skygge/aften')+'</div>'+
-      '<div class="d-sind-sub">'+sp.alt.toFixed(1)+'° · '+azN(sp.az)+'</div></div>'+
-    '</div>'+
-    '<div class="d-chips">'+chips+'</div>'+
-    '<div class="sgrid" style="margin-bottom:12px">'+
-      '<div class="scard"><div class="slbl">Solopgang</div><div class="sval">'+fH(rs.ri)+'</div></div>'+
-      '<div class="scard"><div class="slbl">Solnedgang</div><div class="sval">'+fH(rs.se)+'</div></div>'+
-      '<div class="scard"><div class="slbl">Solhøjde</div><div class="sval">'+sp.alt.toFixed(1)+'<span class="sunit">°</span></div></div>'+
-      '<div class="scard"><div class="slbl">Retning</div><div class="sval">'+azN(sp.az)+'</div></div>'+
-    '</div>'+
-    '<div class="sectit" style="margin-bottom:6px">Solbane i dag</div>'+
-    '<div class="d-arc"><canvas id="darc" width="290" height="95"></canvas></div>';
-  var ds=document.getElementById('dsheet');
-  ds.style.display='flex';
-  requestAnimationFrame(function(){ds.classList.add('open')});
-  setTimeout(function(){drawArc(p.lat,p.lon,'darc')},80);
-  MAP.flyTo([p.lat,p.lon],17,{animate:true,duration:0.7});
+  var links='';
+  if(p.website)links+='<a href="'+p.website+'" target="_blank">🌐 Website</a>';
+  if(p.phone)links+='<a href="tel:'+p.phone+'">📞 '+p.phone+'</a>';
+  var oh='';
+  if(p.openNow===true)oh='<div class="d-open">● Åben nu</div>';
+  else if(p.openNow===false)oh='<div class="d-closed">● Lukket nu</div>';
+  var c=g+'<div style="padding:12px 14px 20px"><div class="d-name">'+p.name+'</div><div class="d-addr" style="margin-top:3px;margin-bottom:8px">'+(p.addr||'')+'</div>'+oh+(links?'<div class="d-links">'+links+'</div>':'')+'<div class="d-sind '+(isSun?'sun':'shade')+'" style="margin-bottom:10px"><div class="d-sind-ico">'+(isSun?'☀️':'🌙')+'</div><div><div class="d-sind-ttl">'+(isSun?'Sol på stedet':'Skygge/aften')+'</div><div class="d-sind-sub">'+sp.alt.toFixed(1)+'° · '+azN(sp.az)+'</div></div></div><div class="d-chips" style="margin-bottom:10px">'+chips+'</div><div class="sgrid" style="margin-bottom:10px"><div class="scard"><div class="slbl">Solopgang</div><div class="sval">'+fH(rs.ri)+'</div></div><div class="scard"><div class="slbl">Solnedgang</div><div class="sval">'+fH(rs.se)+'</div></div><div class="scard"><div class="slbl">Solhøjde</div><div class="sval">'+sp.alt.toFixed(1)+'<span class="sunit">°</span></div></div><div class="scard"><div class="slbl">Retning</div><div class="sval">'+azN(sp.az)+'</div></div></div><div class="sectit" style="margin-bottom:6px">Solbane i dag</div><div class="arcbox"><canvas id="darc" width="'+W+'" height="85"></canvas></div></div>';
+  if(!onMobile){document.getElementById('detail-panel').classList.add('open');document.getElementById('map').classList.add('wpanel');}
+  var dpb=onMobile?document.getElementById('dsbody'):document.getElementById('dp-body');
+  dpb.innerHTML=c;
+  setTimeout(function(){drawArc(p.lat,p.lon,'darc');},80);
 }
+document.getElementById('dp-close').addEventListener('click',function(){
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('map').classList.remove('wpanel');
+});
 document.getElementById('dcl').addEventListener('click',function(){
   var ds=document.getElementById('dsheet');ds.classList.remove('open');
   setTimeout(function(){ds.style.display='none'},350);
@@ -613,7 +524,7 @@ function near(lat,lon){
             type:tlbl[t],photo:ph,rating:p.rating||null,
             reviews:p.user_ratings_total||0,
             price:typeof p.price_level==='number'?p.price_level:null,
-            addr:addr, placeId:p.place_id
+            addr:addr,placeId:p.place_id
           });
         });
       }
