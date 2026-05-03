@@ -2,10 +2,8 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Solvejr â Find sol i Danmark</title>
-<!-- deploy: 1777800351001 -->
+<title>Solvejr — Find sol i Danmark</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -33,8 +31,6 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 #lb.on{background:var(--sun);color:white;box-shadow:0 2px 12px rgba(245,166,35,.4)}
 .dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:blink 1.5s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-#shadow-toggle{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:7px 14px;border-radius:50px;border:1.5px solid var(--border);cursor:pointer;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;background:white;color:var(--muted);transition:.2s;white-space:nowrap}
-#shadow-toggle.on{background:#1A2332;color:white;border-color:#1A2332}
 #map{position:fixed;top:var(--bar);left:0;right:var(--panel);bottom:0}
 #panel{position:fixed;top:var(--bar);right:0;bottom:0;width:var(--panel);background:var(--white);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
 #ptop{padding:20px 20px 14px;border-bottom:1px solid var(--border);background:white}
@@ -43,13 +39,8 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .sind{display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px 13px;border-radius:12px;border:1.5px solid;transition:.4s}
 .sind.sun{background:var(--sun-pale);border-color:rgba(245,166,35,.3);color:#8B5E00}
 .sind.shade{background:#EDF0F5;border-color:rgba(43,58,78,.15);color:#4A5568}
-.sind-icon{font-size:1.3rem}
-.sind-text{flex:1}
-.sind-title{font-weight:600;font-size:.88rem}
-.sind-sub{font-size:.73rem;opacity:.7;margin-top:1px}
-.qbadge{display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:3px 10px;border-radius:50px;font-size:.68rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-.qbadge.dhm{background:#E3F2FD;color:#1565C0}
-.qbadge.ast{background:#FFF8E1;color:#F57F17}
+.sind-icon{font-size:1.3rem}.sind-txt{flex:1}.sind-title{font-weight:600;font-size:.88rem}.sind-sub{font-size:.73rem;opacity:.7;margin-top:1px}
+.qbadge{display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:3px 10px;border-radius:50px;font-size:.68rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;background:#E3F2FD;color:#1565C0}
 #pbody{flex:1;overflow-y:auto;padding:18px 20px}
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
 .scard{background:var(--light);border-radius:12px;padding:12px;border:1px solid var(--border)}
@@ -63,14 +54,9 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .pitem:hover{border-color:var(--sun);box-shadow:0 4px 16px rgba(245,166,35,.1);transform:translateY(-1px)}
 .pitem.snow{border-color:rgba(245,166,35,.4);background:#FFFBF2}
 .pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.pdot.sun{background:var(--sun);box-shadow:0 0 6px rgba(245,166,35,.5)}
-.pdot.shade{background:#A0AEC0}
-.pinfo{flex:1;min-width:0}
-.pname2{font-weight:600;font-size:.86rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ptype{font-size:.71rem;color:var(--muted);margin-top:1px}
-.psun{font-size:.73rem;font-weight:600}
-.psun.sun{color:var(--sun-warm)}
-.psun.shade{color:#90A0B0}
+.pdot.sun{background:var(--sun);box-shadow:0 0 6px rgba(245,166,35,.5)}.pdot.shade{background:#A0AEC0}
+.pinfo{flex:1;min-width:0}.pname2{font-weight:600;font-size:.86rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ptype{font-size:.71rem;color:var(--muted);margin-top:1px}
+.psun{font-size:.73rem;font-weight:600}.psun.sun{color:var(--sun-warm)}.psun.shade{color:#90A0B0}
 .hint{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center;height:100%}
 .hint-icon{font-size:2.8rem;margin-bottom:1rem;opacity:.35}
 .hint-ttl{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--muted);margin-bottom:.4rem}
@@ -85,17 +71,16 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 </style>
 </head>
 <body>
-<div id="loading"><div class="lsun"></div><div class="ltxt">IndlÃ¦ser Solvejrâ¦</div></div>
+<div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
 <div id="bar">
   <a class="brand" href="#"><div class="brand-sun"></div><div class="brand-name">Sol<em>vejr</em></div></a>
   <div id="sw">
     <svg style="width:15px;height:15px;fill:var(--muted);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
-    <input type="text" id="si" placeholder="SÃ¸g adresse, cafÃ© eller restaurantâ¦" autocomplete="off">
+    <input type="text" id="si" placeholder="Søg adresse, café eller restaurant…" autocomplete="off">
     <button id="sb"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
   </div>
   <div id="tc"><div class="tlbl">Tid</div><div id="tdis">12:00</div><input type="range" id="ts" min="0" max="1440" value="720" step="5"></div>
   <button id="lb" class="on"><span class="dot"></span> Live</button>
-  
 </div>
 <div id="map"></div>
 <div id="panel">
@@ -103,185 +88,61 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
     <div class="pname" id="pn">Solvejr</div>
     <div class="psub" id="ps">Find sol i Danmark</div>
     <div id="si2" class="sind shade" style="display:none">
-      <div class="sind-icon" id="sic">ð</div>
-      <div class="sind-text"><div class="sind-title" id="sit">Ingen sol</div><div class="sind-sub" id="sis"></div></div>
+      <div class="sind-icon" id="sic">🌙</div>
+      <div class="sind-txt"><div class="sind-title" id="sit">Ingen sol</div><div class="sind-sub" id="sis"></div></div>
     </div>
-    <div id="qb" style="display:none"></div>
+    <div id="qb" class="qbadge" style="display:none">🏗️ DHM Skyggekort aktivt</div>
   </div>
   <div id="pbody">
     <div class="hint" id="hint">
-      <div class="hint-icon">ð</div>
-      <div class="hint-ttl">SÃ¸g en adresse</div>
-      <div class="hint-txt">Find cafÃ©er og restauranter med sol lige nu â eller skru i tidslinjen for at planlÃ¦gge fremad</div>
+      <div class="hint-icon">🌞</div>
+      <div class="hint-ttl">Søg en adresse</div>
+      <div class="hint-txt">Find caféer og restauranter med sol lige nu — eller skru i tidslinjen for at planlægge fremad</div>
     </div>
     <div id="ds" style="display:none">
       <div class="sgrid">
-        <div class="scard"><div class="slbl">Solopgang</div><div class="sval" id="sr">â</div></div>
-        <div class="scard"><div class="slbl">Solnedgang</div><div class="sval" id="ss">â</div></div>
-        <div class="scard"><div class="slbl">SolhÃ¸jde</div><div class="sval" id="sa">â<span class="sunit">Â°</span></div></div>
-        <div class="scard"><div class="slbl">Retning</div><div class="sval" id="saz">â</div></div>
+        <div class="scard"><div class="slbl">Solopgang</div><div class="sval" id="sr">—</div></div>
+        <div class="scard"><div class="slbl">Solnedgang</div><div class="sval" id="ss">—</div></div>
+        <div class="scard"><div class="slbl">Solhøjde</div><div class="sval" id="sa">—<span class="sunit">°</span></div></div>
+        <div class="scard"><div class="slbl">Retning</div><div class="sval" id="saz">—</div></div>
       </div>
       <div class="stitle">Solbane i dag</div>
       <div class="arc-box"><canvas id="arc" width="310" height="120"></canvas></div>
-      <div class="stitle" id="nbt" style="display:none">Steder i nÃ¦rheden</div>
+      <div class="stitle" id="nbt" style="display:none">Steder i nærheden</div>
       <div class="plist" id="pl"></div>
     </div>
   </div>
 </div>
 <div id="toast"></div>
 <script>
-const DFT='e807bdf1dd535ce2356f498fc79bccaf';
+var gmap,gc,markers=[],slat=null,slon=null,isLive=true,shadowLayer=null;
+var curH=new Date().getHours()+new Date().getMinutes()/60;
+var TODAY=new Date().toISOString().slice(0,10);
+var DFT='e807bdf1dd535ce2356f498fc79bccaf';
 function toRad(d){return d*Math.PI/180}function toDeg(r){return r*180/Math.PI}
-function gsp(lat,lon,date){const jd=date.getTime()/86400000+2440587.5,n=jd-2451545,L=(280.46+0.9856474*n)%360,g=toRad(((357.528+0.9856003*n)%360+360)%360),lam=toRad(L+1.915*Math.sin(g)+.02*Math.sin(2*g)),eps=toRad(23.439-.0000004*n),sinDec=Math.sin(eps)*Math.sin(lam),cosDec=Math.cos(Math.asin(sinDec)),utcH=date.getUTCHours()+date.getUTCMinutes()/60+date.getUTCSeconds()/3600,lmst=((6.697375+0.0657098242*n+utcH+lon/15)%24+24)%24,ha=toRad((lmst-12)*15),latR=toRad(lat),sinAlt=Math.sin(latR)*sinDec+Math.cos(latR)*cosDec*Math.cos(ha),alt=toDeg(Math.asin(Math.max(-1,Math.min(1,sinAlt)))),cosAz=(sinDec-Math.sin(latR)*sinAlt)/(Math.cos(latR)*Math.cos(toRad(alt)));let az=toDeg(Math.acos(Math.max(-1,Math.min(1,cosAz))));if(Math.sin(ha)>0)az=360-az;return{alt,az}}
-function grs(lat,lon,ds){let rise=null,set=null,prev=null;for(let m=0;m<=1440;m+=5){const d=new Date(ds+'T00:00:00Z');d.setUTCMinutes(d.getUTCMinutes()-60+m);const{alt}=gsp(lat,lon,d);if(prev!==null){if(prev<0&&alt>=0&&!rise)rise=m/60-.04;if(prev>=0&&alt<0&&!set)set=m/60-.04}prev=alt}return{rise,set}}
-function sah(lat,lon,ds,h){const d=new Date(ds+'T00:00:00+01:00');d.setMinutes(d.getMinutes()+h*60);return gsp(lat,lon,d)}
-function fmt(h){if(h===null)return'â';return String(Math.floor(h)).padStart(2,'0')+':'+String(Math.round((h%1)*60)).padStart(2,'0')}
-function azl(az){return['N','NNÃ','NÃ','ÃNÃ','Ã','ÃSÃ','SÃ','SSÃ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(az/22.5)%16]}
-const TODAY=new Date().toISOString().slice(0,10);
-let gmap,gc,markers=[],slat=null,slon=null,isLive=true,curH=new Date().getHours()+new Date().getMinutes()/60;
-let shadowLayer=null,showShadows=true;
-
-function toast(msg,dur=2800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+function gsp(lat,lon,date){var jd=date.getTime()/86400000+2440587.5,n=jd-2451545,L=(280.46+0.9856474*n)%360,g=toRad(((357.528+0.9856003*n)%360+360)%360),lam=toRad(L+1.915*Math.sin(g)+.02*Math.sin(2*g)),eps=toRad(23.439-.0000004*n),sinDec=Math.sin(eps)*Math.sin(lam),cosDec=Math.cos(Math.asin(sinDec)),utcH=date.getUTCHours()+date.getUTCMinutes()/60+date.getUTCSeconds()/3600,lmst=((6.697375+0.0657098242*n+utcH+lon/15)%24+24)%24,ha=toRad((lmst-12)*15),latR=toRad(lat),sinAlt=Math.sin(latR)*sinDec+Math.cos(latR)*cosDec*Math.cos(ha),alt=toDeg(Math.asin(Math.max(-1,Math.min(1,sinAlt)))),cosAz=(sinDec-Math.sin(latR)*sinAlt)/(Math.cos(latR)*Math.cos(toRad(alt)));var az=toDeg(Math.acos(Math.max(-1,Math.min(1,cosAz))));if(Math.sin(ha)>0)az=360-az;return{alt:alt,az:az}}
+function grs(lat,lon,ds){var rise=null,set=null,prev=null;for(var m=0;m<=1440;m+=5){var d=new Date(ds+'T00:00:00Z');d.setUTCMinutes(d.getUTCMinutes()-60+m);var a=gsp(lat,lon,d).alt;if(prev!==null){if(prev<0&&a>=0&&!rise)rise=m/60-.04;if(prev>=0&&a<0&&!set)set=m/60-.04}prev=a}return{rise:rise,set:set}}
+function sah(lat,lon,ds,h){var d=new Date(ds+'T00:00:00+01:00');d.setMinutes(d.getMinutes()+h*60);return gsp(lat,lon,d)}
+function fmt(h){if(h===null)return'—';return String(Math.floor(h)).padStart(2,'0')+':'+String(Math.round((h%1)*60)).padStart(2,'0')}
+function azl(az){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(az/22.5)%16]}
 function ts2(h){return String(Math.floor(h)).padStart(2,'0')+':'+String(Math.round((h%1)*60)%60).padStart(2,'0')}
-const tsl=document.getElementById('ts'),tdi=document.getElementById('tdis');
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2800)}
+var tsl=document.getElementById('ts'),tdi=document.getElementById('tdis');
 function setT(h){tsl.value=Math.round(h*60);tdi.textContent=ts2(h);tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%')}
-
-// Shadow WMS layer from Dataforsyningen
-function buildShadowUrl(dateStr,hour){
-  const d=new Date(dateStr+'T'+String(Math.floor(hour)).padStart(2,'0')+':'+String(Math.round((hour%1)*60)%60).padStart(2,'0')+':00+01:00');
-  const iso=d.toISOString();
-  return `https://api.dataforsyningen.dk/dhm_skygge_3d?service=WMS&version=1.3.0&request=GetMap&layers=dhm_skygge_3d&styles=&CRS=EPSG:3857&width=256&height=256&format=image/png&transparent=true&time=${encodeURIComponent(iso)}&token=${DFT}`;
-}
-
-function updateShadowLayer(){
-  if(!gmap)return;
-  if(shadowLayer){shadowLayer.setMap(null);shadowLayer=null}
-  if(!showShadows)return;
-  const url=buildShadowUrl(TODAY,curH);
-  shadowLayer=new google.maps.ImageMapType({
-    getTileUrl:(coord,zoom)=>{
-      const n=Math.pow(2,zoom);
-      const lon1=coord.x/n*360-180;
-      const lat1=toDeg(Math.atan(Math.sinh(Math.PI*(1-2*coord.y/n))));
-      const lon2=(coord.x+1)/n*360-180;
-      const lat2=toDeg(Math.atan(Math.sinh(Math.PI*(1-2*(coord.y+1)/n))));
-      // Convert to EPSG:3857
-      const toM=l=>l*20037508.34/180;
-      const latToM=lat=>Math.log(Math.tan((90+lat)*Math.PI/360))/Math.PI*20037508.34;
-      const minx=toM(lon1),miny=latToM(lat2),maxx=toM(lon2),maxy=latToM(lat1);
-      return `https://api.dataforsyningen.dk/dhm_skygge_3d?service=WMS&version=1.3.0&request=GetMap&layers=dhm_skygge_3d&styles=&CRS=EPSG:3857&BBOX=${minx},${miny},${maxx},${maxy}&width=256&height=256&format=image/png&transparent=true&token=${DFT}`;
-    },
-    tileSize:new google.maps.Size(256,256),
-    opacity:0.5,
-    name:'Skygger'
-  });
-  gmap.overlayMapTypes.clear();
-  gmap.overlayMapTypes.push(shadowLayer);
-}
-
-document.getElementById('shadow-toggle').addEventListener('click',()=>{
-  showShadows=!showShadows;
-  document.getElementById('shadow-toggle').classList.toggle('on',showShadows);
-  updateShadowLayer();
-  toast(showShadows?'ðï¸ Skygger slÃ¥et til':'ð Skygger slÃ¥et fra');
-});
-
-function drawArc(lat,lon,ch){
-  const cv=document.getElementById('arc'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height,cx=W/2,cy=H-10,r=Math.min(cx-14,H-18);
-  ctx.clearRect(0,0,W,H);
-  ctx.beginPath();ctx.moveTo(10,cy);ctx.lineTo(W-10,cy);ctx.strokeStyle='#D0D8E4';ctx.lineWidth=1.5;ctx.stroke();
-  const pts=[];
-  for(let h=0;h<=24;h+=.2){const{alt,az}=sah(lat,lon,TODAY,h);if(alt>0){const ang=Math.PI-(az/180)*Math.PI,rr=r*(1-alt/90);pts.push({x:cx+rr*Math.cos(ang),y:cy-r*(alt/90)})}}
-  if(pts.length>1){
-    const g=ctx.createLinearGradient(0,0,0,cy);g.addColorStop(0,'rgba(245,166,35,.2)');g.addColorStop(1,'rgba(245,166,35,0)');
-    ctx.beginPath();ctx.moveTo(pts[0].x,cy);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,cy);ctx.closePath();ctx.fillStyle=g;ctx.fill();
-    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle='#F5A623';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();
-  }
-  const{alt,az}=sah(lat,lon,TODAY,ch);
-  if(alt>0){const ang=Math.PI-(az/180)*Math.PI,rr=r*(1-alt/90),sx=cx+rr*Math.cos(ang),sy=cy-r*(alt/90);ctx.beginPath();ctx.arc(sx,sy,7,0,2*Math.PI);ctx.fillStyle='#F5A623';ctx.shadowColor='rgba(245,166,35,.6)';ctx.shadowBlur=12;ctx.fill();ctx.shadowBlur=0}
-}
-
-function upPanel(lat,lon,name,sub){
-  slat=lat;slon=lon;
-  document.getElementById('pn').textContent=name||'Valgt sted';
-  document.getElementById('ps').textContent=sub||lat.toFixed(4)+', '+lon.toFixed(4);
-  const now=new Date(TODAY+'T'+ts2(curH)+':00+01:00');
-  const{alt,az}=gsp(lat,lon,now);
-  const{rise,set}=grs(lat,lon,TODAY);
-  const hasSun=alt>3;
-  const ind=document.getElementById('si2');ind.style.display='flex';
-  ind.className='sind '+(hasSun?'sun':'shade');
-  document.getElementById('sic').textContent=hasSun?'âï¸':(alt>0?'ðï¸':'ð');
-  document.getElementById('sit').textContent=hasSun?'Sol pÃ¥ stedet':(alt>0?'Lavt sol/mulig skygge':'Ingen sol nu');
-  document.getElementById('sis').textContent=hasSun?'Solen er '+alt.toFixed(1)+'Â° oppe fra '+azl(az):(alt>0?'Tjek skyggekort pÃ¥ kortet':'Solopgang: '+fmt(rise));
-  const qb=document.getElementById('qb');qb.style.display='inline-flex';
-  qb.className='qbadge '+(showShadows?'dhm':'ast');
-  qb.textContent=showShadows?'ðï¸ DHM Skyggekort aktivt':'â Astronomisk beregning';
-  document.getElementById('sr').textContent=fmt(rise);
-  document.getElementById('ss').textContent=fmt(set);
-  document.getElementById('sa').innerHTML=alt.toFixed(1)+'<span class="sunit">Â°</span>';
-  document.getElementById('saz').textContent=azl(az);
-  drawArc(lat,lon,curH);
-  document.getElementById('hint').style.display='none';
-  document.getElementById('ds').style.display='block';
-}
-
+tsl.addEventListener('input',function(){curH=parseInt(tsl.value)/60;tdi.textContent=ts2(curH);tsl.style.setProperty('--p',(curH/24*100).toFixed(1)+'%');isLive=false;document.getElementById('lb').classList.remove('on');refMk();updateShadow();if(slat!==null)upPanel(slat,slon,document.getElementById('pn').textContent,document.getElementById('ps').textContent)});
+document.getElementById('lb').addEventListener('click',function(){isLive=!isLive;document.getElementById('lb').classList.toggle('on',isLive);if(isLive)syncL()});
+function syncL(){if(!isLive)return;var n=new Date();curH=n.getHours()+n.getMinutes()/60;setT(curH);refMk();updateShadow();if(slat!==null)upPanel(slat,slon,document.getElementById('pn').textContent,document.getElementById('ps').textContent)}
+setInterval(function(){if(isLive)syncL()},60000);setT(curH);
+function updateShadow(){if(!gmap)return;if(shadowLayer){gmap.overlayMapTypes.clear();shadowLayer=null}var d=new Date(TODAY+'T'+ts2(curH)+':00+01:00'),iso=d.toISOString(),dft=DFT;shadowLayer=new google.maps.ImageMapType({getTileUrl:function(coord,zoom){var n=Math.pow(2,zoom),toM=function(l){return l*20037508.34/180},latToM=function(lat){return Math.log(Math.tan((90+lat)*Math.PI/360))/Math.PI*20037508.34},lon1=coord.x/n*360-180,lat1=toDeg(Math.atan(Math.sinh(Math.PI*(1-2*coord.y/n)))),lon2=(coord.x+1)/n*360-180,lat2=toDeg(Math.atan(Math.sinh(Math.PI*(1-2*(coord.y+1)/n)))),minx=toM(lon1),miny=latToM(lat2),maxx=toM(lon2),maxy=latToM(lat1);return 'https://api.dataforsyningen.dk/dhm_skygge_3d?service=WMS&version=1.3.0&request=GetMap&layers=dhm_skygge_3d&styles=&CRS=EPSG:3857&BBOX='+minx+','+miny+','+maxx+','+maxy+'&width=256&height=256&format=image/png&transparent=true&token='+dft},tileSize:new google.maps.Size(256,256),opacity:0.5});gmap.overlayMapTypes.push(shadowLayer)}
+function drawArc(lat,lon,ch){var cv=document.getElementById('arc'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height,cx=W/2,cy=H-10,r=Math.min(cx-14,H-18);ctx.clearRect(0,0,W,H);ctx.beginPath();ctx.moveTo(10,cy);ctx.lineTo(W-10,cy);ctx.strokeStyle='#D0D8E4';ctx.lineWidth=1.5;ctx.stroke();var pts=[];for(var h=0;h<=24;h+=.2){var p=sah(lat,lon,TODAY,h);if(p.alt>0){var ang=Math.PI-(p.az/180)*Math.PI,rr=r*(1-p.alt/90);pts.push({x:cx+rr*Math.cos(ang),y:cy-r*(p.alt/90)})}}if(pts.length>1){var g=ctx.createLinearGradient(0,0,0,cy);g.addColorStop(0,'rgba(245,166,35,.2)');g.addColorStop(1,'rgba(245,166,35,0)');ctx.beginPath();ctx.moveTo(pts[0].x,cy);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.lineTo(pts[pts.length-1].x,cy);ctx.closePath();ctx.fillStyle=g;ctx.fill();ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.strokeStyle='#F5A623';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke()}var cp=sah(lat,lon,TODAY,ch);if(cp.alt>0){var ang2=Math.PI-(cp.az/180)*Math.PI,rr2=r*(1-cp.alt/90),sx=cx+rr2*Math.cos(ang2),sy=cy-r*(cp.alt/90);ctx.beginPath();ctx.arc(sx,sy,7,0,2*Math.PI);ctx.fillStyle='#F5A623';ctx.shadowColor='rgba(245,166,35,.6)';ctx.shadowBlur=12;ctx.fill();ctx.shadowBlur=0}}
+function upPanel(lat,lon,name,sub){slat=lat;slon=lon;document.getElementById('pn').textContent=name||'Valgt sted';document.getElementById('ps').textContent=sub||lat.toFixed(4)+', '+lon.toFixed(4);var now=new Date(TODAY+'T'+ts2(curH)+':00+01:00'),p=gsp(lat,lon,now),rs=grs(lat,lon,TODAY),hasSun=p.alt>3;var ind=document.getElementById('si2');ind.style.display='flex';ind.className='sind '+(hasSun?'sun':'shade');document.getElementById('sic').textContent=hasSun?'☀️':(p.alt>0?'🏙️':'🌙');document.getElementById('sit').textContent=hasSun?'Sol på stedet':(p.alt>0?'Mulig skygge':'Ingen sol nu');document.getElementById('sis').textContent=hasSun?'Solen er '+p.alt.toFixed(1)+'° oppe fra '+azl(p.az):(p.alt>0?'Tjek skyggekort':'Solopgang: '+fmt(rs.rise));document.getElementById('qb').style.display='inline-flex';document.getElementById('sr').textContent=fmt(rs.rise);document.getElementById('ss').textContent=fmt(rs.set);document.getElementById('sa').innerHTML=p.alt.toFixed(1)+'<span class="sunit">°</span>';document.getElementById('saz').textContent=azl(p.az);drawArc(lat,lon,curH);document.getElementById('hint').style.display='none';document.getElementById('ds').style.display='block'}
 function mkI(s){return{path:google.maps.SymbolPath.CIRCLE,scale:10,fillColor:s?'#F5A623':'#8A9BB0',fillOpacity:1,strokeColor:'white',strokeWeight:2.5}}
-function refMk(){markers.forEach(m=>{const{alt}=sah(m._lat,m._lon,TODAY,curH);m.setIcon(mkI(alt>3))})}
-
-async function searchNearby(lat,lng){
-  markers.forEach(m=>m.setMap(null));markers=[];
-  document.getElementById('pl').innerHTML='';
-  document.getElementById('nbt').style.display='none';
-  try{
-    const{Place}=await google.maps.importLibrary('places');
-    const types=['cafe','restaurant','bar'],tl={cafe:'CafÃ©',restaurant:'Restaurant',bar:'Bar'},seen=new Set(),all=[];
-    for(const type of types){
-      try{const{places}=await Place.searchNearby({fields:['displayName','location','formattedAddress'],locationRestriction:{center:{lat,lng},radius:600},includedPrimaryTypes:[type],maxResultCount:6});
-      if(places)places.forEach(p=>{if(seen.has(p.displayName))return;seen.add(p.displayName);all.push({name:p.displayName,address:p.formattedAddress,lat:p.location.lat(),lng:p.location.lng(),type:tl[type]})})}catch(e){}
-    }
-    const list=document.getElementById('pl');let suns=0;
-    for(const p of all){
-      const{alt}=sah(p.lat,p.lng,TODAY,curH),hs=alt>3;if(hs)suns++;
-      const m=new google.maps.Marker({position:{lat:p.lat,lng:p.lng},map:gmap,title:p.name,icon:mkI(hs)});
-      m._lat=p.lat;m._lon=p.lng;markers.push(m);
-      m.addListener('click',()=>{upPanel(p.lat,p.lng,p.name,p.type+(p.address?' Â· '+p.address.split(',')[0]:''))});
-      const btn=document.createElement('button');
-      btn.className='pitem'+(hs?' snow':'');
-      btn.innerHTML='<div class="pdot '+(hs?'sun':'shade')+'"></div><div class="pinfo"><div class="pname2">'+p.name+'</div><div class="ptype">'+p.type+'</div></div><div class="psun '+(hs?'sun':'shade')+'">'+(hs?'âï¸ Sol nu':'ð Skygge')+'</div>';
-      btn.addEventListener('click',()=>{gmap.panTo({lat:p.lat,lng:p.lng});upPanel(p.lat,p.lng,p.name,p.type+(p.address?' Â· '+p.address.split(',')[0]:''))});
-      list.appendChild(btn);
-    }
-    if(all.length){document.getElementById('nbt').style.display='block';toast('âï¸ '+suns+' i sol  Â·  ð '+(all.length-suns)+' i skygge')}
-    else toast('Ingen steder fundet i nÃ¦rheden');
-  }catch(e){toast('Fejl: '+e.message)}
-}
-
-window.initMap = function initMap(){
-  gmap=new google.maps.Map(document.getElementById('map'),{
-    center:{lat:55.676,lng:12.568},zoom:14,
-    styles:[{featureType:'all',elementType:'geometry',stylers:[{color:'#F2EDE6'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#C8DDEF'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#FFF'}]},{featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#FAE5C8'}]},{featureType:'road.highway',elementType:'geometry',stylers:[{color:'#F5D5A8'}]},{featureType:'park',elementType:'geometry',stylers:[{color:'#D5EDBD'}]},{featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},{featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]},{elementType:'labels.text.fill',stylers:[{color:'#7A6A58'}]},{elementType:'labels.text.stroke',stylers:[{color:'#FAFAF8',weight:2}]}],
-    disableDefaultUI:true,zoomControl:true,zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_CENTER},clickableIcons:false
-  });
-  gc=new google.maps.Geocoder();
-  updateShadowLayer();
-  gmap.addListener('click',e=>{const lat=e.latLng.lat(),lng=e.latLng.lng();upPanel(lat,lng);searchNearby(lat,lng)});
-  document.getElementById('sb').addEventListener('click',doSearch);
-  document.getElementById('si').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()});
-  if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{gmap.setCenter({lat:p.coords.latitude,lng:p.coords.longitude});upPanel(p.coords.latitude,p.coords.longitude,'Din placering','GPS');searchNearby(p.coords.latitude,p.coords.longitude)},()=>searchNearby(55.676,12.568))}
-  else searchNearby(55.676,12.568);
-  document.getElementById('loading').classList.add('hidden');
-};
-
-function doSearch(){const q=document.getElementById('si').value.trim();if(!q)return;gc.geocode({address:q.includes(',')?q:q+', Danmark'},(r,s)=>{if(s==='OK'&&r[0]){const loc=r[0].geometry.location;gmap.setCenter(loc);gmap.setZoom(15);upPanel(loc.lat(),loc.lng(),r[0].formatted_address.split(',')[0],r[0].formatted_address);searchNearby(loc.lat(),loc.lng())}else toast('Adresse ikke fundet')})}
-
-tsl.addEventListener('input',()=>{curH=parseInt(tsl.value)/60;tdi.textContent=ts2(curH);tsl.style.setProperty('--p',(curH/24*100).toFixed(1)+'%');isLive=false;document.getElementById('lb').classList.remove('on');refMk();updateShadowLayer();if(slat!==null)upPanel(slat,slon,document.getElementById('pn').textContent,document.getElementById('ps').textContent)});
-document.getElementById('lb').addEventListener('click',()=>{isLive=!isLive;document.getElementById('lb').classList.toggle('on',isLive);if(isLive)syncL()});
-function syncL(){if(!isLive)return;const n=new Date();curH=n.getHours()+n.getMinutes()/60;setT(curH);refMk();updateShadowLayer();if(slat!==null)upPanel(slat,slon,document.getElementById('pn').textContent,document.getElementById('ps').textContent)}
-setInterval(()=>{if(isLive)syncL()},60000);
-setT(curH);
-window.gm_authFailure=function(){document.getElementById('map').innerHTML='<div style="display:flex;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:1rem;font-family:Outfit,sans-serif;color:#6B7A8D"><div style="font-size:2.5rem">â ï¸</div><b>Google Maps fejl</b></div>';document.getElementById('loading').classList.add('hidden')};
+function refMk(){markers.forEach(function(m){var p=sah(m._lat,m._lon,TODAY,curH);m.setIcon(mkI(p.alt>3))})}
+function searchNearby(lat,lng){markers.forEach(function(m){m.setMap(null)});markers=[];document.getElementById('pl').innerHTML='';document.getElementById('nbt').style.display='none';google.maps.importLibrary('places').then(function(lib){var Place=lib.Place,types=['cafe','restaurant','bar'],tl={cafe:'Café',restaurant:'Restaurant',bar:'Bar'},seen={},all=[],done=0;types.forEach(function(type){Place.searchNearby({fields:['displayName','location','formattedAddress'],locationRestriction:{center:{lat:lat,lng:lng},radius:600},includedPrimaryTypes:[type],maxResultCount:6}).then(function(res){if(res.places)res.places.forEach(function(p){if(seen[p.displayName])return;seen[p.displayName]=1;all.push({name:p.displayName,address:p.formattedAddress,lat:p.location.lat(),lng:p.location.lng(),type:tl[type]})})}).catch(function(){}).finally(function(){done++;if(done===types.length){var list=document.getElementById('pl'),suns=0;all.forEach(function(p){var sp=sah(p.lat,p.lng,TODAY,curH),hs=sp.alt>3;if(hs)suns++;var m=new google.maps.Marker({position:{lat:p.lat,lng:p.lng},map:gmap,title:p.name,icon:mkI(hs)});m._lat=p.lat;m._lon=p.lng;markers.push(m);m.addListener('click',function(){upPanel(p.lat,p.lng,p.name,p.type+(p.address?' · '+p.address.split(',')[0]:''))});var btn=document.createElement('button');btn.className='pitem'+(hs?' snow':'');btn.innerHTML='<div class="pdot '+(hs?'sun':'shade')+'"></div><div class="pinfo"><div class="pname2">'+p.name+'</div><div class="ptype">'+p.type+'</div></div><div class="psun '+(hs?'sun':'shade')+'">'+(hs?'☀️ Sol nu':'🌙 Skygge')+'</div>';btn.addEventListener('click',function(){gmap.panTo({lat:p.lat,lng:p.lng});upPanel(p.lat,p.lng,p.name,p.type+(p.address?' · '+p.address.split(',')[0]:''))});list.appendChild(btn)});if(all.length){document.getElementById('nbt').style.display='block';toast('☀️ '+suns+' i sol  ·  🌙 '+(all.length-suns)+' i skygge')}else toast('Ingen steder fundet')}})})}) }
+function initMap(){gmap=new google.maps.Map(document.getElementById('map'),{center:{lat:55.676,lng:12.568},zoom:14,styles:[{featureType:'all',elementType:'geometry',stylers:[{color:'#F2EDE6'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#C8DDEF'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#FFF'}]},{featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#FAE5C8'}]},{featureType:'road.highway',elementType:'geometry',stylers:[{color:'#F5D5A8'}]},{featureType:'park',elementType:'geometry',stylers:[{color:'#D5EDBD'}]},{featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},{featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]},{elementType:'labels.text.fill',stylers:[{color:'#7A6A58'}]},{elementType:'labels.text.stroke',stylers:[{color:'#FAFAF8',weight:2}]}],disableDefaultUI:true,zoomControl:true,zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_CENTER},clickableIcons:false});gc=new google.maps.Geocoder();updateShadow();gmap.addListener('click',function(e){var lat=e.latLng.lat(),lng=e.latLng.lng();upPanel(lat,lng);searchNearby(lat,lng)});document.getElementById('sb').addEventListener('click',doSearch);document.getElementById('si').addEventListener('keydown',function(e){if(e.key==='Enter')doSearch()});if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(p){gmap.setCenter({lat:p.coords.latitude,lng:p.coords.longitude});upPanel(p.coords.latitude,p.coords.longitude,'Din placering','GPS');searchNearby(p.coords.latitude,p.coords.longitude)},function(){searchNearby(55.676,12.568)})}else searchNearby(55.676,12.568);document.getElementById('loading').classList.add('hidden')}
+function doSearch(){var q=document.getElementById('si').value.trim();if(!q)return;gc.geocode({address:q.includes(',')?q:q+', Danmark'},function(r,s){if(s==='OK'&&r[0]){var loc=r[0].geometry.location;gmap.setCenter(loc);gmap.setZoom(15);upPanel(loc.lat(),loc.lng(),r[0].formatted_address.split(',')[0],r[0].formatted_address);searchNearby(loc.lat(),loc.lng())}else toast('Adresse ikke fundet')})}
+window.gm_authFailure=function(){document.getElementById('map').innerHTML='<div style="display:flex;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:1rem;font-family:Outfit,sans-serif;color:#6B7A8D"><div style="font-size:2.5rem">⚠️</div><b>Google Maps fejl</b></div>';document.getElementById('loading').classList.add('hidden')};
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrKdTkGmPgclGBEiwOKsgmkkAbTYUN07Q&libraries=places&callback=initMap&loading=async" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrKdTkGmPgclGBEiwOKsgmkkAbTYUN07Q&libraries=places&callback=initMap" async defer></script>
 </body>
 </html>
