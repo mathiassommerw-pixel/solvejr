@@ -25,118 +25,95 @@ function showPin(lat, lon, nm) {
 }
 
 
-var DETAIL_SVC = null;
-function getDetailSvc(){
-  if(!DETAIL_SVC) DETAIL_SVC = new google.maps.places.PlacesService(document.createElement('div'));
-  return DETAIL_SVC;
-}
-
+// ── Place Detail ──────────────────────────────────
 function loadPlaceDetail(p, onMobile) {
-  var svc = getDetailSvc();
+  var dpb = onMobile ? document.getElementById('dsbody') : document.getElementById('dp-body');
+  dpb.innerHTML = '<div class="d-loading">Henter info…</div>';
+  if(!onMobile) {
+    document.getElementById('detail-panel').classList.add('open');
+    document.getElementById('map').classList.add('wpanel');
+  }
+  var svc = new google.maps.places.PlacesService(document.createElement('div'));
   svc.getDetails({
     placeId: p.placeId,
-    fields: ['name','rating','user_ratings_total','formatted_address','formatted_phone_number','opening_hours','photos','website','price_level']
+    fields: ['name','rating','user_ratings_total','formatted_address',
+             'formatted_phone_number','opening_hours','photos','website','price_level']
   }, function(d, st) {
-    if(st !== 'OK' || !d) { renderDetail(p, null, onMobile); return; }
-    // Merge data
-    p.outdoor = typeof d.'undefined' ? d.
-    p.website = d.website || null;
-    p.phone = d.formatted_phone_number || null;
-    p.openNow = d.opening_hours ? d.opening_hours.open_now : null;
-    p.hours = d.opening_hours ? d.opening_hours.weekday_text : null;
-    // Hent op til 5 billeder
-    var photos = [];
-    if(d.photos && d.photos.length) {
-      d.photos.slice(0,6).forEach(function(ph){
-        try { photos.push(ph.getUrl({maxWidth:600,maxHeight:400})); } catch(e){}
-      });
+    if(st === 'OK' && d) {
+      if(d.photos && d.photos.length) {
+        p.photos = d.photos.slice(0,6).map(function(ph){
+          try{return ph.getUrl({maxWidth:600,maxHeight:400})}catch(e){return null}
+        }).filter(Boolean);
+      }
+      p.openNow = d.opening_hours ? d.opening_hours.open_now : null;
+      p.website = d.website || null;
+      p.phone = d.formatted_phone_number || null;
     }
-    p.photos = photos;
-    renderDetail(p, d, onMobile);
+    renderDetail(p, onMobile);
   });
 }
 
-function renderDetail(p, d, onMobile) {
+function renderDetail(p, onMobile) {
   var isSun = shAt(p.lat, p.lon, CRH).alt > 4;
   var sp = shAt(p.lat, p.lon, CRH);
   var rs = rS(p.lat, p.lon);
+  var W = onMobile ? 260 : 240;
 
-  // Billeder
-  var galleryHtml = '';
+  var gallery = '';
   if(p.photos && p.photos.length) {
-    galleryHtml = '<div class="d-gallery">';
-    p.photos.forEach(function(url, i) {
-      galleryHtml += '<img src="'+url+'" alt="" loading="lazy">';
-    });
-    galleryHtml += '</div>';
+    gallery = '<div class="d-gallery">';
+    p.photos.forEach(function(url){ gallery += '<img src="'+url+'" alt="" loading="lazy">'; });
+    gallery += '</div>';
   } else if(p.photo) {
-    galleryHtml = '<div class="d-gallery"><img src="'+p.photo+'" alt=""></div>';
+    gallery = '<div class="d-gallery"><img src="'+p.photo+'" alt="" style="width:100%;height:170px;object-fit:cover"></div>';
   } else {
-    galleryHtml = '<div style="height:120px;background:var(--lt);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin-bottom:12px">🍽️</div>';
+    gallery = '<div style="height:100px;background:var(--lt);display:flex;align-items:center;justify-content:center;font-size:2rem">🍽️</div>';
   }
 
-  // Chips
   var chips = '';
   if(p.rating) chips += '<span class="d-chip"><span style="color:var(--warm);font-weight:700">★ '+p.rating.toFixed(1)+'</span> ('+p.reviews+')</span>';
-  if(p.price !== null && PRICE[p.price]) chips += '<span class="d-chip">'+PRICE[p.price]+'</span>';
+  if(p.price !== null && p.price !== undefined && PRICE[p.price]) chips += '<span class="d-chip">'+PRICE[p.price]+'</span>';
   chips += '<span class="d-chip">'+p.type+'</span>';
   if(isSun) chips += '<span class="d-chip sun">☀️ Sol nu</span>';
-  if(p.outdoor === true) chips += '<span class="d-chip out">🌳 Udeservering</span>';
-  else if(p.outdoor === false) chips += '<span class="d-chip inn">🏠 Kun indendørs</span>';
 
-  // Åbningstider
+  var links = '';
+  if(p.website) links += '<a href="'+p.website+'" target="_blank">🌐 Website</a>';
+  if(p.phone) links += '<a href="tel:'+p.phone+'">📞 '+p.phone+'</a>';
+
   var openHtml = '';
-  if(p.openNow !== null) {
-    openHtml = '<div class="d-stat">'+(p.openNow ? '<span class="d-open">● Åben nu</span>' : '<span class="d-closed">● Lukket nu</span>')+'</div>';
-  }
+  if(p.openNow === true) openHtml = '<div class="d-open">● Åben nu</div>';
+  else if(p.openNow === false) openHtml = '<div class="d-closed">● Lukket nu</div>';
 
-  // Website / telefon
-  var linksHtml = '';
-  if(p.website) linksHtml += '<a href="'+p.website+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:.76rem;color:var(--sun);font-weight:600;text-decoration:none;margin-right:12px">🌐 Website</a>';
-  if(p.phone) linksHtml += '<a href="tel:'+p.phone+'" style="display:inline-flex;align-items:center;gap:5px;font-size:.76rem;color:var(--sun);font-weight:600;text-decoration:none">📞 Ring</a>';
-
-  var content =
-    galleryHtml +
-    '<div style="padding:0 16px 16px">' +
+  var content = gallery +
+    '<div style="padding:12px 14px 20px">' +
       '<div class="d-name">'+p.name+'</div>' +
-      '<div class="d-addr">'+(p.addr||'')+'</div>' +
+      '<div class="d-addr" style="margin-top:3px;margin-bottom:8px">'+(p.addr||'')+'</div>' +
       openHtml +
-      (linksHtml ? '<div style="margin-bottom:10px">'+linksHtml+'</div>' : '') +
-      '<div class="d-sind '+(isSun?'sun':'shade')+'" style="margin-bottom:12px">'+
+      (links ? '<div class="d-links">'+links+'</div>' : '') +
+      '<div class="d-sind '+(isSun?'sun':'shade')+'" style="margin-bottom:10px">'+
         '<div class="d-sind-ico">'+(isSun?'☀️':'🌙')+'</div>'+
         '<div><div class="d-sind-ttl">'+(isSun?'Sol på stedet':'Skygge/aften')+'</div>'+
         '<div class="d-sind-sub">'+sp.alt.toFixed(1)+'° · '+azN(sp.az)+'</div></div>'+
       '</div>'+
-      '<div class="d-chips">'+chips+'</div>'+
-      '<div class="sgrid" style="margin-bottom:12px">'+
+      '<div class="d-chips" style="margin-bottom:10px">'+chips+'</div>'+
+      '<div class="sgrid" style="margin-bottom:10px">'+
         '<div class="scard"><div class="slbl">Solopgang</div><div class="sval">'+fH(rs.ri)+'</div></div>'+
         '<div class="scard"><div class="slbl">Solnedgang</div><div class="sval">'+fH(rs.se)+'</div></div>'+
         '<div class="scard"><div class="slbl">Solhøjde</div><div class="sval">'+sp.alt.toFixed(1)+'<span class="sunit">°</span></div></div>'+
         '<div class="scard"><div class="slbl">Retning</div><div class="sval">'+azN(sp.az)+'</div></div>'+
       '</div>'+
       '<div class="sectit" style="margin-bottom:6px">Solbane i dag</div>'+
-      '<div class="d-arc"><canvas id="darc" width="'+(onMobile?'260':'256')+'" height="90"></canvas></div>'+
+      '<div class="arcbox"><canvas id="darc" width="'+W+'" height="85"></canvas></div>'+
     '</div>';
 
-  if(onMobile) {
-    document.getElementById('dsbody').innerHTML = content;
-    var ds = document.getElementById('dsheet');
-    ds.style.display = 'flex';
-    requestAnimationFrame(function(){ ds.classList.add('open'); });
-  } else {
-    document.getElementById('dp-body').innerHTML = content;
-    var dp = document.getElementById('detail-panel');
-    dp.classList.add('open');
-    document.getElementById('map').classList.add('with-detail');
-  }
+  var dpb = onMobile ? document.getElementById('dsbody') : document.getElementById('dp-body');
+  dpb.innerHTML = content;
   setTimeout(function(){ drawArc(p.lat, p.lon, 'darc'); }, 80);
-  showPin(p.lat, p.lon, p.name);
 }
 
-// Luk desktop detail panel
 document.getElementById('dp-close').addEventListener('click', function(){
   document.getElementById('detail-panel').classList.remove('open');
-  document.getElementById('map').classList.remove('with-detail');
+  document.getElementById('map').classList.remove('wpanel');
 });
 
 </script>
@@ -233,7 +210,6 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .mrow-rat{color:var(--warm);font-weight:600}
 .mbadge{flex-shrink:0;font-size:.69rem;font-weight:600;padding:3px 9px;border-radius:50px}
 .mbadge.sun{background:var(--pale);color:#8B5E00}.mbadge.shade{background:#EDF0F5;color:#4A5568}
-.outdoor-tag{font-size:.65rem;color:#2E7D32;font-weight:600;margin-top:2px}
 
 /* MOBIL: detail sheet */
 #dsheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -6px 28px rgba(0,0,0,.15);z-index:700;display:flex;flex-direction:column;max-height:92vh;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1)}
@@ -251,9 +227,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .d-sind-ico{font-size:1.2rem}.d-sind-ttl{font-weight:600;font-size:.83rem}.d-sind-sub{font-size:.69rem;opacity:.7;margin-top:1px}
 .d-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .d-chip{padding:4px 11px;border-radius:50px;font-size:.72rem;font-weight:500;background:var(--lt)}
-.d-chip.sun{background:var(--pale);color:#8B5E00}.d-chip.out{background:#E8F5E9;color:#2E7D32}.d-chip.inn{background:#EEF1F6;color:#4A5568}
-.d-chip.outdoor{background:#E8F5E9;color:#2E7D32}
-.d-chip.indoor{background:#EEF1F6;color:#4A5568}
+.d-chip.sun{background:var(--pale);color:#8B5E00}
 .d-arc{background:var(--lt);border-radius:12px;padding:9px;margin-top:8px}
 
 /* MOBIL: tid pill */
@@ -286,22 +260,21 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 
 .search-pin{width:32px;height:32px;border-radius:50% 50% 50% 0;background:var(--sun);border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.3);transform:rotate(-45deg);position:relative}
 .search-pin::after{content:'';width:10px;height:10px;background:#fff;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
-.spin-wrap{width:32px;height:44px;display:flex;flex-direction:column;align-items:center}.spin-dot{width:26px;height:26px;border-radius:50%;background:var(--sun);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.3)}.spin-tail{width:3px;height:14px;background:var(--sun);border-radius:0 0 2px 2px;margin-top:-1px}
-.d-gallery{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.d-gallery::-webkit-scrollbar{display:none}
-.d-gallery img{width:120px;height:90px;object-fit:cover;border-radius:10px;flex-shrink:0;cursor:pointer}
-.d-gallery img:first-child{width:100%;height:160px;border-radius:12px}
-.d-stat{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--mut);margin-bottom:6px}
-.d-stat strong{color:var(--txt)}
-.d-open{color:#2E7D32;font-weight:600}.d-closed{color:#C62828;font-weight:600}
-.d-loading{text-align:center;padding:20px;color:var(--mut);font-size:.85rem}
-/* Desktop detail panel */
-#detail-panel{position:fixed;top:var(--bh);right:var(--pw);bottom:0;width:320px;background:#fff;border-left:1px solid var(--bdr);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:3;display:flex;flex-direction:column;overflow:hidden;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
+
+#detail-panel{position:fixed;top:var(--bh);right:var(--pw);bottom:0;width:310px;background:#fff;border-left:1px solid var(--bdr);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:3;display:flex;flex-direction:column;overflow:hidden;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
 #detail-panel.open{transform:translateX(0)}
 #dp-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--lt);border:none;cursor:pointer;font-size:.9rem;color:var(--mut);z-index:4;display:flex;align-items:center;justify-content:center}
 #dp-body{overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
-/* Juster map og panel bredde når detail åbent */
-#map.with-detail{right:calc(var(--pw) + 320px)}
+#map.wpanel{right:calc(var(--pw) + 310px)}
+.d-gallery{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:0}
+.d-gallery::-webkit-scrollbar{display:none}
+.d-gallery img{height:130px;width:auto;border-radius:0;flex-shrink:0;object-fit:cover}
+.d-gallery img:first-child{width:100%;height:170px;object-fit:cover}
+.d-open{color:#2E7D32;font-weight:600;font-size:.78rem;margin-bottom:8px}
+.d-closed{color:#C62828;font-weight:600;font-size:.78rem;margin-bottom:8px}
+.d-links{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.d-links a{font-size:.76rem;color:var(--sun);font-weight:600;text-decoration:none}
+.d-loading{padding:40px 16px;text-align:center;color:var(--mut);font-size:.85rem}
 </style>
 </head>
 <body>
@@ -328,10 +301,9 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 
 <!-- MAP -->
 <div id="map"></div>
-<!-- DESKTOP DETAIL PANEL -->
 <div id="detail-panel">
   <button id="dp-close">✕</button>
-  <div id="dp-body"><div class="d-loading">Henter info…</div></div>
+  <div id="dp-body"><div class="d-loading">Vælg et sted</div></div>
 </div>
 
 <!-- DESKTOP PANEL -->
@@ -455,7 +427,7 @@ function updSh(){
   var op=z<=16?0.65:Math.max(0,0.65-(z-16)*0.25);
   if(op<=0)return;
   SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
-    {tms:true,opacity:op,attribution:'© <a href="https://osm.org/copyright">OpenStreetMap</a>',maxNativeZoom:16,maxZoom:22});
+    {tms:true,opacity:op,attribution:'',maxNativeZoom:16,maxZoom:22});
   SHL.addTo(MAP);
   MAP.off('zoomend',MAP._shz);
   MAP._shz=function(){
@@ -558,8 +530,15 @@ function updMarkers(){
 }
 
 // ── Mobil detail sheet ─────────────────────────────
-function showDetail(p){ document.getElementById("dsbody").innerHTML='<div class="d-loading">Henter info…</div>'; var ds=document.getElementById("dsheet"); ds.style.display="flex"; requestAnimationFrame(function(){ds.classList.add("open");}); loadPlaceDetail(p, true); return; /* original nedenfor */
-function _showDetailOrig(p){
+function showDetail(p){
+  var ds=document.getElementById('dsheet');
+  document.getElementById('dsbody').innerHTML='<div class="d-loading">Henter info…</div>';
+  ds.style.display='flex';
+  requestAnimationFrame(function(){ds.classList.add('open');});
+  showPin(p.lat,p.lon,p.name);
+  loadPlaceDetail(p,true);
+  return;}
+function _showDetailUnused(p){
   var isSun=shAt(p.lat,p.lon,CRH).alt>4;
   var sp=shAt(p.lat,p.lon,CRH),rs=rS(p.lat,p.lon);
   var imgH=p.photo?'<div class="d-img"><img src="'+p.photo+'" alt=""></div>':'<div class="d-img">🍽️</div>';
@@ -568,8 +547,6 @@ function _showDetailOrig(p){
   if(p.price!==null&&PRICE[p.price])chips+='<span class="d-chip">'+PRICE[p.price]+'</span>';
   chips+='<span class="d-chip">'+p.type+'</span>';
   if(isSun)chips+='<span class="d-chip sun">☀️ Sol nu</span>';
-  
-  
   document.getElementById('dsbody').innerHTML=
     imgH+
     '<div class="d-name">'+p.name+'</div>'+
@@ -592,9 +569,7 @@ function _showDetailOrig(p){
   ds.style.display='flex';
   requestAnimationFrame(function(){ds.classList.add('open')});
   setTimeout(function(){drawArc(p.lat,p.lon,'darc')},80);
-  showPin(p.lat,p.lon,p.name);
   MAP.flyTo([p.lat,p.lon],17,{animate:true,duration:0.7});
-}
 }
 document.getElementById('dcl').addEventListener('click',function(){
   var ds=document.getElementById('dsheet');ds.classList.remove('open');
@@ -638,42 +613,12 @@ function near(lat,lon){
             type:tlbl[t],photo:ph,rating:p.rating||null,
             reviews:p.user_ratings_total||0,
             price:typeof p.price_level==='number'?p.price_level:null,
-            addr:addr,
-            placeId:p.place_id,
-            outdoor:undefined
+            addr:addr, placeId:p.place_id
           });
         });
       }
       done++;
-      if(done===types.length) {
-        // Hent outdoor info for de første 20 steder (API limit)
-        var top = all.slice(0,20);
-        getOutdoor(top, function(enriched) {
-          // Tilføj resten uden outdoor info
-          renderAll(enriched.concat(all.slice(20)));
-        });
-      }
-    });
-  });
-}
-
-function getOutdoor(places, cb) {
-  // Hent 
-  // Vi bruger en kø for ikke at overbelaste API'et
-  var svc = new google.maps.places.PlacesService(document.createElement('div'));
-  var done = 0;
-  if(!places.length){cb(places);return;}
-  places.forEach(function(p) {
-    svc.getDetails({
-      placeId: p.placeId,
-      fields: ['serves_beer','serves_wine','reservable','website']
-    }, function(d, st) {
-      if(d) {
-        p.outdoor = d.
-        p.website = d.website || null;
-      }
-      done++;
-      if(done === places.length) cb(places);
+      if(done===types.length) renderAll(all);
     });
   });
 }
@@ -714,12 +659,10 @@ function renderAll(all){
     var meta=[];
     if(p.rating)meta.push('<span class="prat">★ '+p.rating.toFixed(1)+'</span><span> ('+p.reviews+')</span>');
     if(p.price!==null&&PRICE[p.price])meta.push('<span>'+PRICE[p.price]+'</span>');
-    font-weight:600">🌳 Udeservering</span>');
-    else if(
     var btn=document.createElement('button');
     btn.className='pitem'+(isSun?' snow':'');
     btn.innerHTML=imgH+'<div class="pinner"><div class="pdot '+(isSun?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.name+'</div><div class="ptyp">'+p.type+'</div>'+(meta.length?'<div class="pmeta">'+meta.join(' · ')+'</div>':'')+'</div><div class="psun2 '+(isSun?'sun':'shade')+'">'+(isSun?'☀️<br>Sol':'🌙<br>Skygge')+'</div></div>';
-    btn.addEventListener('click',function(){upPanel(p.lat,p.lon,p.name);updSh();loadPlaceDetail(p,false);});
+    btn.addEventListener('click',function(){showPin(p.lat,p.lon,p.name);upPanel(p.lat,p.lon,p.name);updSh();loadPlaceDetail(p,false);});
     dpl.appendChild(btn);
 
     // ── Mobil kort ──
@@ -727,9 +670,6 @@ function renderAll(all){
     var mmeta=[];
     if(p.rating)mmeta.push('<span class="mrow-rat">★ '+p.rating.toFixed(1)+'</span><span> ('+p.reviews+')</span>');
     if(p.price!==null&&PRICE[p.price])mmeta.push(PRICE[p.price]);
-    
-    font-weight:600">🌳 Udeservering</span>');
-    else if(
     var mrow=document.createElement('div');
     mrow.className='mrow'+(isSun?' sun':'');
     mrow.innerHTML=mimg+'<div class="mrow-info"><div class="mrow-name">'+p.name+'</div><div class="mrow-typ">'+p.type+'</div>'+(mmeta.length?'<div class="mrow-meta">'+mmeta.join(' · ')+'</div>':'')+'</div><div class="mbadge '+(isSun?'sun':'shade')+'">'+(isSun?'☀️ Sol':'🌙 Skygge')+'</div>';
@@ -775,16 +715,6 @@ document.getElementById('sinp').addEventListener('input',function(){
   },240);
 });
 document.getElementById('sinp').addEventListener('blur',function(){setTimeout(function(){document.getElementById('sug').style.display='none'},200)});
-
-var SPIN=null;
-function showPin(lat,lon,nm){
-  if(SPIN){MAP.removeLayer(SPIN);SPIN=null}
-  var icon=L.divIcon({html:'<div class="spin-wrap"><div class="spin-dot"></div><div class="spin-tail"></div></div>',className:'',iconSize:[32,44],iconAnchor:[16,44]});
-  SPIN=L.marker([lat,lon],{icon:icon,zIndexOffset:2000}).addTo(MAP);
-  SPIN.bindPopup('<strong style="font-family:Playfair Display,serif">'+nm+'</strong>',{offset:[0,-46],closeButton:false}).openPopup();
-  MAP.flyTo([lat,lon],17,{animate:true,duration:0.9});
-}
-// fetchOutdoor fjernet
 function doSearch(){
   var q=document.getElementById('sinp').value.trim();if(!q)return;
   document.getElementById('sug').style.display='none';
@@ -793,7 +723,7 @@ function doSearch(){
     if(d.results&&d.results[0]){
       var loc=d.results[0].geometry.location,nm=d.results[0].formatted_address.split(',')[0];
       SLA=loc.lat;SLO=loc.lng;
-      showPin(loc.lat,loc.lng,nm);
+      MAP.flyTo([loc.lat,loc.lng],16,{animate:true,duration:0.9});
       upPanel(loc.lat,loc.lng,nm);near(loc.lat,loc.lng);updSh();
     }else toast('Adresse ikke fundet');
   }).catch(function(){toast('Søgning fejlede')});
