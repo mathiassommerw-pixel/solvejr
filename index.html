@@ -6,21 +6,7 @@
 <title>Solvejr — Find sol i Danmark</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-function updNight(){
-  if(!window.SunCalc||SLA===null)return;
-  var d=new Date(TOD+'T00:00:00');
-  d.setHours(Math.floor(CRH),Math.round((CRH%1)*60),0,0);
-  var alt=SunCalc.getPosition(d,SLA,SLO).altitude*180/Math.PI;
-  var dk;
-  if(alt>6)dk=0;
-  else if(alt>-6)dk=(6-alt)/12*0.3;
-  else if(alt>-18)dk=0.3+(-6-alt)/12*0.4;
-  else dk=0.7;
-  var ov=document.getElementById('night-overlay');
-  if(ov)ov.style.background='rgba(10,15,30,'+dk.toFixed(3)+')';
-}
-</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -166,8 +152,6 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 @media(min-width:701px){
   #msheet,#dsheet,#tpill{display:none!important}
 }
-#night-overlay{position:fixed;top:var(--bh);left:0;right:var(--pw);bottom:0;pointer-events:none;z-index:1;transition:background 2s ease}
-@media(max-width:700px){#night-overlay{right:0}}
 </style>
 </head>
 <body>
@@ -190,7 +174,6 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
   <button id="lbtn" class="on"><span class="dot"></span>Live</button>
 </div>
 <div id="map"></div>
-<div id="night-overlay"></div>
 <div id="dpanel">
   <button id="dpcl">&#x2715;</button>
   <div id="dpbody"><div class="d-load">Vaelg et sted</div></div>
@@ -356,7 +339,7 @@ function syncUI(h){
   ms.style.background='linear-gradient(to right,#F5A623 '+pct+',#C8D1DC '+pct+')';
 }
 function setT(h){
-  CRH=h;syncUI(h);updSh();updMk();updNight();
+  CRH=h;syncUI(h);updSh();updMk();
   if(SLA!==null)upPanel(SLA,SLO,document.getElementById('pname').textContent);
 }
 document.getElementById('tsl').addEventListener('input',function(){
