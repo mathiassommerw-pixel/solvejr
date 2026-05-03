@@ -235,7 +235,7 @@ function azl(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','S
 function tst(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2800)}
 
 var tsl=document.getElementById('tsl'),tdi=document.getElementById('tdis');
-function setT(h){CRH=h;tsl.value=Math.round(h*60);tdi.textContent=ts(h);tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%')}
+function setT(h){CRH=h;tsl.value=Math.round(h*60);tdi.textContent=ts(h);tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%')var pd=document.getElementById("tpilldis");if(pd)pd.textContent=document.getElementById("tdis").textContent;var ps=document.getElementById("tpillsl");if(ps){ps.value=Math.round(h*60);var pct=(Math.round(h*60)/1439*100).toFixed(1)+"%";ps.style.background="linear-gradient(to right,#F5A623 "+pct+",#CBD3DE "+pct+")";}}
 tsl.addEventListener('input',function(){
   LIV=false;document.getElementById('lbtn').classList.remove('on');
   setT(parseInt(this.value)/60);rfmk();updSh();
@@ -446,67 +446,33 @@ window.addEventListener('load',function(){
 <script>
 // Mobil responsivt
 (function(){
-  var isMobile = function(){ return window.innerWidth <= 700; };
-
-  // Panel toggle ved tryk på ptop
+  // Panel toggle
   document.getElementById('ptop').addEventListener('click', function(){
-    if(!isMobile()) return;
-    var p = document.getElementById('panel');
-    p.classList.toggle('open');
+    if(window.innerWidth > 700) return;
+    document.getElementById('panel').classList.toggle('open');
   });
 
-  // Sync tidspill med tidsslider
-  var tpillsl = document.getElementById('tpillsl');
-  var tpilldis = document.getElementById('tpilldis');
-  var mainTsl = document.getElementById('tsl');
-  var mainTdis = document.getElementById('tdis');
-
-  function syncPill(h){
-    var H = Math.floor(h), M = Math.round((h%1)*60)%60;
-    var t = String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');
-    if(tpilldis) tpilldis.textContent = t;
-    if(tpillsl) { tpillsl.value = Math.round(h*60); syncSliderBg(tpillsl); }
-  }
-
-  function syncSliderBg(sl){
-    var pct = (parseInt(sl.value)/1439*100).toFixed(1)+'%';
-    sl.style.background = 'linear-gradient(to right,#F5A623 '+pct+',#CBD3DE '+pct+')';
-  }
-
-  if(tpillsl) tpillsl.addEventListener('input', function(){
-    var h = parseInt(this.value)/60;
-    syncSliderBg(this);
-    // Kald den eksisterende setT funktion
+  // Tpill slider → kald setT direkte
+  var ps = document.getElementById('tpillsl');
+  if(ps) ps.addEventListener('input', function(){
+    var h = parseInt(this.value) / 60;
+    LIV = false;
+    document.getElementById('lbtn').classList.remove('on');
+    var tpilllbtn = document.getElementById('tpilllbtn');
+    if(tpilllbtn) tpilllbtn.style.opacity = '0.5';
     setT(h);
-    else if(typeof CRH !== 'undefined') {
-      CRH = h;
-      if(mainTsl) mainTsl.value = this.value;
-      if(mainTdis) mainTdis.textContent = tpilldis.textContent;
-      if(typeof updSh === 'function') updSh();
-      if(typeof updateMarkers === 'function') updateMarkers();
-    }
   });
 
-  // Sync når hoved-slideren ændres
-  if(mainTsl) mainTsl.addEventListener('input', function(){
-    syncPill(parseInt(this.value)/60);
+  // Tpill live knap
+  var pb = document.getElementById('tpilllbtn');
+  if(pb) pb.addEventListener('click', function(){
+    document.getElementById('lbtn').click();
+    this.style.opacity = LIV ? '1' : '0.5';
   });
 
-  // Live knap på pill
-  var tpilllbtn = document.getElementById('tpilllbtn');
-  var mainLbtn = document.getElementById('lbtn');
-  if(tpilllbtn && mainLbtn) {
-    tpilllbtn.addEventListener('click', function(){
-      if(mainLbtn) mainLbtn.click();
-    });
-  }
-
-  // Initial sync
-  setTimeout(function(){syncPill(typeof CRH!=='undefined'?CRH:12);}, 600);
-
-  // Luk panel når man trykker på kortet
+  // Luk panel ved kortklik
   document.getElementById('map').addEventListener('click', function(){
-    if(!isMobile()) return;
+    if(window.innerWidth > 700) return;
     document.getElementById('panel').classList.remove('open');
   });
 })();
