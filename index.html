@@ -39,7 +39,7 @@ function loadPlaceDetail(p, onMobile) {
   }, function(d, st) {
     if(st !== 'OK' || !d) { renderDetail(p, null, onMobile); return; }
     // Merge data
-    p.outdoor = typeof d.outdoor_seating !== 'undefined' ? d.outdoor_seating : p.outdoor;
+    p.outdoor = typeof d.'undefined' ? d.
     p.website = d.website || null;
     p.phone = d.formatted_phone_number || null;
     p.openNow = d.opening_hours ? d.opening_hours.open_now : null;
@@ -658,7 +658,7 @@ function near(lat,lon){
 }
 
 function getOutdoor(places, cb) {
-  // Hent outdoor_seating for alle steder via getDetails
+  // Hent 
   // Vi bruger en kø for ikke at overbelaste API'et
   var svc = new google.maps.places.PlacesService(document.createElement('div'));
   var done = 0;
@@ -669,7 +669,7 @@ function getOutdoor(places, cb) {
       fields: ['serves_beer','serves_wine','reservable','website']
     }, function(d, st) {
       if(d) {
-        p.outdoor = d.outdoor_seating; // true/false/undefined
+        p.outdoor = d.
         p.website = d.website || null;
       }
       done++;
