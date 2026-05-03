@@ -223,6 +223,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 </div>
 <div id="toast"></div>
 <script>
+function updNight(){if(!window.SunCalc||SLA===null)return;var d=new Date(TOD+'T00:00:00');d.setHours(Math.floor(CRH),Math.round((CRH%1)*60),0,0);var alt=SunCalc.getPosition(d,SLA,SLO).altitude*180/Math.PI;var dk=alt>6?0:alt>-6?(6-alt)/12*0.3:alt>-18?0.3+(-6-alt)/12*0.4:0.7;var ov=document.getElementById('nov');if(ov)ov.style.background='rgba(10,15,30,'+dk.toFixed(3)+')';}
 // ── State ─────────────────────────────────────────
 var MAP, MARKERS=[], LIV=true, SHL=null, SPIN=null;
 var CRH=new Date().getHours()+new Date().getMinutes()/60;
@@ -703,7 +704,6 @@ setT(CRH);
 setTimeout(updNight,500);setTimeout(function(){document.getElementById('loading').classList.add('gone');},700);
 </script>
 
-function updNight(){if(!window.SunCalc||SLA===null)return;var d=new Date(TOD+'T00:00:00');d.setHours(Math.floor(CRH),Math.round((CRH%1)*60),0,0);var alt=SunCalc.getPosition(d,SLA,SLO).altitude*180/Math.PI;var dk=alt>6?0:alt>-6?(6-alt)/12*0.3:alt>-18?0.3+(-6-alt)/12*0.4:0.7;var ov=document.getElementById('nov');if(ov)ov.style.background='rgba(10,15,30,'+dk.toFixed(3)+')';}
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
 </body>
 </html>
