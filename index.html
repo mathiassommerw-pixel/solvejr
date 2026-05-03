@@ -418,37 +418,6 @@ function updMk(){
     var isSun=shAt(m.la,m.lo,CRH).alt>4;
     m.mk.getElement()&&(m.mk.getElement().style.background=isSun?'#F5A623':'#8A9BB0');
   });
-  // Opdater sol-badges i desktop og mobil liste
-  if(ALLE.length){
-    var dpl=document.getElementById('pl');
-    var mpl=document.getElementById('msbody');
-    var sunny=0;
-    ALLE.forEach(function(p,i){
-      var isSun=shAt(p.lat,p.lon,CRH).alt>4;
-      if(isSun)sunny++;
-      // Desktop badge
-      var dBtn=dpl.children[i];
-      if(dBtn){
-        dBtn.className='pitem'+(isSun?' snow':'');
-        var dot=dBtn.querySelector('.pdot');
-        if(dot)dot.className='pdot '+(isSun?'sun':'shade');
-        var badge=dBtn.querySelector('.psun2');
-        if(badge){badge.className='psun2 '+(isSun?'sun':'shade');badge.innerHTML=isSun?'☀️<br>Sol':'🌙<br>Skygge';}
-      }
-      // Mobil badge
-      var mRow=mpl.children[i];
-      if(mRow){
-        mRow.className='mrow'+(isSun?' sun':'');
-        var mbadge=mRow.querySelector('.mbadge');
-        if(mbadge){mbadge.className='mbadge '+(isSun?'sun':'shade');mbadge.textContent=isSun?'☀️ Sol':'🌙 Skygge';}
-      }
-    });
-    // Opdater tæller
-    var mscount=document.getElementById('mscount');
-    if(mscount)mscount.textContent=ALLE.length+' steder inden for 1km';
-    var mssun=document.getElementById('mssun');
-    if(mssun)mssun.textContent=sunny+' i sol · '+(ALLE.length-sunny)+' i skygge';
-  }
 }
 
 // ── Detail indhold ────────────────────────────────
@@ -576,7 +545,7 @@ function near(lat,lon){
   var all=[];
   var totalDone=0;
   // Søg fra KBH centrum - 13km dækker hele skyggekortets område
-  
+  var searchCenter={lat:55.676,lon:12.568};
   var totalSearches=types.length;
   
   function fetchPage(type, req) {
@@ -606,15 +575,14 @@ function near(lat,lon){
   
   types.forEach(function(t){
     fetchPage(t, {
-      location:{lat:lat, lng:lon},
-      radius:1000,
+      location:{lat:searchCenter.lat, lng:searchCenter.lon},
+      radius:13000,
       type:t
     });
   });
 }
 
 function renderAll(all){
-  ALLE=all;
   all.sort(function(a,b){
     var as=shAt(a.lat,a.lon,CRH).alt>4?1:0;
     var bs=shAt(b.lat,b.lon,CRH).alt>4?1:0;
@@ -735,9 +703,7 @@ MAP.on('moveend',function(){
   clearTimeout(_nearTimer);
   _nearTimer=setTimeout(function(){
     var c=MAP.getCenter();
-    SLA=c.lat;SLO=c.lng;
     near(c.lat,c.lng);
-    updSh();
   },800);
 });
 
