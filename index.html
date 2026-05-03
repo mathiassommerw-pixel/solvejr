@@ -182,11 +182,31 @@ setT(CRH);
 function updSh(){
   if(!MAP)return;
   if(SHL){MAP.removeLayer(SHL);SHL=null}
-  var month=pad(new Date(TOD).getMonth()+1);
-  var h=Math.min(21,Math.max(6,Math.round(CRH)));
-  SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
-    {tms:true,opacity:0.65,attribution:'Skygger © SDFE'});
-  SHL.addTo(MAP);
+  var badge=document.getElementById('badge');
+  // Prøv Dataforsyningen WMS (dækker hele Danmark)
+  var d=new Date(TOD+'T00:00:00+01:00');
+  d.setMinutes(d.getMinutes()+Math.round(CRH*60));
+  var iso=d.toISOString();
+  var wmsUrl='https://api.dataforsyningen.dk/dhm_skygge_3d';
+  var testUrl=wmsUrl+'?service=WMS&version=1.3.0&request=GetMap&layers=dhm_skygge_3d&styles=&CRS=EPSG:3857&BBOX=1394000,7492000,1400000,7498000&width=2&height=2&format=image/png&transparent=true&token=e807bdf1dd535ce2356f498fc79bccaf&time='+iso;
+  fetch(testUrl,{method:'HEAD',mode:'no-cors'}).then(function(){
+    // WMS er oppe - brug den til hele Danmark
+    SHL=L.tileLayer.wms(wmsUrl,{
+      layers:'dhm_skygge_3d',format:'image/png',transparent:true,
+      version:'1.3.0',token:'e807bdf1dd535ce2356f498fc79bccaf',
+      time:iso,opacity:0.65,attribution:'Skygger © SDFE'
+    });
+    SHL.addTo(MAP);
+    if(badge)badge.textContent='🏗️ DHM Skyggekort aktivt (hele Danmark)';
+  }).catch(function(){
+    // WMS nede - brug DigitalOcean tiles (KBH-området)
+    var month=pad(new Date(TOD).getMonth()+1);
+    var h=Math.min(21,Math.max(6,Math.round(CRH)));
+    SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
+      {tms:true,opacity:0.65,attribution:'Skygger © SDFE'});
+    SHL.addTo(MAP);
+    if(badge)badge.textContent='🏗️ Skyggekort (København)';
+  });
 }
 
 function showPin(lat,lng,nm){
