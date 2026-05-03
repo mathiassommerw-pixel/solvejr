@@ -254,13 +254,13 @@ function sunPos(lat,lon,date){
 }
 function shAt(lat,lon,h){
   var d=new Date(TOD+'T00:00:00Z');
-  d.setUTCMinutes(Math.round(h*60)-60);
+  d.setUTCMinutes(Math.round(h*60)+new Date().getTimezoneOffset());
   return sunPos(lat,lon,d);
 }
 function rS(lat,lon){
   var ri=null,se=null,pv=null;
   for(var m=0;m<=1440;m+=3){
-    var d=new Date(TOD+'T00:00:00Z');d.setUTCMinutes(m-60);
+    var d=new Date(TOD+'T00:00:00Z');d.setUTCMinutes(m+new Date().getTimezoneOffset());
     var a=sunPos(lat,lon,d).alt;
     if(pv!==null){if(pv<0&&a>=0&&!ri)ri=m/60;if(pv>=0&&a<0&&!se)se=m/60;}
     pv=a;
