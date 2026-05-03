@@ -77,7 +77,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 #toast{position:fixed;bottom:22px;left:calc(50% - var(--pw)/2);transform:translateX(-50%) translateY(8px);background:var(--txt);color:#fff;padding:9px 18px;border-radius:50px;font-size:.8rem;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #loading{position:fixed;inset:0;background:rgba(250,250,248,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(4px);transition:opacity .4s}
-#loading.gone{opacity:0;pointer-events:none}
+#loading.hidden{opacity:0;pointer-events:none}
 .lsun{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,var(--sun));animation:lg 2s ease-in-out infinite;margin-bottom:18px}
 @keyframes lg{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 .ltxt{font-family:'Playfair Display',serif;font-size:1rem;color:var(--mut)}
@@ -235,7 +235,7 @@ function azl(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','S
 function tst(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2800)}
 
 var tsl=document.getElementById('tsl'),tdi=document.getElementById('tdis');
-function setT(h){CRH=h;tsl.value=Math.round(h*60);tdi.textContent=ts(h);tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%')var pd=document.getElementById("tpilldis");if(pd)pd.textContent=document.getElementById("tdis").textContent;var ps=document.getElementById("tpillsl");if(ps){ps.value=Math.round(h*60);var pct=(Math.round(h*60)/1439*100).toFixed(1)+"%";ps.style.background="linear-gradient(to right,#F5A623 "+pct+",#CBD3DE "+pct+")";}}
+function setT(h){CRH=h;tsl.value=Math.round(h*60);tdi.textContent=ts(h);tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%')}
 tsl.addEventListener('input',function(){
   LIV=false;document.getElementById('lbtn').classList.remove('on');
   setT(parseInt(this.value)/60);rfmk();updSh();
@@ -432,7 +432,7 @@ window.addEventListener('load',function(){
       function(){near(55.676,12.568)}
     );
   } else near(55.676,12.568);
-  document.getElementById('loading').classList.add('gone');
+  document.getElementById('loading').classList.add('hidden');
 });
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
@@ -446,33 +446,69 @@ window.addEventListener('load',function(){
 <script>
 // Mobil responsivt
 (function(){
-  // Panel toggle
+  var isMobile = function(){ return window.innerWidth <= 700; };
+
+  // Panel toggle ved tryk på ptop
   document.getElementById('ptop').addEventListener('click', function(){
-    if(window.innerWidth > 700) return;
-    document.getElementById('panel').classList.toggle('open');
+    if(!isMobile()) return;
+    var p = document.getElementById('panel');
+    p.classList.toggle('open');
   });
 
-  // Tpill slider → kald setT direkte
-  var ps = document.getElementById('tpillsl');
-  if(ps) ps.addEventListener('input', function(){
-    var h = parseInt(this.value) / 60;
-    LIV = false;
-    document.getElementById('lbtn').classList.remove('on');
-    var tpilllbtn = document.getElementById('tpilllbtn');
-    if(tpilllbtn) tpilllbtn.style.opacity = '0.5';
-    setT(h);
+  // Sync tidspill med tidsslider
+  var tpillsl = document.getElementById('tpillsl');
+  var tpilldis = document.getElementById('tpilldis');
+  var mainTsl = document.getElementById('tsl');
+  var mainTdis = document.getElementById('tdis');
+
+  function syncPill(h){
+    var H = Math.floor(h), M = Math.round((h%1)*60)%60;
+    var t = String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');
+    if(tpilldis) tpilldis.textContent = t;
+    if(tpillsl) { tpillsl.value = Math.round(h*60); syncSliderBg(tpillsl); }
+  }
+
+  function syncSliderBg(sl){
+    var pct = (parseInt(sl.value)/1439*100).toFixed(1)+'%';
+    sl.style.background = 'linear-gradient(to right,#F5A623 '+pct+',#CBD3DE '+pct+')';
+  }
+
+  if(tpillsl) tpillsl.addEventListener('input', function(){
+    var h = parseInt(this.value)/60;
+    syncSliderBg(this);
+    // Kald den eksisterende setT funktion
+    if(typeof setT === 'function') setT(h);
+    else if(typeof CRH !== 'undefined') {
+      CRH = h;
+      if(mainTsl) mainTsl.value = this.value;
+      if(mainTdis) mainTdis.textContent = tpilldis.textContent;
+      if(typeof updSh === 'function') updSh();
+      if(typeof updateMarkers === 'function') updateMarkers();
+    }
   });
 
-  // Tpill live knap
-  var pb = document.getElementById('tpilllbtn');
-  if(pb) pb.addEventListener('click', function(){
-    document.getElementById('lbtn').click();
-    this.style.opacity = LIV ? '1' : '0.5';
+  // Sync når hoved-slideren ændres
+  if(mainTsl) mainTsl.addEventListener('input', function(){
+    syncPill(parseInt(this.value)/60);
   });
 
-  // Luk panel ved kortklik
+  // Live knap på pill
+  var tpilllbtn = document.getElementById('tpilllbtn');
+  var mainLbtn = document.getElementById('lbtn');
+  if(tpilllbtn && mainLbtn) {
+    tpilllbtn.addEventListener('click', function(){
+      if(mainLbtn) mainLbtn.click();
+    });
+  }
+
+  // Initial sync
+  setTimeout(function(){
+    if(mainTdis) syncPill(CRH||12);
+  }, 500);
+
+  // Luk panel når man trykker på kortet
   document.getElementById('map').addEventListener('click', function(){
-    if(window.innerWidth > 700) return;
+    if(!isMobile()) return;
     document.getElementById('panel').classList.remove('open');
   });
 })();
