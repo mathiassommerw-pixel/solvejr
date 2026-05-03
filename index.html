@@ -185,7 +185,7 @@ function updSh(){
   var month=pad(new Date(TOD).getMonth()+1);
   var h=Math.min(21,Math.max(6,Math.round(CRH)));
   SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
-    {tms:true,opacity:0.65,attribution:'Skygger © SDFE'});
+    {tms:true,opacity:0.65,attribution:'Skygger © SDFE',maxNativeZoom:16,maxZoom:22});
   SHL.addTo(MAP);
 }
 function showPin(lat,lng,nm){
