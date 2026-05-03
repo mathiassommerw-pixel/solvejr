@@ -152,6 +152,8 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 @media(min-width:701px){
   #msheet,#dsheet,#tpill{display:none!important}
 }
+#nov{position:fixed;top:var(--bh);left:0;right:var(--pw);bottom:0;pointer-events:none;z-index:1;background:rgba(10,15,30,0);transition:background 2s ease}
+@media(max-width:700px){#nov{right:0}}
 </style>
 </head>
 <body>
@@ -173,7 +175,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
   </div>
   <button id="lbtn" class="on"><span class="dot"></span>Live</button>
 </div>
-<div id="map"></div>
+<div id="map"></div><div id="nov"></div>
 <div id="dpanel">
   <button id="dpcl">&#x2715;</button>
   <div id="dpbody"><div class="d-load">Vaelg et sted</div></div>
@@ -339,7 +341,7 @@ function syncUI(h){
   ms.style.background='linear-gradient(to right,#F5A623 '+pct+',#C8D1DC '+pct+')';
 }
 function setT(h){
-  CRH=h;syncUI(h);updSh();updMk();
+  CRH=h;syncUI(h);updSh();updMk();updNight();
   if(SLA!==null)upPanel(SLA,SLO,document.getElementById('pname').textContent);
 }
 document.getElementById('tsl').addEventListener('input',function(){
@@ -698,8 +700,10 @@ if(navigator.geolocation){
   );
 }else{start(55.676,12.568,'København');}
 setT(CRH);
-setTimeout(function(){document.getElementById('loading').classList.add('gone');},700);
+setTimeout(updNight,500);setTimeout(function(){document.getElementById('loading').classList.add('gone');},700);
 </script>
+
+function updNight(){if(!window.SunCalc||SLA===null)return;var d=new Date(TOD+'T00:00:00');d.setHours(Math.floor(CRH),Math.round((CRH%1)*60),0,0);var alt=SunCalc.getPosition(d,SLA,SLO).altitude*180/Math.PI;var dk=alt>6?0:alt>-6?(6-alt)/12*0.3:alt>-18?0.3+(-6-alt)/12*0.4:0.7;var ov=document.getElementById('nov');if(ov)ov.style.background='rgba(10,15,30,'+dk.toFixed(3)+')';}
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
 </body>
 </html>
