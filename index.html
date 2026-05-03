@@ -742,7 +742,12 @@ MAP.on('click',function(e){
 function start(lat,lon,nm){
   SLA=lat;SLO=lon;
   MAP.flyTo([lat,lon],16,{animate:true,duration:1});
-  upPanel(lat,lon,nm);near(lat,lon);updSh();
+  upPanel(lat,lon,nm);updSh();
+  // Søg fra GPS-positionen efter kortet er landet
+  MAP.once('moveend',function(){
+    var c=MAP.getCenter();
+    near(c.lat,c.lng);
+  });
 }
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(
