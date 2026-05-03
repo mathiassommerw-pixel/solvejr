@@ -136,7 +136,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .d-sind-ico{font-size:1.2rem}.d-sind-ttl{font-weight:600;font-size:.83rem}.d-sind-sub{font-size:.69rem;opacity:.7;margin-top:1px}
 .d-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .d-chip{padding:4px 11px;border-radius:50px;font-size:.72rem;font-weight:500;background:var(--lt)}
-.d-chip.sun{background:var(--pale);color:#8B5E00}
+.d-chip.sun{background:var(--pale);color:#8B5E00}.d-chip.out{background:#E8F5E9;color:#2E7D32}.d-chip.inn{background:#EEF1F6;color:#4A5568}
 .d-chip.outdoor{background:#E8F5E9;color:#2E7D32}
 .d-chip.indoor{background:#EEF1F6;color:#4A5568}
 .d-arc{background:var(--lt);border-radius:12px;padding:9px;margin-top:8px}
@@ -171,7 +171,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 
 .search-pin{width:32px;height:32px;border-radius:50% 50% 50% 0;background:var(--sun);border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.3);transform:rotate(-45deg);position:relative}
 .search-pin::after{content:'';width:10px;height:10px;background:#fff;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
-</style>
+.spin-wrap{width:32px;height:44px;display:flex;flex-direction:column;align-items:center}.spin-dot{width:26px;height:26px;border-radius:50%;background:var(--sun);border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.3)}.spin-tail{width:3px;height:14px;background:var(--sun);border-radius:0 0 2px 2px;margin-top:-1px}</style>
 </head>
 <body>
 <div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
@@ -431,6 +431,8 @@ function showDetail(p){
   if(p.price!==null&&PRICE[p.price])chips+='<span class="d-chip">'+PRICE[p.price]+'</span>';
   chips+='<span class="d-chip">'+p.type+'</span>';
   if(isSun)chips+='<span class="d-chip sun">☀️ Sol nu</span>';
+  if(p.outdoor===true)chips+='<span class="d-chip out">🌳 Udeservering</span>';
+  else if(p.outdoor===false)chips+='<span class="d-chip inn">🏠 Kun indendørs</span>';
   if(p.outdoor===true)chips+='<span class="d-chip outdoor">🌳 Udeservering</span>';
   else if(p.outdoor===false)chips+='<span class="d-chip indoor">🏠 Kun indendørs</span>';
   document.getElementById('dsbody').innerHTML=
@@ -455,6 +457,7 @@ function showDetail(p){
   ds.style.display='flex';
   requestAnimationFrame(function(){ds.classList.add('open')});
   setTimeout(function(){drawArc(p.lat,p.lon,'darc')},80);
+  showPin(p.lat,p.lon,p.name);
   MAP.flyTo([p.lat,p.lon],17,{animate:true,duration:0.7});
 }
 document.getElementById('dcl').addEventListener('click',function(){
@@ -580,7 +583,7 @@ function renderAll(all){
     var btn=document.createElement('button');
     btn.className='pitem'+(isSun?' snow':'');
     btn.innerHTML=imgH+'<div class="pinner"><div class="pdot '+(isSun?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.name+'</div><div class="ptyp">'+p.type+'</div>'+(meta.length?'<div class="pmeta">'+meta.join(' · ')+'</div>':'')+'</div><div class="psun2 '+(isSun?'sun':'shade')+'">'+(isSun?'☀️<br>Sol':'🌙<br>Skygge')+'</div></div>';
-    btn.addEventListener('click',function(){MAP.flyTo([p.lat,p.lon],17,{animate:true,duration:0.7});upPanel(p.lat,p.lon,p.name);updSh();});
+    btn.addEventListener('click',function(){showPin(p.lat,p.lon,p.name);upPanel(p.lat,p.lon,p.name);updSh();});
     dpl.appendChild(btn);
 
     // ── Mobil kort ──
@@ -588,6 +591,7 @@ function renderAll(all){
     var mmeta=[];
     if(p.rating)mmeta.push('<span class="mrow-rat">★ '+p.rating.toFixed(1)+'</span><span> ('+p.reviews+')</span>');
     if(p.price!==null&&PRICE[p.price])mmeta.push(PRICE[p.price]);
+    if(p.outdoor===true)mmeta.push('🌳 Ude');
     if(p.outdoor===true)mmeta.push('<span style="color:#2E7D32;font-weight:600">🌳 Udeservering</span>');
     else if(p.outdoor===false)mmeta.push('<span style="color:#6B7A8D">🏠 Ingen udeservering</span>');
     var mrow=document.createElement('div');
@@ -635,6 +639,25 @@ document.getElementById('sinp').addEventListener('input',function(){
   },240);
 });
 document.getElementById('sinp').addEventListener('blur',function(){setTimeout(function(){document.getElementById('sug').style.display='none'},200)});
+
+var SPIN=null;
+function showPin(lat,lon,nm){
+  if(SPIN){MAP.removeLayer(SPIN);SPIN=null}
+  var icon=L.divIcon({html:'<div class="spin-wrap"><div class="spin-dot"></div><div class="spin-tail"></div></div>',className:'',iconSize:[32,44],iconAnchor:[16,44]});
+  SPIN=L.marker([lat,lon],{icon:icon,zIndexOffset:2000}).addTo(MAP);
+  SPIN.bindPopup('<strong style="font-family:Playfair Display,serif">'+nm+'</strong>',{offset:[0,-46],closeButton:false}).openPopup();
+  MAP.flyTo([lat,lon],17,{animate:true,duration:0.9});
+}
+function fetchOutdoor(all,svc){
+  var top=all.slice(0,15),done=0;
+  if(!top.length){renderAll(all);return}
+  top.forEach(function(p){
+    svc.getDetails({placeId:p.placeId,fields:['outdoor_seating']},function(d,st){
+      if(d&&typeof d.outdoor_seating!=='undefined')p.outdoor=d.outdoor_seating;
+      done++;if(done===top.length)renderAll(all);
+    });
+  });
+}
 function doSearch(){
   var q=document.getElementById('sinp').value.trim();if(!q)return;
   document.getElementById('sug').style.display='none';
@@ -643,7 +666,7 @@ function doSearch(){
     if(d.results&&d.results[0]){
       var loc=d.results[0].geometry.location,nm=d.results[0].formatted_address.split(',')[0];
       SLA=loc.lat;SLO=loc.lng;
-      MAP.flyTo([loc.lat,loc.lng],16,{animate:true,duration:0.9});
+      showPin(loc.lat,loc.lng,nm);
       upPanel(loc.lat,loc.lng,nm);near(loc.lat,loc.lng);updSh();
     }else toast('Adresse ikke fundet');
   }).catch(function(){toast('Søgning fejlede')});
