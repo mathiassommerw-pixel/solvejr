@@ -35,9 +35,7 @@ function loadPlaceDetail(p, onMobile) {
   var svc = getDetailSvc();
   svc.getDetails({
     placeId: p.placeId,
-    fields: ['name','rating','user_ratings_total','formatted_address','formatted_phone_number',
-             'opening_hours','photos','website','price_level','outdoor_seating',
-             'serves_beer','serves_wine','serves_breakfast','serves_lunch','serves_dinner','types']
+    fields: ['name','rating','user_ratings_total','formatted_address','formatted_phone_number','opening_hours','photos','website','price_level']
   }, function(d, st) {
     if(st !== 'OK' || !d) { renderDetail(p, null, onMobile); return; }
     // Merge data
@@ -792,7 +790,9 @@ function fetchOutdoor(all,svc){
   var top=all.slice(0,15),done=0;
   if(!top.length){renderAll(all);return}
   top.forEach(function(p){
-    svc.getDetails({placeId:p.placeId,fields:['outdoor_seating']},function(d,st){
+    // outdoor_seating ikke tilgængeligt i dette API tier
+  if(true){done++;if(done===top.length)renderAll(all);return;}
+  svc.getDetails({placeId:p.placeId,fields:['outdoor_seating']},function(d,st){
       if(d&&typeof d.outdoor_seating!=='undefined')p.outdoor=d.outdoor_seating;
       done++;if(done===top.length)renderAll(all);
     });
