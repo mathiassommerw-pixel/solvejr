@@ -284,15 +284,10 @@ function updSh(){
   var h=Math.min(21,Math.max(6,Math.round(CRH)));
   var z=MAP.getZoom(),op=z<=16?0.65:Math.max(0,0.65-(z-16)*0.25);
   if(op<=0)return;
-  SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
-    {tms:true,opacity:op,attribution:'',maxNativeZoom:16,maxZoom:22});
+  SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',{tms:true,opacity:op,attribution:'',maxNativeZoom:16,maxZoom:22});
   SHL.addTo(MAP);
   MAP.off('zoomend',MAP._shz);
-  MAP._shz=function(){
-    if(!SHL)return;
-    var z2=MAP.getZoom(),op2=z2<=16?0.65:Math.max(0,0.65-(z2-16)*0.25);
-    if(op2<=0){MAP.removeLayer(SHL);SHL=null;}else SHL.setOpacity(op2);
-  };
+  MAP._shz=function(){if(!SHL)return;var z2=MAP.getZoom(),op2=z2<=16?0.65:Math.max(0,0.65-(z2-16)*0.25);if(op2<=0){MAP.removeLayer(SHL);SHL=null;}else SHL.setOpacity(op2);};
   MAP.on('zoomend',MAP._shz);
 }
 
