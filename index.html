@@ -4,7 +4,6 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Solvejr — Find sol i Danmark</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -239,15 +238,15 @@ var tsl=document.getElementById('tsl'),tdi=document.getElementById('tdis');
 function setT(h){CRH=h;tsl.value=Math.round(h*60);tdi.textContent=ts(h);tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%')}
 tsl.addEventListener('input',function(){
   LIV=false;document.getElementById('lbtn').classList.remove('on');
-  setT(parseInt(this.value)/60);rfmk();updShadowOuter();
+  setT(parseInt(this.value)/60);rfmk();updSh();
   if(SLA!==null)upP(SLA,SLO,document.getElementById('pn').textContent,document.getElementById('ps').textContent);
 });
 document.getElementById('lbtn').addEventListener('click',function(){LIV=!LIV;this.classList.toggle('on',LIV);if(LIV)goLive()});
-function goLive(){if(!LIV)return;var n=new Date();setT(n.getHours()+n.getMinutes()/60);rfmk();updShadowOuter();if(SLA!==null)upP(SLA,SLO,document.getElementById('pn').textContent,document.getElementById('ps').textContent)}
+function goLive(){if(!LIV)return;var n=new Date();setT(n.getHours()+n.getMinutes()/60);rfmk();updSh();if(SLA!==null)upP(SLA,SLO,document.getElementById('pn').textContent,document.getElementById('ps').textContent)}
 setInterval(function(){if(LIV)goLive()},60000);
 setT(CRH);
 
-function updShadowOuter(){
+function updSh(){
   if(!MAP)return;
   if(SHL){MAP.removeLayer(SHL);SHL=null}
   var month=pad(new Date(TOD).getMonth()+1);
@@ -483,7 +482,7 @@ window.addEventListener('load',function(){
       CRH = h;
       if(mainTsl) mainTsl.value = this.value;
       if(mainTdis) mainTdis.textContent = tpilldis.textContent;
-      if(typeof updSh === 'function') updShadowOuter();
+      if(typeof updSh === 'function') updSh();
       if(typeof updateMarkers === 'function') updateMarkers();
     }
   });
@@ -513,64 +512,6 @@ window.addEventListener('load',function(){
     document.getElementById('panel').classList.remove('open');
   });
 })();
-
-var KBH={minLat:55.58,maxLat:55.78,minLon:12.35,maxLon:12.75};
-function inKBH(la,lo){return la>KBH.minLat&&la<KBH.maxLat&&lo>KBH.minLon&&lo<KBH.maxLon}
-var SHLG=null,OPC={},OPL=false;
-
-function renderShadows(bldgs,alt,az){
-  if(SHLG){MAP.removeLayer(SHLG);SHLG=null;}
-  if(alt<=1)return;
-  var altR=alt*Math.PI/180,shadAz=(az+180)%360,shadR=shadAz*Math.PI/180;
-  var len=1/Math.tan(altR),mLat=111320,mLon=111320*Math.cos(56*Math.PI/180);
-  var feats=[];
-  bldgs.forEach(function(b){
-    if(!b.geometry||b.geometry.length<3)return;
-    var h=parseFloat(b.tags&&(b.tags.height||b.tags['building:height']))||
-          (parseFloat(b.tags&&b.tags['building:levels'])||3)*3;
-    var sl=h*len,dLat=Math.cos(shadR)*sl/mLat,dLon=Math.sin(shadR)*sl/mLon;
-    var ring=b.geometry.map(function(g){return[g.lon,g.lat]});
-    var off=ring.map(function(p){return[p[0]+dLon,p[1]+dLat]});
-    try{
-      var hull=turf.convex(turf.featureCollection(ring.concat(off).map(function(p){return turf.point(p)})));
-      if(hull)feats.push(hull);
-    }catch(e){}
-  });
-  if(!feats.length)return;
-  SHLG=L.geoJSON({type:'FeatureCollection',features:feats},{
-    style:{fillColor:'#1a2332',fillOpacity:0.3,stroke:false}
-  }).addTo(MAP);
-  SHLG.bringToBack();
-}
-
-function updOverpass(lat,lon){
-  if(SHLG){MAP.removeLayer(SHLG);SHLG=null;}
-  var p=shAt(lat,lon,CRH);
-  if(p.alt<=1)return;
-  var key=Math.round(lat*100)+','+Math.round(lon*100);
-  if(OPC[key]){renderShadows(OPC[key],p.alt,p.az);return;}
-  if(OPL)return;
-  OPL=true;
-  var d=0.009,bbox=(lat-d)+','+(lon-d)+','+(lat+d)+','+(lon+d);
-  fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent('[out:json][timeout:15];(way["building"]('+bbox+'););out geom;')})
-  .then(function(r){return r.json()})
-  .then(function(data){
-    OPL=false;OPC[key]=data.elements||[];
-    var p2=shAt(lat,lon,CRH);renderShadows(OPC[key],p2.alt,p2.az);
-  })
-  .catch(function(){OPL=false;});
-}
-
-function updShadowOuter(){
-  if(!MAP||SLA===null)return;
-  if(inKBH(SLA,SLO)){
-    if(SHLG){MAP.removeLayer(SHLG);SHLG=null;}
-    updSh();
-  } else {
-    if(SHL){MAP.removeLayer(SHL);SHL=null;}
-    updOverpass(SLA,SLO);
-  }
-}
 </script>
 </body>
 </html>
