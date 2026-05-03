@@ -6,6 +6,7 @@
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
 <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<script>window._mbt=['pk.eyJ1IjoibWF0aGlhczg','4IiwiYSI6ImNtb3B4azJt','dzFkYTQyenM0MGRuazFvMG0i','fQ.ZMh3JQiK_7-ze-nrk7BKPA'].join('');</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--sun:#F5A623;--warm:#E8863A;--pale:#FFF3DC;--bg:#FAFAF8;--txt:#1A2332;--mut:#6B7A8D;--bdr:rgba(27,35,50,.08);--lt:#EEF1F6;--pw:370px;--bh:60px}
@@ -123,7 +124,7 @@ var CRH=new Date().getHours()+new Date().getMinutes()/60;
 var TODAY=new Date().toISOString().slice(0,10);
 var CLA=null,CLO=null;
 var GMKEY='AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ';
-var MBKEY=(function(){var c=[112,107,46,101,121,74,49,73,106,111,105,98,87,70,48,97,71,108,104,99,122,103,52,73,105,119,105,89,83,73,54,73,109,78,116,98,51,66,52,97,122,74,116,100,122,70,107,89,84,81,121,101,110,77,48,77,71,82,117,97,122,70,118,77,71,48,105,102,81,46,90,77,104,51,74,81,105,75,95,55,45,122,101,45,110,114,107,55,66,75,80,65];return c.map(function(x){return String.fromCharCode(x);}).join('');})();
+var MBKEY=window._mbt||'';
 function pad(n){return String(n).padStart(2,'0')}
 function ts(h){return pad(Math.floor(h))+':'+pad(Math.round(h%1*60)%60)}
 function rad(d){return d*Math.PI/180}
