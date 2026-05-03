@@ -272,11 +272,10 @@ function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','S
 
 // ── Skyggekort ────────────────────────────────────
 function updSh(){
-  if(!MAP)return;
-  if(SHL){MAP.removeLayer(SHL);SHL=null}
-  var p=shAt(SLA||55.676,SLO||12.568,CRH);
-  if(p.alt<=1)return;
+  if(!MAP||SLA===null)return;
+  if(SHL){MAP.removeLayer(SHL);SHL=null;}
   var month=pad(new Date(TOD).getMonth()+1);
+  // Brug lokal time direkte som shady.dk - ingen solhøjde check
   var h=Math.min(21,Math.max(6,Math.round(CRH)));
   var z=MAP.getZoom(),op=z<=16?0.65:Math.max(0,0.65-(z-16)*0.25);
   if(op<=0)return;
