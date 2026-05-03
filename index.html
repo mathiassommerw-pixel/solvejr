@@ -1,465 +1,517 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Solvejr — Find sol i Danmark</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{--sun:#F5A623;--warm:#E8863A;--pale:#FFF3DC;--bg:#FAFAF8;--txt:#1A2332;--mut:#6B7A8D;--bdr:rgba(27,35,50,.1);--lt:#EEF1F6;--bh:58px;--bs:env(safe-area-inset-bottom,0px)}
-html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background:#000;color:var(--txt)}
-
-/* TOP BAR */
-#bar{position:fixed;top:0;left:0;right:0;height:var(--bh);background:#fff;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px;padding:0 14px;z-index:1000;box-shadow:0 1px 12px rgba(0,0,0,.07)}
-.logo{display:flex;align-items:center;gap:8px;flex-shrink:0;text-decoration:none}
-.logo-sun{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,#F5A623);box-shadow:0 0 0 5px rgba(245,166,35,.15);animation:pulse 3s ease-in-out infinite;flex-shrink:0}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 5px rgba(245,166,35,.15)}50%{box-shadow:0 0 0 9px rgba(245,166,35,.07)}}
-.logo-name{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--txt)}.logo-name em{color:var(--sun);font-style:normal}
-#sw{flex:1;position:relative}
-#srch{display:flex;align-items:center;background:var(--lt);border-radius:50px;padding:0 5px 0 13px;gap:7px;border:1.5px solid transparent;transition:.2s}
-#srch:focus-within{background:#fff;border-color:var(--sun)}
-#sinp{flex:1;border:none;outline:none;background:transparent;font-family:'Outfit',sans-serif;font-size:.85rem;color:var(--txt);padding:8px 0;min-width:0}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--sun:#F5A623;--warm:#E8863A;--pale:#FFF3DC;--bg:#FAFAF8;--txt:#1A2332;--mut:#6B7A8D;--bdr:rgba(27,35,50,.08);--lt:#E8EEF5;--pw:380px;--bh:64px}
+html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--txt)}
+#bar{position:fixed;top:0;left:0;right:0;height:var(--bh);background:var(--bg);border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:14px;padding:0 20px;z-index:1000;box-shadow:0 1px 24px rgba(0,0,0,.06)}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;text-decoration:none}
+.logo-sun{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,var(--sun));box-shadow:0 0 0 4px rgba(245,166,35,.15);animation:glow 3s ease-in-out infinite;flex-shrink:0}
+@keyframes glow{0%,100%{box-shadow:0 0 0 4px rgba(245,166,35,.15)}50%{box-shadow:0 0 0 8px rgba(245,166,35,.08)}}
+.logo-name{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--txt);letter-spacing:-.5px}
+.logo-name em{color:var(--sun);font-style:normal}
+#sw{flex:1;max-width:460px;position:relative}
+#srch{display:flex;align-items:center;background:var(--lt);border-radius:50px;padding:0 6px 0 18px;gap:8px;border:1.5px solid transparent;transition:.2s}
+#srch:focus-within{background:#fff;border-color:var(--sun);box-shadow:0 0 0 3px rgba(245,166,35,.12)}
+#sinp{flex:1;border:none;outline:none;background:transparent;font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--txt);padding:10px 0}
 #sinp::placeholder{color:var(--mut)}
-#sbtn{background:var(--sun);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-#sbtn svg{width:12px;height:12px;fill:#fff}
-#sug{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);overflow:hidden;z-index:9999;display:none;max-height:260px;overflow-y:auto}
-.si{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--bdr);transition:background .1s}
-.si:last-child{border-bottom:none}.si:active{background:var(--lt)}
-.si-m{font-weight:600;font-size:.82rem}.si-s{font-size:.72rem;color:var(--mut);margin-top:1px}
-
-/* MAP */
-#map{position:fixed;top:var(--bh);left:0;right:0;bottom:0}
-
-/* TIME PILL — zwevend over kortet */
-#tpill{position:fixed;bottom:calc(22px + var(--bs));left:50%;transform:translateX(-50%);background:#fff;border-radius:50px;padding:7px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:500;border:1px solid var(--bdr)}
-.tlbl{font-size:.6rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
-#tdis{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--txt);min-width:2.5rem;text-align:center}
-#tsl{width:110px;-webkit-appearance:none;height:3px;border-radius:2px;background:linear-gradient(to right,var(--sun) var(--p,50%),#CBD3DE var(--p,50%));outline:none;cursor:pointer}
-#tsl::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--sun);border:2.5px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.2)}
-#lbtn{background:none;border:none;cursor:pointer;font-size:1rem;padding:2px}
-#lbtn.on{animation:spin 4s linear infinite}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-
-/* BOTTOM SHEET — liste over steder */
-#sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.12);z-index:600;transform:translateY(calc(100% - 110px - var(--bs)));transition:transform .35s cubic-bezier(.4,0,.2,1);max-height:85vh;display:flex;flex-direction:column}
-#sheet.peek{transform:translateY(calc(100% - 110px - var(--bs)))}
-#sheet.half{transform:translateY(40%)}
-#sheet.full{transform:translateY(0)}
-#sheet-handle{padding:10px 0 0;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
-.handle{width:36px;height:4px;border-radius:2px;background:#D0D8E4}
-#sheet-top{padding:0 16px 10px;flex-shrink:0}
-#sheet-count{font-size:.75rem;color:var(--mut);font-weight:500}
-#sheet-sun{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--txt)}
-#sheet-body{overflow-y:auto;flex:1;padding:0 12px 16px;padding-bottom:calc(16px + var(--bs))}
-.prow{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;cursor:pointer;transition:background .15s;border:1.5px solid transparent;margin-bottom:6px}
-.prow:active{background:var(--lt)}
-.prow.snow{background:#FFFBF2;border-color:rgba(245,166,35,.3)}
-.prow.shade{background:#fff;border-color:var(--bdr)}
-.prow-img{width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--lt);display:flex;align-items:center;justify-content:center;font-size:1.4rem}
-.prow-img img{width:52px;height:52px;border-radius:10px;object-fit:cover}
-.prow-info{flex:1;min-width:0}
-.prow-name{font-weight:600;font-size:.88rem;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prow-typ{font-size:.72rem;color:var(--mut);margin-top:1px}
-.prow-meta{font-size:.72rem;color:var(--mut);margin-top:2px}
-.prow-rat{color:var(--warm);font-weight:600}
-.prow-sun{font-size:1.3rem;flex-shrink:0}
-
-/* DETAIL SHEET — enkelt sted */
-#dsheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.15);z-index:700;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);max-height:90vh;display:flex;flex-direction:column}
-#dsheet.open{transform:translateY(0)}
-#dsheet-handle{padding:10px 0 4px;display:flex;justify-content:center;flex-shrink:0;cursor:pointer}
-#dsheet-body{overflow-y:auto;flex:1;padding:0 18px calc(20px + var(--bs))}
-.d-img{width:100%;height:160px;object-fit:cover;border-radius:14px;margin-bottom:14px;background:var(--lt);display:flex;align-items:center;justify-content:center;font-size:3rem}
-.d-name{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--txt);line-height:1.2}
-.d-typ{font-size:.78rem;color:var(--mut);margin-top:3px}
-.d-sind{display:flex;align-items:center;gap:10px;margin:12px 0;padding:10px 12px;border-radius:11px;border:1.5px solid}
-.d-sind.sun{background:var(--pale);border-color:rgba(245,166,35,.35);color:#7A5100}
-.d-sind.shade{background:#EDF0F5;border-color:rgba(0,0,0,.08);color:#4A5568}
-.d-sind-ico{font-size:1.2rem}.d-sind-ttl{font-weight:600;font-size:.85rem}.d-sind-sub{font-size:.7rem;opacity:.7;margin-top:1px}
-.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.d-card{background:var(--lt);border-radius:10px;padding:10px}
-.d-lbl{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:2px}
-.d-val{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--txt)}
-.d-unit{font-family:'Outfit',sans-serif;font-size:.68rem;color:var(--mut)}
-.d-arc{background:var(--lt);border-radius:12px;padding:10px;margin-bottom:14px}
-.d-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.d-chip{background:var(--lt);border-radius:50px;padding:4px 12px;font-size:.75rem;font-weight:500;color:var(--txt)}
-.d-chip.sun{background:var(--pale);color:#8B5E00}
-.close-btn{position:absolute;top:12px;right:14px;width:30px;height:30px;border-radius:50%;background:var(--lt);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--mut)}
-
-/* LOADING */
-#loading{position:fixed;inset:0;background:rgba(250,250,248,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;transition:opacity .4s}
-#loading.gone{opacity:0;pointer-events:none}
-.lsun{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,#F5A623);animation:pulse 2s ease-in-out infinite;margin-bottom:14px}
-.ltxt{font-family:'Playfair Display',serif;font-size:.9rem;color:var(--mut)}
-
-/* TOAST */
-#toast{position:fixed;top:calc(var(--bh) + 10px);left:50%;transform:translateX(-50%) translateY(-4px);background:var(--txt);color:#fff;padding:7px 16px;border-radius:50px;font-size:.76rem;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap}
+#sbtn{background:var(--sun);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+#sbtn svg{width:15px;height:15px;fill:#fff}
+#sug{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.12);overflow:hidden;z-index:9999;display:none}
+.si{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;font-size:.86rem;color:var(--txt);border-bottom:1px solid var(--bdr);transition:background .12s}
+.si:last-child{border-bottom:none}.si:hover{background:var(--lt)}
+.si-m{font-weight:600}.si-s{font-size:.75rem;color:var(--mut);margin-top:1px}
+#tc{display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--lt);border-radius:50px;padding:6px 16px 6px 12px}
+.tlbl{font-size:.7rem;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+#tdis{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--txt);min-width:3.2rem;text-align:center}
+#tsl{width:100px;-webkit-appearance:none;height:3px;border-radius:2px;background:linear-gradient(to right,var(--sun) var(--p,50%),#D0D8E4 var(--p,50%));outline:none;cursor:pointer}
+#tsl::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--sun);border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+#lbtn{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:7px 14px;border-radius:50px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;background:var(--lt);color:var(--mut);transition:.2s}
+#lbtn.on{background:var(--sun);color:#fff}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+#map{position:fixed;top:var(--bh);left:0;right:var(--pw);bottom:0;z-index:1}
+#panel{position:fixed;top:var(--bh);right:0;bottom:0;width:var(--pw);background:var(--bg);border-left:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden;z-index:2}
+#ptop{padding:20px 20px 14px;border-bottom:1px solid var(--bdr);background:#fff}
+.pname{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--txt);line-height:1.2;margin-bottom:3px}
+.psub{font-size:.78rem;color:var(--mut)}
+.sind{display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px 13px;border-radius:12px;border:1.5px solid;transition:.4s}
+.sind.sun{background:var(--pale);border-color:rgba(245,166,35,.3);color:#8B5E00}
+.sind.shade{background:#EDF0F5;border-color:rgba(43,58,78,.15);color:#4A5568}
+.sind-ico{font-size:1.3rem}.sind-txt{flex:1}.sind-ttl{font-weight:600;font-size:.88rem}.sind-sub{font-size:.73rem;opacity:.7;margin-top:1px}
+.badge{display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:3px 10px;border-radius:50px;font-size:.68rem;font-weight:600;text-transform:uppercase;background:#E3F2FD;color:#1565C0}
+#pbody{flex:1;overflow-y:auto;padding:18px 20px}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
+.scard{background:var(--lt);border-radius:12px;padding:12px;border:1px solid var(--bdr)}
+.slbl{font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:3px}
+.sval{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--txt)}
+.sunit{font-family:'Outfit',sans-serif;font-size:.72rem;color:var(--mut)}
+.sectitle{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:8px}
+.arcbox{background:var(--lt);border-radius:14px;padding:11px;margin-bottom:18px}
+.plist{display:flex;flex-direction:column;gap:7px}
+.pitem{display:flex;align-items:stretch;background:#fff;border:1.5px solid var(--bdr);border-radius:12px;cursor:pointer;transition:.2s;text-align:left;width:100%;overflow:hidden}
+.pitem:hover{border-color:var(--sun);box-shadow:0 4px 16px rgba(245,166,35,.1);transform:translateY(-1px)}
+.pitem.snow{border-color:rgba(245,166,35,.4);background:#FFFBF2}
+.pimg{width:72px;object-fit:cover;flex-shrink:0}
+.pimg-ph{width:72px;background:var(--lt);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.8rem}
+.pinner{flex:1;min-width:0;padding:10px 12px;display:flex;align-items:center;gap:8px}
+.pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:2px}
+.pdot.sun{background:var(--sun)}.pdot.shade{background:#A0AEC0}
+.pinfo{flex:1;min-width:0}
+.pn2{font-weight:600;font-size:.86rem;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ptyp{font-size:.71rem;color:var(--mut);margin-top:1px}
+.pmeta{font-size:.71rem;color:var(--mut);margin-top:3px;display:flex;align-items:center;gap:6px}
+.prat{color:#E8863A;font-weight:600}
+.pprice{color:var(--mut)}
+.psun2{font-size:.72rem;font-weight:600;flex-shrink:0;text-align:center;line-height:1.4}
+.psun2.sun{color:var(--warm)}.psun2.shade{color:#90A0B0}
+.hint{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center;height:100%}
+.hi{font-size:2.8rem;margin-bottom:1rem;opacity:.35}
+.ht{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--mut);margin-bottom:.4rem}
+.hx{font-size:.8rem;color:var(--mut);line-height:1.6;opacity:.7}
+#toast{position:fixed;bottom:22px;left:calc(50% - var(--pw)/2);transform:translateX(-50%) translateY(8px);background:var(--txt);color:#fff;padding:9px 18px;border-radius:50px;font-size:.8rem;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#loading{position:fixed;inset:0;background:rgba(250,250,248,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(4px);transition:opacity .4s}
+#loading.hidden{opacity:0;pointer-events:none}
+.lsun{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,var(--sun));animation:lg 2s ease-in-out infinite;margin-bottom:18px}
+@keyframes lg{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.ltxt{font-family:'Playfair Display',serif;font-size:1rem;color:var(--mut)}
+.pin-wrap{width:32px;height:42px}
+.pin-body{width:26px;height:26px;background:var(--sun);border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 4px 16px rgba(245,166,35,.5);animation:pb .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes pb{0%{transform:rotate(-45deg) translateY(-20px);opacity:0}60%{transform:rotate(-45deg) translateY(4px)}100%{transform:rotate(-45deg);opacity:1}}
 
-.leaflet-control-attribution{display:none}
+/* ── Mobil ───────────────────────── */
+@media (max-width: 700px) {
+  :root { --pw: 100%; --bh: 54px }
+
+  /* Kort fylder hele skærmen */
+  #map { right: 0 !important; bottom: 0 !important; }
+
+  /* Panel som bottom sheet */
+  #panel {
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 55vh;
+    border-left: none !important;
+    border-top: 1px solid var(--bdr);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,.12);
+    transform: translateY(calc(100% - 68px));
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+    z-index: 500;
+  }
+  #panel.open { transform: translateY(0); }
+
+  /* Handle øverst i panel */
+  #panel::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: #D0D8E4;
+    margin: 10px auto 0;
+    flex-shrink: 0;
+  }
+
+  /* Tidsslider i bar */
+  #tc { display: none; }
+
+  /* Tidspill svæver over kortet */
+  #tpill {
+    display: flex !important;
+    position: fixed;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border-radius: 50px;
+    padding: 6px 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    z-index: 501;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--bdr);
+  }
+
+  /* Søgefelt smallere */
+  #sw { max-width: none; }
+
+  /* Panel-top vises som peek-label */
+  #ptop { cursor: pointer; }
+  #pbody { -webkit-overflow-scrolling: touch; }
+}
+@media (min-width: 701px) {
+  #tpill { display: none !important; }
+}
 </style>
 </head>
 <body>
 <div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
-
 <div id="bar">
   <a class="logo" href="#"><div class="logo-sun"></div><div class="logo-name">Sol<em>vejr</em></div></a>
   <div id="sw">
     <div id="srch">
-      <svg style="width:13px;height:13px;fill:var(--mut);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
-      <input id="sinp" type="text" placeholder="Søg adresse eller sted…" autocomplete="off">
-      <button id="sbtn"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
+      <svg style="width:15px;height:15px;fill:var(--mut);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
+      <input type="text" id="sinp" placeholder="Søg adresse, café eller restaurant…" autocomplete="off">
+      <button id="sbtn"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
     </div>
     <div id="sug"></div>
   </div>
+  <div id="tc"><div class="tlbl">Tid</div><div id="tdis">--:--</div><input type="range" id="tsl" min="0" max="1439" value="720" step="5"></div>
+  <button id="lbtn" class="on"><span class="dot"></span> Live</button>
 </div>
-
 <div id="map"></div>
-
-<div id="tpill">
-  <div class="tlbl">Tid</div>
-  <div id="tdis">--:--</div>
-  <input id="tsl" type="range" min="0" max="1439" value="720" step="5">
-  <button id="lbtn" class="on" title="Live">☀️</button>
-</div>
-
-<!-- Liste-sheet -->
-<div id="sheet">
-  <div id="sheet-handle"><div class="handle"></div></div>
-  <div id="sheet-top">
-    <div id="sheet-sun">Søg en adresse for at finde sol</div>
-    <div id="sheet-count"></div>
+<div id="panel">
+  <div id="ptop">
+    <div class="pname" id="pn">Solvejr</div>
+    <div class="psub" id="ps">Find sol i Danmark</div>
+    <div id="sind" class="sind shade" style="display:none">
+      <div class="sind-ico" id="sico">🌙</div>
+      <div class="sind-txt"><div class="sind-ttl" id="sttl">Ingen sol</div><div class="sind-sub" id="ssub"></div></div>
+    </div>
+    <div id="badge" class="badge" style="display:none">🏗️ DHM Skyggekort aktivt</div>
   </div>
-  <div id="sheet-body" id="pl"></div>
+  <div id="pbody">
+    <div class="hint" id="hint"><div class="hi">🌞</div><div class="ht">Søg en adresse</div><div class="hx">Find caféer og restauranter med sol — eller planlæg fremad med tidslinjen</div></div>
+    <div id="ds" style="display:none">
+      <div class="sgrid">
+        <div class="scard"><div class="slbl">Solopgang</div><div class="sval" id="sr">—</div></div>
+        <div class="scard"><div class="slbl">Solnedgang</div><div class="sval" id="ss">—</div></div>
+        <div class="scard"><div class="slbl">Solhøjde</div><div class="sval" id="sa">—<span class="sunit">°</span></div></div>
+        <div class="scard"><div class="slbl">Retning</div><div class="sval" id="saz">—</div></div>
+      </div>
+      <div class="sectitle">Solbane i dag</div>
+      <div class="arcbox"><canvas id="arc" width="310" height="120"></canvas></div>
+      <div class="sectitle" id="nbt" style="display:none">Steder i nærheden</div>
+      <div class="plist" id="pl"></div>
+    </div>
+  </div>
 </div>
-
-<!-- Detail-sheet -->
-<div id="dsheet">
-  <div id="dsheet-handle"><div class="handle"></div></div>
-  <button class="close-btn" id="dclose">×</button>
-  <div id="dsheet-body"></div>
-</div>
-
 <div id="toast"></div>
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-var MAP, MARKERS=[], LIVE=true, SHL=null;
+var MAP,MK=[],PIN=null,SHL=null,SLA=null,SLO=null,LIV=true;
 var CRH=new Date().getHours()+new Date().getMinutes()/60;
-var TODAY=new Date().toISOString().slice(0,10);
-var CLA=null,CLO=null;
-var GMKEY='AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ';
+var TOD=new Date().toISOString().slice(0,10);
+var KEY='AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ',DFT='e807bdf1dd535ce2356f498fc79bccaf';
+var PRICE=['','€','\u20ac\u20ac','\u20ac\u20ac\u20ac','\u20ac\u20ac\u20ac\u20ac'];
 
-function pad(n){return String(n).padStart(2,'0')}
-function ts(h){return pad(Math.floor(h))+':'+pad(Math.round(h%1*60)%60)}
 function rad(d){return d*Math.PI/180}
 function deg(r){return r*180/Math.PI}
-
-function sunPos(lat,lon,date){
-  var jd=date.getTime()/86400000+2440587.5,n=jd-2451545;
-  var L=((280.46+0.9856474*n)%360+360)%360;
-  var g=rad(((357.528+0.9856003*n)%360+360)%360);
-  var lam=rad(L+1.915*Math.sin(g)+0.02*Math.sin(2*g));
-  var eps=rad(23.439-0.0000004*n);
-  var sinD=Math.sin(eps)*Math.sin(lam),cosD=Math.cos(Math.asin(sinD));
-  var UT=date.getUTCHours()+date.getUTCMinutes()/60+date.getUTCSeconds()/3600;
-  var GMST=((6.697375+0.0657098242*n+UT)%24+24)%24;
-  var LST=((GMST+lon/15)%24+24)%24;
-  var HA=rad((LST-12)*15),lr=rad(lat);
-  var sinA=Math.sin(lr)*sinD+Math.cos(lr)*cosD*Math.cos(HA);
-  var alt=deg(Math.asin(Math.max(-1,Math.min(1,sinA))));
-  var cosAz=(sinD-Math.sin(lr)*sinA)/(Math.cos(lr)*Math.cos(rad(alt)));
-  var az=deg(Math.acos(Math.max(-1,Math.min(1,cosAz))));
-  if(Math.sin(HA)>0)az=360-az;
-  return{alt:alt,az:az};
+function sol(lat,lon,dt){
+  var jd=dt.getTime()/86400000+2440587.5,n=jd-2451545,L=(280.46+0.9856474*n)%360;
+  var g=rad(((357.528+0.9856003*n)%360+360)%360),lam=rad(L+1.915*Math.sin(g)+.02*Math.sin(2*g));
+  var eps=rad(23.439-.0000004*n),sd=Math.sin(eps)*Math.sin(lam),cd=Math.cos(Math.asin(sd));
+  var uh=dt.getUTCHours()+dt.getUTCMinutes()/60+dt.getUTCSeconds()/3600;
+  var lst=((6.697375+0.0657098242*n+uh+lon/15)%24+24)%24,ha=rad((lst-12)*15),lr=rad(lat);
+  var sa=Math.sin(lr)*sd+Math.cos(lr)*cd*Math.cos(ha),alt=deg(Math.asin(Math.max(-1,Math.min(1,sa))));
+  var ca=(sd-Math.sin(lr)*sa)/(Math.cos(lr)*Math.cos(rad(alt))),az=deg(Math.acos(Math.max(-1,Math.min(1,ca))));
+  if(Math.sin(ha)>0)az=360-az;
+  return{alt:alt,az:az}
 }
-function sunAt(lat,lon,h){var d=new Date(TODAY+'T00:00:00Z');d.setUTCMinutes(Math.round(h*60)-60);return sunPos(lat,lon,d)}
-function riseset(lat,lon){
+function shAt(lat,lon,h){var d=new Date(TOD+'T00:00:00+01:00');d.setMinutes(d.getMinutes()+Math.round(h*60));return sol(lat,lon,d)}
+function rs(lat,lon){
   var ri=null,se=null,pv=null;
-  for(var m=0;m<=1440;m+=3){var d=new Date(TODAY+'T00:00:00Z');d.setUTCMinutes(m-60);var a=sunPos(lat,lon,d).alt;if(pv!==null){if(pv<0&&a>=0&&!ri)ri=m/60;if(pv>=0&&a<0&&!se)se=m/60;}pv=a;}
-  return{ri:ri,se:se};
+  for(var m=0;m<=1440;m+=5){
+    var d=new Date(TOD+'T00:00:00Z');d.setUTCMinutes(d.getUTCMinutes()-60+m);
+    var a=sol(lat,lon,d).alt;
+    if(pv!==null){if(pv<0&&a>=0&&!ri)ri=m/60-.04;if(pv>=0&&a<0&&!se)se=m/60-.04}
+    pv=a;
+  }
+  return{ri:ri,se:se}
 }
-function fH(h){if(h===null)return'—';return pad(Math.floor(h))+':'+pad(Math.round(h%1*60)%60)}
-function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(a/22.5)%16]}
+function ft(h){if(h===null)return'—';return pad(Math.floor(h))+':'+pad(Math.round((h%1)*60))}
+function pad(n){return String(n).padStart(2,'0')}
+function ts(h){return pad(Math.floor(h))+':'+pad(Math.round((h%1)*60)%60)}
+function azl(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(a/22.5)%16]}
+function tst(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2800)}
 
-function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500)}
+var tsl=document.getElementById('tsl'),tdi=document.getElementById('tdis');
+function setT(h){CRH=h;tsl.value=Math.round(h*60);tdi.textContent=ts(h);tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%')}
+tsl.addEventListener('input',function(){
+  LIV=false;document.getElementById('lbtn').classList.remove('on');
+  setT(parseInt(this.value)/60);rfmk();updSh();
+  if(SLA!==null)upP(SLA,SLO,document.getElementById('pn').textContent,document.getElementById('ps').textContent);
+});
+document.getElementById('lbtn').addEventListener('click',function(){LIV=!LIV;this.classList.toggle('on',LIV);if(LIV)goLive()});
+function goLive(){if(!LIV)return;var n=new Date();setT(n.getHours()+n.getMinutes()/60);rfmk();updSh();if(SLA!==null)upP(SLA,SLO,document.getElementById('pn').textContent,document.getElementById('ps').textContent)}
+setInterval(function(){if(LIV)goLive()},60000);
+setT(CRH);
 
-// ── Skyggekort ─────────────────────────────────────
-function updShadow(){
+function updSh(){
   if(!MAP)return;
   if(SHL){MAP.removeLayer(SHL);SHL=null}
-  var p=sunAt(CLA||55.676,CLO||12.568,CRH);
-  if(p.alt<=1)return;
-  var month=pad(new Date(TODAY).getMonth()+1);
+  var month=pad(new Date(TOD).getMonth()+1);
   var h=Math.min(21,Math.max(6,Math.round(CRH)));
   SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
-    {tms:true,opacity:0.65,attribution:'',maxNativeZoom:16,maxZoom:22});
+    {tms:true,opacity:0.65,attribution:'Skygger © SDFE',maxNativeZoom:16,maxZoom:22});
   SHL.addTo(MAP);
 }
-
-// ── Tid ────────────────────────────────────────────
-var tsl=document.getElementById('tsl'),tdis=document.getElementById('tdis');
-function setTime(h){
-  CRH=h;tsl.value=Math.round(h*60);tdis.textContent=ts(h);
-  tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%');
-  updShadow();updateMarkers();
-}
-tsl.addEventListener('input',function(){
-  LIVE=false;document.getElementById('lbtn').classList.remove('on');
-  setTime(parseInt(this.value)/60);
-});
-document.getElementById('lbtn').addEventListener('click',function(){
-  LIVE=!LIVE;this.classList.toggle('on',LIVE);if(LIVE){var n=new Date();setTime(n.getHours()+n.getMinutes()/60)}
-});
-setInterval(function(){if(LIVE){var n=new Date();setTime(n.getHours()+n.getMinutes()/60)}},60000);
-
-// ── Sheet ──────────────────────────────────────────
-var sheet=document.getElementById('sheet');
-var startY=0,startT=0;
-document.getElementById('sheet-handle').addEventListener('touchstart',function(e){startY=e.touches[0].clientY;startT=Date.now()},{passive:true});
-document.getElementById('sheet-handle').addEventListener('touchend',function(e){
-  var dy=e.changedTouches[0].clientY-startY,dt=Date.now()-startT;
-  if(Math.abs(dy)<20&&dt<300){
-    if(sheet.classList.contains('peek'))sheet.classList.replace('peek','half');
-    else if(sheet.classList.contains('half'))sheet.classList.replace('half','full');
-    else sheet.classList.replace('full','peek');
-  } else if(dy>40)sheet.className='sheet peek';
-  else if(dy<-40)sheet.className='sheet half';
-},{passive:true});
-
-function showSheet(){sheet.classList.replace('peek','half')||sheet.classList.add('half')}
-function peekSheet(){sheet.className='sheet peek'}
-
-// ── Detail sheet ───────────────────────────────────
-var dsheet=document.getElementById('dsheet');
-document.getElementById('dclose').addEventListener('click',closeDetail);
-document.getElementById('dsheet-handle').addEventListener('click',closeDetail);
-function closeDetail(){dsheet.classList.remove('open')}
-
-function showDetail(p){
-  var isSun=sunAt(p.lat,p.lon,CRH).alt>4;
-  var rs=riseset(p.lat,p.lon);
-  var sp=sunAt(p.lat,p.lon,CRH);
-  var PRICE=['','€','€€','€€€','€€€€'];
-
-  var imgHtml=p.photo?'<img class="d-img" src="'+p.photo+'" alt="">':'<div class="d-img">🍽️</div>';
-
-  var meta='';
-  if(p.rating)meta+='<div class="d-chip"><span style="color:var(--warm);font-weight:700">★ '+p.rating.toFixed(1)+'</span> ('+p.reviews+')</div>';
-  if(p.price!==null&&PRICE[p.price])meta+='<div class="d-chip">'+PRICE[p.price]+'</div>';
-  meta+='<div class="d-chip">'+p.type+'</div>';
-  if(isSun)meta+='<div class="d-chip sun">☀️ Sol nu</div>';
-
-  document.getElementById('dsheet-body').innerHTML=
-    imgHtml+
-    '<div class="d-name">'+p.name+'</div>'+
-    '<div class="d-typ">'+p.address+'</div>'+
-    '<div class="d-sind '+(isSun?'sun':'shade')+'">'+
-      '<div class="d-sind-ico">'+(isSun?'☀️':(sp.alt>0?'🏙️':'🌙'))+'</div>'+
-      '<div><div class="d-sind-ttl">'+(isSun?'Sol på stedet':(sp.alt>0?'Mulig skygge':'Solen er nede'))+'</div>'+
-      '<div class="d-sind-sub">'+sp.alt.toFixed(1)+'° · '+azN(sp.az)+'</div></div>'+
-    '</div>'+
-    '<div class="d-meta">'+meta+'</div>'+
-    '<div class="d-grid">'+
-      '<div class="d-card"><div class="d-lbl">Solopgang</div><div class="d-val">'+fH(rs.ri)+'</div></div>'+
-      '<div class="d-card"><div class="d-lbl">Solnedgang</div><div class="d-val">'+fH(rs.se)+'</div></div>'+
-      '<div class="d-card"><div class="d-lbl">Solhøjde</div><div class="d-val">'+sp.alt.toFixed(1)+'<span class="d-unit">°</span></div></div>'+
-      '<div class="d-card"><div class="d-lbl">Retning</div><div class="d-val">'+azN(sp.az)+'</div></div>'+
-    '</div>'+
-    '<div class="d-arc"><canvas id="darc" width="300" height="100"></canvas></div>';
-
-  dsheet.classList.add('open');
-  // Tegn arc
-  setTimeout(function(){drawArc(p.lat,p.lon,'darc')},50);
-
-  // Flyv til stedet
-  MAP.flyTo([p.lat,p.lon],17,{duration:0.8});
+function showPin(lat,lng,nm){
+  if(PIN){MAP.removeLayer(PIN);PIN=null}
+  var ic=L.divIcon({className:'',html:'<div class="pin-wrap"><div class="pin-body"></div></div>',iconSize:[32,42],iconAnchor:[13,40]});
+  PIN=L.marker([lat,lng],{icon:ic,zIndexOffset:1000}).addTo(MAP);
+  PIN.bindPopup('<b style="font-family:Playfair Display,serif">'+nm+'</b>').openPopup();
 }
 
-function drawArc(lat,lon,id){
-  var cv=document.getElementById(id);if(!cv)return;
-  var ctx=cv.getContext('2d'),W=cv.width,H=cv.height,base=H-12,r=H-20;
+function drawArc(lat,lon,ch){
+  var cv=document.getElementById('arc'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height,cy=H-14,r=H-24;
   ctx.clearRect(0,0,W,H);
-  ctx.beginPath();ctx.moveTo(6,base);ctx.lineTo(W-6,base);ctx.strokeStyle='#CDD4DF';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(8,cy);ctx.lineTo(W-8,cy);ctx.strokeStyle='#D0D8E4';ctx.lineWidth=1.5;ctx.stroke();
+  var r2=rs(lat,lon);
+  if(r2.ri){ctx.fillStyle='#B0BACB';ctx.font='9px Outfit,sans-serif';ctx.fillText(ft(r2.ri),Math.max(2,W*r2.ri/24-10),cy+11)}
+  if(r2.se){ctx.fillText(ft(r2.se),Math.min(W-28,W*r2.se/24-10),cy+11)}
   var pts=[];
-  for(var h=0;h<=24;h+=0.3){var a=sunAt(lat,lon,h);if(a.alt>0)pts.push({x:W*h/24,y:base-r*(a.alt/85)})}
+  for(var h=0;h<=24;h+=.2){var p=shAt(lat,lon,h);if(p.alt>0)pts.push({x:W*h/24,y:cy-r*(p.alt/90)})}
   if(pts.length>1){
-    var gr=ctx.createLinearGradient(0,0,0,base);gr.addColorStop(0,'rgba(245,166,35,.2)');gr.addColorStop(1,'rgba(245,166,35,0)');
-    ctx.beginPath();ctx.moveTo(pts[0].x,base);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.lineTo(pts[pts.length-1].x,base);ctx.closePath();ctx.fillStyle=gr;ctx.fill();
-    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.strokeStyle='#F5A623';ctx.lineWidth=2;ctx.stroke();
+    var g=ctx.createLinearGradient(0,0,0,cy);
+    g.addColorStop(0,'rgba(245,166,35,.25)');g.addColorStop(1,'rgba(245,166,35,0)');
+    ctx.beginPath();ctx.moveTo(pts[0].x,cy);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.lineTo(pts[pts.length-1].x,cy);ctx.closePath();ctx.fillStyle=g;ctx.fill();
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.strokeStyle='#F5A623';ctx.lineWidth=2.5;ctx.stroke();
   }
-  var nx=W*CRH/24,cp=sunAt(lat,lon,CRH);
-  ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(nx,base);ctx.lineTo(nx,4);ctx.strokeStyle='rgba(245,166,35,.4)';ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);
-  if(cp.alt>0){var sy=base-r*(cp.alt/85);ctx.beginPath();ctx.arc(nx,sy,6,0,2*Math.PI);ctx.fillStyle='#F5A623';ctx.shadowColor='rgba(245,166,35,.6)';ctx.shadowBlur=10;ctx.fill();ctx.shadowBlur=0;ctx.beginPath();ctx.arc(nx,sy,2.5,0,2*Math.PI);ctx.fillStyle='#fff';ctx.fill();}
-  var rs=riseset(lat,lon);ctx.fillStyle='#9AAAB8';ctx.font='8px Outfit,sans-serif';
-  if(rs.ri)ctx.fillText(fH(rs.ri),Math.max(2,W*rs.ri/24-10),H);
-  if(rs.se)ctx.fillText(fH(rs.se),Math.min(W-28,W*rs.se/24-10),H);
+  var tx=W*ch/24;
+  ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(tx,cy);ctx.lineTo(tx,8);ctx.strokeStyle='rgba(245,166,35,.5)';ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);
+  var cp=shAt(lat,lon,ch);
+  if(cp.alt>0){
+    var y2=cy-r*(cp.alt/90);
+    ctx.beginPath();ctx.arc(tx,y2,8,0,2*Math.PI);ctx.fillStyle='#F5A623';ctx.shadowColor='rgba(245,166,35,.7)';ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;
+    ctx.beginPath();ctx.arc(tx,y2,3.5,0,2*Math.PI);ctx.fillStyle='#fff';ctx.fill();
+  } else {
+    ctx.beginPath();ctx.arc(tx,cy,5,0,2*Math.PI);ctx.fillStyle='#A0AEC0';ctx.fill();
+  }
 }
 
-// ── Markører ───────────────────────────────────────
-function updateMarkers(){
-  MARKERS.forEach(function(m){
-    var isSun=sunAt(m._lat,m._lon,CRH).alt>4;
-    m._el.style.background=isSun?'#F5A623':'#8A9BB0';
-  });
-}
-function mkMarker(isSun){
-  var el=document.createElement('div');
-  el.style.cssText='width:20px;height:20px;border-radius:50%;background:'+(isSun?'#F5A623':'#8A9BB0')+';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;transition:background .3s';
-  return el;
+function upP(lat,lon,nm,sb){
+  SLA=lat;SLO=lon;
+  document.getElementById('pn').textContent=nm||'Valgt sted';
+  document.getElementById('ps').textContent=sb||lat.toFixed(4)+', '+lon.toFixed(4);
+  var now=new Date(TOD+'T00:00:00+01:00');now.setMinutes(now.getMinutes()+Math.round(CRH*60));
+  var p=sol(lat,lon,now),r2=rs(lat,lon),hs=p.alt>3;
+  var ind=document.getElementById('sind');
+  ind.style.display='flex';ind.className='sind '+(hs?'sun':'shade');
+  document.getElementById('sico').textContent=hs?'☀️':(p.alt>0?'🏙️':'🌙');
+  document.getElementById('sttl').textContent=hs?'Sol på stedet':(p.alt>0?'Mulig skygge':'Ingen sol nu');
+  document.getElementById('ssub').textContent=hs?'Solen er '+p.alt.toFixed(1)+'° fra '+azl(p.az):(p.alt>0?'Tjek skyggekort':'Solopgang: '+ft(r2.ri));
+  document.getElementById('badge').style.display='inline-flex';
+  document.getElementById('sr').textContent=ft(r2.ri);document.getElementById('ss').textContent=ft(r2.se);
+  document.getElementById('sa').innerHTML=p.alt.toFixed(1)+'<span class="sunit">°</span>';
+  document.getElementById('saz').textContent=azl(p.az);
+  drawArc(lat,lon,CRH);
+  document.getElementById('hint').style.display='none';document.getElementById('ds').style.display='block';
 }
 
-// ── Google Places ──────────────────────────────────
-function loadNearby(lat,lon){
-  MARKERS.forEach(function(m){m._mk.remove()});MARKERS=[];
-  document.getElementById('sheet-body').innerHTML='';
+function mkI(hs){return L.divIcon({className:'',html:'<div style="width:20px;height:20px;border-radius:50%;background:'+(hs?'#F5A623':'#8A9BB0')+';border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',iconSize:[20,20],iconAnchor:[10,10]})}
+function rfmk(){MK.forEach(function(m){m.setIcon(mkI(shAt(m._a,m._o,CRH).alt>3))})}
+
+function near(lat,lng){
+  MK.forEach(function(m){MAP.removeLayer(m)});MK=[];
+  document.getElementById('pl').innerHTML='';document.getElementById('nbt').style.display='none';
   var svc=new google.maps.places.PlacesService(document.createElement('div'));
-  var types=['cafe','restaurant','bar'],tlbl={cafe:'Café',restaurant:'Restaurant',bar:'Bar'},all=[],done=0;
-  types.forEach(function(t){
-    svc.nearbySearch({location:{lat:lat,lng:lon},radius:600,type:t},function(res,st){
-      if(st==='OK'&&res)res.forEach(function(p){
-        if(all.find(function(x){return x.name===p.name}))return;
-        var ph=null;try{if(p.photos&&p.photos.length)ph=p.photos[0].getUrl({maxWidth:160,maxHeight:160})}catch(e){}
-        var addr='';try{addr=p.vicinity||''}catch(e){}
-        all.push({name:p.name,lat:p.geometry.location.lat(),lon:p.geometry.location.lng(),type:tlbl[t],photo:ph,rating:p.rating||null,reviews:p.user_ratings_total||0,price:typeof p.price_level==='number'?p.price_level:null,address:addr});
-      });
-      done++;
-      if(done===types.length)renderPlaces(all,lat,lon);
+  var tp=['cafe','restaurant','bar'],tl={cafe:'Café',restaurant:'Restaurant',bar:'Bar'},al=[],dn=0;
+  tp.forEach(function(t){
+    svc.nearbySearch({location:{lat:lat,lng:lng},radius:600,type:t},function(res,status){
+      if(status==='OK'&&res){
+        res.forEach(function(p){
+          if(al.find(function(x){return x.n===p.name}))return;
+          var ph=null;
+          try{if(p.photos&&p.photos.length)ph=p.photos[0].getUrl({maxWidth:140,maxHeight:140})}catch(e){}
+          al.push({
+            n:p.name,
+            la:p.geometry.location.lat(),
+            ln:p.geometry.location.lng(),
+            t:tl[t],
+            ph:ph,
+            rt:p.rating||null,
+            rv:p.user_ratings_total||0,
+            pl:typeof p.price_level==='number'?p.price_level:null
+          });
+        });
+      }
+      dn++;
+      if(dn===tp.length){
+        al.sort(function(a,b){return(b.rt||0)-(a.rt||0)});
+        var li=document.getElementById('pl'),sc=0;
+        al.forEach(function(p){
+          var hs=shAt(p.la,p.ln,CRH).alt>3;if(hs)sc++;
+          var m=L.marker([p.la,p.ln],{icon:mkI(hs)}).addTo(MAP);
+          m._a=p.la;m._o=p.ln;MK.push(m);
+          m.on('click',function(){MAP.setView([p.la,p.ln],17);showPin(p.la,p.ln,p.n);upP(p.la,p.ln,p.n,p.t)});
+          var b=document.createElement('button');
+          b.className='pitem'+(hs?' snow':'');
+          // Billede
+          var imgHtml=p.ph
+            ?('<img class="pimg" src="'+p.ph+'" alt="" loading="lazy">')
+            :'<div class="pimg-ph">🍽️</div>';
+          // Rating
+          var stars='';
+          if(p.rt){for(var i=0;i<5;i++)stars+=i<Math.round(p.rt)?'★':'☆'}
+          // Pris
+          var priceStr=p.pl!==null?PRICE[p.pl]:'';
+          // Meta linje
+          var metaParts=[];
+          if(p.rt)metaParts.push('<span class="prat">'+stars+' '+p.rt.toFixed(1)+'</span><span>('+p.rv+')</span>');
+          if(priceStr)metaParts.push('<span class="pprice">'+priceStr+'</span>');
+          var metaHtml=metaParts.length?'<div class="pmeta">'+metaParts.join('')+'</div>':'';
+          b.innerHTML=imgHtml+'<div class="pinner"><div class="pdot '+(hs?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.n+'</div><div class="ptyp">'+p.t+'</div>'+metaHtml+'</div><div class="psun2 '+(hs?'sun':'shade')+'">'+(hs?'☀️<br>Sol':'🌙<br>Skygge')+'</div></div>';
+          b.addEventListener('click',function(){MAP.setView([p.la,p.ln],17);showPin(p.la,p.ln,p.n);upP(p.la,p.ln,p.n,p.t)});
+          li.appendChild(b);
+        });
+        if(al.length){document.getElementById('nbt').style.display='block';tst('☀️ '+sc+' i sol · 🌙 '+(al.length-sc)+' i skygge')}
+        else tst('Ingen steder fundet');
+      }
     });
   });
 }
 
-function renderPlaces(all,lat,lon){
-  all.sort(function(a,b){return(b.rating||0)-(a.rating||0)});
-  // Sol-steder øverst
-  all.sort(function(a,b){
-    var as=sunAt(a.lat,a.lon,CRH).alt>4?1:0;
-    var bs=sunAt(b.lat,b.lon,CRH).alt>4?1:0;
-    return bs-as;
-  });
-  var sunny=0,total=all.length;
-  var li=document.getElementById('sheet-body');
-  li.innerHTML='';
-  all.forEach(function(p){
-    var isSun=sunAt(p.lat,p.lon,CRH).alt>4;if(isSun)sunny++;
-    // Markør
-    var el=mkMarker(isSun);
-    var mk=L.marker([p.lat,p.lon],{icon:L.divIcon({html:el,className:'',iconSize:[20,20],iconAnchor:[10,10]})}).addTo(MAP);
-    mk.on('click',function(){showDetail(p);peekSheet()});
-    MARKERS.push({_lat:p.lat,_lon:p.lon,_el:el,_mk:mk});
-    // Liste-række
-    var PRICE=['','€','€€','€€€','€€€€'];
-    var row=document.createElement('div');
-    row.className='prow '+(isSun?'snow':'shade');
-    var imgHtml=p.photo?'<div class="prow-img"><img src="'+p.photo+'" alt=""></div>':'<div class="prow-img">'+'🍽️'+'</div>';
-    var meta='';
-    if(p.rating)meta+='<span class="prow-rat">★ '+p.rating.toFixed(1)+'</span>';
-    if(p.price!==null&&PRICE[p.price])meta+=' '+PRICE[p.price];
-    if(meta)meta='<div class="prow-meta">'+meta+'</div>';
-    row.innerHTML=imgHtml+
-      '<div class="prow-info">'+
-        '<div class="prow-name">'+p.name+'</div>'+
-        '<div class="prow-typ">'+p.type+'</div>'+
-        meta+
-      '</div>'+
-      '<div class="prow-sun">'+(isSun?'☀️':'🌙')+'</div>';
-    row.addEventListener('click',function(){showDetail(p);peekSheet()});
-    li.appendChild(row);
-  });
-  document.getElementById('sheet-sun').textContent=sunny+' i sol · '+(total-sunny)+' i skygge';
-  document.getElementById('sheet-count').textContent=total+' steder inden for 600m';
-  showSheet();
-  toast('☀️ '+sunny+' i sol · 🌙 '+(total-sunny)+' i skygge');
-}
-
-// ── Søgning ────────────────────────────────────────
 var sugT=null;
 document.getElementById('sinp').addEventListener('input',function(){
   var q=this.value.trim(),box=document.getElementById('sug');
-  clearTimeout(sugT);if(q.length<2){box.style.display='none';return}
+  clearTimeout(sugT);
+  if(q.length<2){box.style.display='none';return}
   sugT=setTimeout(function(){
     var ac=new google.maps.places.AutocompleteService();
     ac.getPlacePredictions({input:q,componentRestrictions:{country:'dk'},language:'da'},function(preds,st){
-      if(st!=='OK'||!preds){box.style.display='none';return}
-      box.innerHTML=preds.slice(0,5).map(function(p){return'<div class="si" data-pid="'+p.place_id+'"><div class="si-m">'+p.structured_formatting.main_text+'</div><div class="si-s">'+(p.structured_formatting.secondary_text||'')+'</div></div>'}).join('');
+      if(st!==google.maps.places.PlacesServiceStatus.OK||!preds){box.style.display='none';return}
+      box.innerHTML=preds.slice(0,5).map(function(p){
+        return '<div class="si" data-pid="'+p.place_id+'"><div><div class="si-m">'+p.structured_formatting.main_text+'</div><div class="si-s">'+(p.structured_formatting.secondary_text||'')+'</div></div></div>';
+      }).join('');
       box.style.display='block';
       box.querySelectorAll('.si').forEach(function(el){
-        el.addEventListener('touchend',function(e){
-          e.preventDefault();
-          var ps=new google.maps.places.PlacesService(document.createElement('div'));
-          ps.getDetails({placeId:this.dataset.pid,fields:['geometry','name','formatted_address']},function(pl,st){
-            if(st!=='OK')return;
-            var lat=pl.geometry.location.lat(),lon=pl.geometry.location.lng(),nm=pl.name||pl.formatted_address.split(',')[0];
-            document.getElementById('sinp').value=nm;document.getElementById('sug').style.display='none';
-            CLA=lat;CLO=lon;
-            MAP.flyTo([lat,lon],16,{duration:1});
-            updShadow();loadNearby(lat,lon);
-          });
-        });
         el.addEventListener('mousedown',function(e){
           e.preventDefault();
           var ps=new google.maps.places.PlacesService(document.createElement('div'));
-          ps.getDetails({placeId:this.dataset.pid,fields:['geometry','name','formatted_address']},function(pl,st){
-            if(st!=='OK')return;
-            var lat=pl.geometry.location.lat(),lon=pl.geometry.location.lng(),nm=pl.name||pl.formatted_address.split(',')[0];
-            document.getElementById('sinp').value=nm;document.getElementById('sug').style.display='none';
-            CLA=lat;CLO=lon;
-            MAP.flyTo([lat,lon],16,{duration:1});
-            updShadow();loadNearby(lat,lon);
+          ps.getDetails({placeId:this.dataset.pid,fields:['geometry','name','formatted_address']},function(pl,s){
+            if(s!==google.maps.places.PlacesServiceStatus.OK)return;
+            var lat=pl.geometry.location.lat(),lng=pl.geometry.location.lng(),nm=pl.name||pl.formatted_address.split(',')[0];
+            document.getElementById('sinp').value=pl.formatted_address||nm;
+            document.getElementById('sug').style.display='none';
+            MAP.setView([lat,lng],17);showPin(lat,lng,nm);upP(lat,lng,nm,pl.formatted_address||nm);near(lat,lng);
           });
         });
       });
     });
   },250);
 });
-document.getElementById('sinp').addEventListener('blur',function(){setTimeout(function(){document.getElementById('sug').style.display='none'},200)});
-function doSearch(){
+document.getElementById('sinp').addEventListener('blur',function(){setTimeout(function(){document.getElementById('sug').style.display='none'},150)});
+
+function srch(){
   var q=document.getElementById('sinp').value.trim();if(!q)return;
   document.getElementById('sug').style.display='none';
-  fetch('https://maps.googleapis.com/maps/api/geocode/json?address='+encodeURIComponent(q+', Danmark')+'&key='+GMKEY)
-  .then(function(r){return r.json()}).then(function(d){
+  fetch('https://maps.googleapis.com/maps/api/geocode/json?address='+encodeURIComponent(q.includes(',')?q:q+', Danmark')+'&key='+KEY)
+  .then(function(r){return r.json()})
+  .then(function(d){
     if(d.results&&d.results[0]){
-      var loc=d.results[0].geometry.location;
-      CLA=loc.lat;CLO=loc.lng;
-      MAP.flyTo([loc.lat,loc.lng],16,{duration:1});
-      updShadow();loadNearby(loc.lat,loc.lng);
-    } else toast('Adresse ikke fundet');
-  });
+      var loc=d.results[0].geometry.location,nm=d.results[0].formatted_address.split(',')[0];
+      MAP.setView([loc.lat,loc.lng],17);showPin(loc.lat,loc.lng,nm);
+      upP(loc.lat,loc.lng,nm,d.results[0].formatted_address);near(loc.lat,loc.lng);
+    } else tst('Adresse ikke fundet');
+  }).catch(function(){tst('Søgning fejlede')});
 }
-document.getElementById('sbtn').addEventListener('click',doSearch);
-document.getElementById('sinp').addEventListener('keydown',function(e){if(e.key==='Enter'){document.getElementById('sug').style.display='none';doSearch()}});
+document.getElementById('sbtn').addEventListener('click',srch);
+document.getElementById('sinp').addEventListener('keydown',function(e){if(e.key==='Enter'){document.getElementById('sug').style.display='none';srch()}});
 
-// ── Leaflet init ───────────────────────────────────
-MAP=L.map('map',{zoomControl:false}).setView([56.0,10.2],7);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:22}).addTo(MAP);
-MAP.on('click',function(e){
-  CLA=e.latlng.lat;CLO=e.latlng.lng;
-  updShadow();loadNearby(e.latlng.lat,e.latlng.lng);
+window.addEventListener('load',function(){
+  MAP=L.map('map',{zoomControl:true,attributionControl:false}).setView([55.676,12.568],17);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(MAP);
+  updSh();
+  MAP.on('click',function(e){
+    if(PIN){MAP.removeLayer(PIN);PIN=null}
+    upP(e.latlng.lat,e.latlng.lng);near(e.latlng.lat,e.latlng.lng);
+  });
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      function(p){MAP.setView([p.coords.latitude,p.coords.longitude],17);upP(p.coords.latitude,p.coords.longitude,'Din placering','GPS');near(p.coords.latitude,p.coords.longitude)},
+      function(){near(55.676,12.568)}
+    );
+  } else near(55.676,12.568);
+  document.getElementById('loading').classList.add('hidden');
 });
-
-// GPS
-if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(function(pos){
-    CLA=pos.coords.latitude;CLO=pos.coords.longitude;
-    MAP.flyTo([CLA,CLO],16,{duration:1.2});
-    updShadow();loadNearby(CLA,CLO);
-  },function(){
-    CLA=55.676;CLO=12.568;
-    MAP.flyTo([CLA,CLO],15,{duration:1});
-    updShadow();loadNearby(CLA,CLO);
-  });
-} else {
-  CLA=55.676;CLO=12.568;
-  MAP.flyTo([CLA,CLO],15,{duration:1});
-  updShadow();loadNearby(CLA,CLO);
-}
-
-setTime(CRH);
-document.getElementById('loading').classList.add('gone');
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
+
+<div id="tpill" style="display:none">
+  <span style="font-size:.6rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.08em">Tid</span>
+  <span id="tpilldis" style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--txt);min-width:2.5rem;text-align:center">--:--</span>
+  <input id="tpillsl" type="range" min="0" max="1439" value="720" step="5" style="width:100px;-webkit-appearance:none;height:3px;border-radius:2px;background:linear-gradient(to right,#F5A623 50%,#CBD3DE 50%);outline:none;cursor:pointer">
+  <button id="tpilllbtn" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:0">&#9728;&#65039;</button>
+</div>
+<script>
+// Mobil responsivt
+(function(){
+  var isMobile = function(){ return window.innerWidth <= 700; };
+
+  // Panel toggle ved tryk på ptop
+  document.getElementById('ptop').addEventListener('click', function(){
+    if(!isMobile()) return;
+    var p = document.getElementById('panel');
+    p.classList.toggle('open');
+  });
+
+  // Sync tidspill med tidsslider
+  var tpillsl = document.getElementById('tpillsl');
+  var tpilldis = document.getElementById('tpilldis');
+  var mainTsl = document.getElementById('tsl');
+  var mainTdis = document.getElementById('tdis');
+
+  function syncPill(h){
+    var H = Math.floor(h), M = Math.round((h%1)*60)%60;
+    var t = String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');
+    if(tpilldis) tpilldis.textContent = t;
+    if(tpillsl) { tpillsl.value = Math.round(h*60); syncSliderBg(tpillsl); }
+  }
+
+  function syncSliderBg(sl){
+    var pct = (parseInt(sl.value)/1439*100).toFixed(1)+'%';
+    sl.style.background = 'linear-gradient(to right,#F5A623 '+pct+',#CBD3DE '+pct+')';
+  }
+
+  if(tpillsl) tpillsl.addEventListener('input', function(){
+    var h = parseInt(this.value)/60;
+    syncSliderBg(this);
+    // Kald den eksisterende setT funktion
+    if(typeof setT === 'function') setT(h);
+    else if(typeof CRH !== 'undefined') {
+      CRH = h;
+      if(mainTsl) mainTsl.value = this.value;
+      if(mainTdis) mainTdis.textContent = tpilldis.textContent;
+      if(typeof updSh === 'function') updSh();
+      if(typeof updateMarkers === 'function') updateMarkers();
+    }
+  });
+
+  // Sync når hoved-slideren ændres
+  if(mainTsl) mainTsl.addEventListener('input', function(){
+    syncPill(parseInt(this.value)/60);
+  });
+
+  // Live knap på pill
+  var tpilllbtn = document.getElementById('tpilllbtn');
+  var mainLbtn = document.getElementById('lbtn');
+  if(tpilllbtn && mainLbtn) {
+    tpilllbtn.addEventListener('click', function(){
+      if(mainLbtn) mainLbtn.click();
+    });
+  }
+
+  // Initial sync
+  setTimeout(function(){
+    if(mainTdis) syncPill(CRH||12);
+  }, 500);
+
+  // Luk panel når man trykker på kortet
+  document.getElementById('map').addEventListener('click', function(){
+    if(!isMobile()) return;
+    document.getElementById('panel').classList.remove('open');
+  });
+})();
+</script>
 </body>
 </html>
