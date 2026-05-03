@@ -346,7 +346,7 @@ document.getElementById('sinp').addEventListener('input',function(){
             var lat=pl.geometry.location.lat(),lng=pl.geometry.location.lng(),nm=pl.name||pl.formatted_address.split(',')[0];
             document.getElementById('sinp').value=pl.formatted_address||nm;
             document.getElementById('sug').style.display='none';
-            MAP.setView([lat,lng],15);showPin(lat,lng,nm);upP(lat,lng,nm,pl.formatted_address||nm);near(lat,lng);
+            MAP.setView([lat,lng],17);showPin(lat,lng,nm);upP(lat,lng,nm,pl.formatted_address||nm);near(lat,lng);
           });
         });
       });
@@ -362,7 +362,7 @@ function srch(){
   .then(function(r){return r.json()}).then(function(d){
     if(d.results&&d.results[0]){
       var loc=d.results[0].geometry.location,nm=d.results[0].formatted_address.split(',')[0];
-      MAP.setView([loc.lat,loc.lng],15);showPin(loc.lat,loc.lng,nm);upP(loc.lat,loc.lng,nm,d.results[0].formatted_address);near(loc.lat,loc.lng);
+      MAP.setView([loc.lat,loc.lng],17);showPin(loc.lat,loc.lng,nm);upP(loc.lat,loc.lng,nm,d.results[0].formatted_address);near(loc.lat,loc.lng);
     } else tst('Adresse ikke fundet');
   }).catch(function(){tst('Søgning fejlede')});
 }
