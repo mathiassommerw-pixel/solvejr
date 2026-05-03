@@ -545,7 +545,7 @@ function near(lat,lon){
   var all=[];
   var totalDone=0;
   // Søg fra KBH centrum - 13km dækker hele skyggekortets område
-  var searchCenter={lat:55.676,lon:12.568};
+  
   var totalSearches=types.length;
   
   function fetchPage(type, req) {
@@ -575,8 +575,8 @@ function near(lat,lon){
   
   types.forEach(function(t){
     fetchPage(t, {
-      location:{lat:searchCenter.lat, lng:searchCenter.lon},
-      radius:13000,
+      location:{lat:lat, lng:lon},
+      radius:1000,
       type:t
     });
   });
@@ -703,7 +703,9 @@ MAP.on('moveend',function(){
   clearTimeout(_nearTimer);
   _nearTimer=setTimeout(function(){
     var c=MAP.getCenter();
+    SLA=c.lat;SLO=c.lng;
     near(c.lat,c.lng);
+    updSh();
   },800);
 });
 
