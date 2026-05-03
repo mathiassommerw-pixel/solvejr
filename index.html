@@ -57,6 +57,8 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .pitem{display:flex;align-items:center;gap:11px;padding:11px 13px;background:#fff;border:1.5px solid var(--bdr);border-radius:12px;cursor:pointer;transition:.2s;text-align:left;width:100%}
 .pitem:hover{border-color:var(--sun);box-shadow:0 4px 16px rgba(245,166,35,.1);transform:translateY(-1px)}
 .pitem.snow{border-color:rgba(245,166,35,.4);background:#FFFBF2}
+.pimg{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--lt)}
+.pimg-ph{width:52px;height:52px;border-radius:8px;background:var(--lt);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
 .pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .pdot.sun{background:var(--sun)}.pdot.shade{background:#A0AEC0}
 .pinfo{flex:1;min-width:0}
@@ -273,6 +275,8 @@ function upP(lat,lon,nm,sb){
   document.getElementById('sttl').textContent=hs?'Sol på stedet':(p.alt>0?'Mulig skygge':'Ingen sol nu');
   document.getElementById('ssub').textContent=hs?'Solen er '+p.alt.toFixed(1)+'° fra '+azl(p.az):(p.alt>0?'Tjek skyggekort':'Solopgang: '+ft(r2.ri));
   document.getElementById('badge').style.display='inline-flex';
+  // Gem foto reference til dette sted
+  window._curPhoto = arguments[4]||null;
   document.getElementById('sr').textContent=ft(r2.ri);
   document.getElementById('ss').textContent=ft(r2.se);
   document.getElementById('sa').innerHTML=p.alt.toFixed(1)+'<span class="sunit">°</span>';
@@ -301,7 +305,8 @@ function near(lat,lng){
     svc.nearbySearch({location:{lat:lat,lng:lng},radius:600,type:t},function(res,status){
       if(status==='OK'&&res)res.forEach(function(p){
         if(al.find(function(x){return x.n===p.name}))return;
-        al.push({n:p.name,la:p.geometry.location.lat(),ln:p.geometry.location.lng(),t:tl[t]})
+        var ph=p.photos&&p.photos[0]?p.photos[0].getUrl({maxWidth:120,maxHeight:120}):null;
+        al.push({n:p.name,la:p.geometry.location.lat(),ln:p.geometry.location.lng(),t:tl[t],ph:ph})
       });
       dn++;
       if(dn===tp.length){
