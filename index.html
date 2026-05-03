@@ -416,7 +416,7 @@ function upPanel(lat,lon,nm){
 function updMk(){
   MARKERS.forEach(function(m){
     var isSun=shAt(m.la,m.lo,CRH).alt>4;
-    m.mk.getElement()&&(m.mk.getElement().style.background=isSun?'#E53E3E':'#718096');
+    m.mk.getElement()&&(m.mk.getElement().style.background=isSun?'#F5A623':'#8A9BB0');
   });
   // Opdater badges i listerne
   if(!window.ALLE||!window.ALLE.length)return;
@@ -603,7 +603,7 @@ function renderAll(all){
     if(isSun)sunny++;
     // Markør
     var mkEl=document.createElement('div');
-    mkEl.style.cssText='width:18px;height:18px;border-radius:50%;background:'+(isSun?'#E53E3E':'#718096')+';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.25)';
+    mkEl.style.cssText='width:18px;height:18px;border-radius:50%;background:'+(isSun?'#F5A623':'#8A9BB0')+';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.25)';
     var icon=L.divIcon({html:mkEl.outerHTML,className:'',iconSize:[18,18],iconAnchor:[9,9]});
     var mk=L.marker([p.lat,p.lon],{icon:icon}).addTo(MAP);
     MARKERS.push({la:p.lat,lo:p.lon,mk:mk});
