@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="da"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Solvejr — Find sol i Danmark</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -22,10 +25,8 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 #sbtn svg{width:15px;height:15px;fill:#fff}
 #sug{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.12);overflow:hidden;z-index:9999;display:none}
 .si{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;font-size:.86rem;color:var(--txt);border-bottom:1px solid var(--bdr);transition:background .12s}
-.si:last-child{border-bottom:none}
-.si:hover{background:var(--lt)}
-.si-m{font-weight:600}
-.si-s{font-size:.75rem;color:var(--mut);margin-top:1px}
+.si:last-child{border-bottom:none}.si:hover{background:var(--lt)}
+.si-m{font-weight:600}.si-s{font-size:.75rem;color:var(--mut);margin-top:1px}
 #tc{display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--lt);border-radius:50px;padding:6px 16px 6px 12px}
 .tlbl{font-size:.7rem;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
 #tdis{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--txt);min-width:3.2rem;text-align:center}
@@ -53,18 +54,22 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .sunit{font-family:'Outfit',sans-serif;font-size:.72rem;color:var(--mut)}
 .sectitle{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:8px}
 .arcbox{background:var(--lt);border-radius:14px;padding:11px;margin-bottom:18px}
-.plist{display:flex;flex-direction:column;gap:7px}.pimg{width:54px;height:54px;border-radius:10px;object-fit:cover;flex-shrink:0}.pimg-ph{width:54px;height:54px;border-radius:10px;background:var(--lt);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
-.pitem{display:flex;align-items:center;gap:11px;padding:11px 13px;background:#fff;border:1.5px solid var(--bdr);border-radius:12px;cursor:pointer;transition:.2s;text-align:left;width:100%}
+.plist{display:flex;flex-direction:column;gap:7px}
+.pitem{display:flex;align-items:stretch;background:#fff;border:1.5px solid var(--bdr);border-radius:12px;cursor:pointer;transition:.2s;text-align:left;width:100%;overflow:hidden}
 .pitem:hover{border-color:var(--sun);box-shadow:0 4px 16px rgba(245,166,35,.1);transform:translateY(-1px)}
 .pitem.snow{border-color:rgba(245,166,35,.4);background:#FFFBF2}
-.pimg{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--lt)}
-.pimg-ph{width:52px;height:52px;border-radius:8px;background:var(--lt);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
-.pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.pimg{width:72px;object-fit:cover;flex-shrink:0}
+.pimg-ph{width:72px;background:var(--lt);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.8rem}
+.pinner{flex:1;min-width:0;padding:10px 12px;display:flex;align-items:center;gap:8px}
+.pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:2px}
 .pdot.sun{background:var(--sun)}.pdot.shade{background:#A0AEC0}
 .pinfo{flex:1;min-width:0}
 .pn2{font-weight:600;font-size:.86rem;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ptyp{font-size:.71rem;color:var(--mut);margin-top:1px}
-.psun2{font-size:.73rem;font-weight:600}.psun2.sun{color:var(--warm)}.psun2.shade{color:#90A0B0}
+.prat{font-size:.72rem;color:#E8863A;margin-top:3px;letter-spacing:.02em}
+.prat span{color:var(--mut);font-size:.68rem}
+.psun2{font-size:.72rem;font-weight:600;flex-shrink:0;text-align:center;line-height:1.4}
+.psun2.sun{color:var(--warm)}.psun2.shade{color:#90A0B0}
 .hint{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center;height:100%}
 .hi{font-size:2.8rem;margin-bottom:1rem;opacity:.35}
 .ht{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--mut);margin-bottom:.4rem}
@@ -79,7 +84,9 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .pin-wrap{width:32px;height:42px}
 .pin-body{width:26px;height:26px;background:var(--sun);border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 4px 16px rgba(245,166,35,.5);animation:pb .5s cubic-bezier(.36,.07,.19,.97)}
 @keyframes pb{0%{transform:rotate(-45deg) translateY(-20px);opacity:0}60%{transform:rotate(-45deg) translateY(4px)}100%{transform:rotate(-45deg);opacity:1}}
-</style></head><body>
+</style>
+</head>
+<body>
 <div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
 <div id="bar">
   <a class="logo" href="#"><div class="logo-sun"></div><div class="logo-name">Sol<em>vejr</em></div></a>
@@ -128,174 +135,27 @@ var MAP,MK=[],PIN=null,SHL=null,SLA=null,SLO=null,LIV=true;
 var CRH=new Date().getHours()+new Date().getMinutes()/60;
 var TOD=new Date().toISOString().slice(0,10);
 var KEY='AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ',DFT='e807bdf1dd535ce2356f498fc79bccaf';
-
-// Sol-matematik
-function rad(d){return d*Math.PI/180}
-function deg(r){return r*180/Math.PI}
-function sol(lat,lon,dt){
-  var jd=dt.getTime()/86400000+2440587.5,n=jd-2451545;
-  var L=(280.46+0.9856474*n)%360,g=rad(((357.528+0.9856003*n)%360+360)%360);
-  var lam=rad(L+1.915*Math.sin(g)+.02*Math.sin(2*g));
-  var eps=rad(23.439-.0000004*n),sd=Math.sin(eps)*Math.sin(lam),cd=Math.cos(Math.asin(sd));
-  var uh=dt.getUTCHours()+dt.getUTCMinutes()/60+dt.getUTCSeconds()/3600;
-  var lst=((6.697375+0.0657098242*n+uh+lon/15)%24+24)%24,ha=rad((lst-12)*15),lr=rad(lat);
-  var sa=Math.sin(lr)*sd+Math.cos(lr)*cd*Math.cos(ha),alt=deg(Math.asin(Math.max(-1,Math.min(1,sa))));
-  var ca=(sd-Math.sin(lr)*sa)/(Math.cos(lr)*Math.cos(rad(alt))),az=deg(Math.acos(Math.max(-1,Math.min(1,ca))));
-  if(Math.sin(ha)>0)az=360-az;
-  return{alt:alt,az:az}
-}
-function shAt(lat,lon,h){
-  var d=new Date(TOD+'T00:00:00+01:00');
-  d.setMinutes(d.getMinutes()+Math.round(h*60));
-  return sol(lat,lon,d)
-}
-function rs(lat,lon){
-  var ri=null,se=null,pv=null;
-  for(var m=0;m<=1440;m+=5){
-    var d=new Date(TOD+'T00:00:00Z');d.setUTCMinutes(d.getUTCMinutes()-60+m);
-    var a=sol(lat,lon,d).alt;
-    if(pv!==null){if(pv<0&&a>=0&&!ri)ri=m/60-.04;if(pv>=0&&a<0&&!se)se=m/60-.04}
-    pv=a
-  }
-  return{ri:ri,se:se}
-}
+function rad(d){return d*Math.PI/180}function deg(r){return r*180/Math.PI}
+function sol(lat,lon,dt){var jd=dt.getTime()/86400000+2440587.5,n=jd-2451545,L=(280.46+0.9856474*n)%360,g=rad(((357.528+0.9856003*n)%360+360)%360),lam=rad(L+1.915*Math.sin(g)+.02*Math.sin(2*g)),eps=rad(23.439-.0000004*n),sd=Math.sin(eps)*Math.sin(lam),cd=Math.cos(Math.asin(sd)),uh=dt.getUTCHours()+dt.getUTCMinutes()/60+dt.getUTCSeconds()/3600,lst=((6.697375+0.0657098242*n+uh+lon/15)%24+24)%24,ha=rad((lst-12)*15),lr=rad(lat),sa=Math.sin(lr)*sd+Math.cos(lr)*cd*Math.cos(ha),alt=deg(Math.asin(Math.max(-1,Math.min(1,sa)))),ca=(sd-Math.sin(lr)*sa)/(Math.cos(lr)*Math.cos(rad(alt))),az=deg(Math.acos(Math.max(-1,Math.min(1,ca))));if(Math.sin(ha)>0)az=360-az;return{alt:alt,az:az}}
+function shAt(lat,lon,h){var d=new Date(TOD+'T00:00:00+01:00');d.setMinutes(d.getMinutes()+Math.round(h*60));return sol(lat,lon,d)}
+function rs(lat,lon){var ri=null,se=null,pv=null;for(var m=0;m<=1440;m+=5){var d=new Date(TOD+'T00:00:00Z');d.setUTCMinutes(d.getUTCMinutes()-60+m);var a=sol(lat,lon,d).alt;if(pv!==null){if(pv<0&&a>=0&&!ri)ri=m/60-.04;if(pv>=0&&a<0&&!se)se=m/60-.04}pv=a}return{ri:ri,se:se}}
 function ft(h){if(h===null)return'—';return pad(Math.floor(h))+':'+pad(Math.round((h%1)*60))}
 function pad(n){return String(n).padStart(2,'0')}
 function ts(h){return pad(Math.floor(h))+':'+pad(Math.round((h%1)*60)%60)}
 function azl(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(a/22.5)%16]}
 function tst(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2800)}
-
-// Tidsslider
 var tsl=document.getElementById('tsl'),tdi=document.getElementById('tdis');
-function setT(h){
-  CRH=h;
-  tsl.value=Math.round(h*60);
-  tdi.textContent=ts(h);
-  tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%');
-}
-tsl.addEventListener('input',function(){
-  var h=parseInt(this.value)/60;
-  LIV=false;
-  document.getElementById('lbtn').classList.remove('on');
-  setT(h);
-  rfmk();
-  updSh();
-  if(SLA!==null){upP(SLA,SLO,document.getElementById('pn').textContent,document.getElementById('ps').textContent);}
-});
-document.getElementById('lbtn').addEventListener('click',function(){
-  LIV=!LIV;
-  this.classList.toggle('on',LIV);
-  if(LIV)goLive();
-});
-function goLive(){
-  if(!LIV)return;
-  var n=new Date();
-  setT(n.getHours()+n.getMinutes()/60);
-  rfmk();updSh();
-  if(SLA!==null)upP(SLA,SLO,document.getElementById('pn').textContent,document.getElementById('ps').textContent);
-}
-setInterval(function(){if(LIV)goLive()},60000);
-setT(CRH);
-
-// Skyggekort - opdater ved tidsskift
-function updSh(){
-  if(!MAP)return;
-  if(SHL){MAP.removeLayer(SHL);SHL=null}
-  // Brug forudberegnede shadow tiles fra skyggekort.shady.dk (DigitalOcean)
-  var month=String(new Date(TOD).getMonth()+1).padStart(2,'0');
-  var hour=String(Math.round(CRH)).padStart(2,'0');
-  // Kun tiles for time 6-21
-  var h=Math.min(21,Math.max(6,Math.round(CRH)));
-  var hStr=String(h).padStart(2,'0');
-  SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+hStr+'/{z}/{x}/{y}.png',{
-    tms:true,opacity:0.65,attribution:'Skygger © SDFE'
-  });
-  SHL.addTo(MAP);
-}
-
-// Solbane-graf med tidsindikator
-function drawArc(lat,lon,ch){
-  var cv=document.getElementById('arc'),ctx=cv.getContext('2d');
-  var W=cv.width,H=cv.height,cx=W/2,cy=H-10,r=Math.min(cx-14,H-18);
-  ctx.clearRect(0,0,W,H);
-  // Horisontlinje
-  ctx.beginPath();ctx.moveTo(10,cy);ctx.lineTo(W-10,cy);
-  ctx.strokeStyle='#D0D8E4';ctx.lineWidth=1.5;ctx.stroke();
-  // Solopgang/solnedgang labels
-  var r2=rs(lat,lon);
-  if(r2.ri){var x=W*r2.ri/24;ctx.fillStyle='#D0D8E4';ctx.font='9px Outfit,sans-serif';ctx.fillText(ft(r2.ri),Math.max(2,x-10),cy+10)}
-  if(r2.se){var x2=W*r2.se/24;ctx.fillText(ft(r2.se),Math.min(W-25,x2-10),cy+10)}
-  // Solbane kurve
-  var pts=[];
-  for(var h=0;h<=24;h+=.25){
-    var p=shAt(lat,lon,h);
-    if(p.alt>0)pts.push({x:W*h/24,y:cy-r*(p.alt/90)});
-  }
-  if(pts.length>1){
-    // Fyld
-    var g=ctx.createLinearGradient(0,0,0,cy);
-    g.addColorStop(0,'rgba(245,166,35,.25)');g.addColorStop(1,'rgba(245,166,35,0)');
-    ctx.beginPath();ctx.moveTo(pts[0].x,cy);
-    pts.forEach(function(p){ctx.lineTo(p.x,p.y)});
-    ctx.lineTo(pts[pts.length-1].x,cy);ctx.closePath();
-    ctx.fillStyle=g;ctx.fill();
-    // Streg
-    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
-    pts.forEach(function(p){ctx.lineTo(p.x,p.y)});
-    ctx.strokeStyle='#F5A623';ctx.lineWidth=2.5;ctx.stroke();
-  }
-  // Lodret tidslinje
-  var tx=W*ch/24;
-  ctx.beginPath();ctx.moveTo(tx,cy);ctx.lineTo(tx,10);
-  ctx.strokeStyle='rgba(245,166,35,.4)';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);ctx.stroke();
-  ctx.setLineDash([]);
-  // Sol-dot ved nuværende tidspunkt
-  var cp=shAt(lat,lon,ch);
-  if(cp.alt>0){
-    var cy2=cy-r*(cp.alt/90);
-    ctx.beginPath();ctx.arc(tx,cy2,8,0,2*Math.PI);
-    ctx.fillStyle='#F5A623';ctx.shadowColor='rgba(245,166,35,.7)';ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;
-    ctx.beginPath();ctx.arc(tx,cy2,4,0,2*Math.PI);ctx.fillStyle='#fff';ctx.fill();
-  } else {
-    // Sol er under horisonten - vis dot ved horisonten
-    ctx.beginPath();ctx.arc(tx,cy,6,0,2*Math.PI);
-    ctx.fillStyle='#A0AEC0';ctx.fill();
-  }
-}
-
-function upP(lat,lon,nm,sb){
-  SLA=lat;SLO=lon;
-  document.getElementById('pn').textContent=nm||'Valgt sted';
-  document.getElementById('ps').textContent=sb||lat.toFixed(4)+', '+lon.toFixed(4);
-  var now=new Date(TOD+'T00:00:00+01:00');now.setMinutes(now.getMinutes()+Math.round(CRH*60));
-  var p=sol(lat,lon,now),r2=rs(lat,lon),hs=p.alt>3;
-  var ind=document.getElementById('sind');
-  ind.style.display='flex';ind.className='sind '+(hs?'sun':'shade');
-  document.getElementById('sico').textContent=hs?'☀️':(p.alt>0?'🏙️':'🌙');
-  document.getElementById('sttl').textContent=hs?'Sol på stedet':(p.alt>0?'Mulig skygge':'Ingen sol nu');
-  document.getElementById('ssub').textContent=hs?'Solen er '+p.alt.toFixed(1)+'° fra '+azl(p.az):(p.alt>0?'Tjek skyggekort':'Solopgang: '+ft(r2.ri));
-  document.getElementById('badge').style.display='inline-flex';
-  // Gem foto reference til dette sted
-  window._curPhoto = arguments[4]||null;
-  document.getElementById('sr').textContent=ft(r2.ri);
-  document.getElementById('ss').textContent=ft(r2.se);
-  document.getElementById('sa').innerHTML=p.alt.toFixed(1)+'<span class="sunit">°</span>';
-  document.getElementById('saz').textContent=azl(p.az);
-  drawArc(lat,lon,CRH);
-  document.getElementById('hint').style.display='none';
-  document.getElementById('ds').style.display='block';
-}
-
+function setT(h){CRH=h;tsl.value=Math.round(h*60);tdi.textContent=ts(h);tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%')}
+tsl.addEventListener('input',function(){LIV=false;document.getElementById('lbtn').classList.remove('on');setT(parseInt(this.value)/60);rfmk();updSh();if(SLA!==null)upP(SLA,SLO,document.getElementById('pn').textContent,document.getElementById('ps').textContent)});
+document.getElementById('lbtn').addEventListener('click',function(){LIV=!LIV;this.classList.toggle('on',LIV);if(LIV)goLive()});
+function goLive(){if(!LIV)return;var n=new Date();setT(n.getHours()+n.getMinutes()/60);rfmk();updSh();if(SLA!==null)upP(SLA,SLO,document.getElementById('pn').textContent,document.getElementById('ps').textContent)}
+setInterval(function(){if(LIV)goLive()},60000);setT(CRH);
+function updSh(){if(!MAP)return;if(SHL){MAP.removeLayer(SHL);SHL=null}var month=pad(new Date(TOD).getMonth()+1),h=Math.min(21,Math.max(6,Math.round(CRH)));SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',{tms:true,opacity:0.65,attribution:'Skygger © SDFE'});SHL.addTo(MAP)}
+function showPin(lat,lng,nm){if(PIN){MAP.removeLayer(PIN);PIN=null}var ic=L.divIcon({className:'',html:'<div class="pin-wrap"><div class="pin-body"></div></div>',iconSize:[32,42],iconAnchor:[13,40]});PIN=L.marker([lat,lng],{icon:ic,zIndexOffset:1000}).addTo(MAP);PIN.bindPopup('<b style="font-family:Playfair Display,serif">'+nm+'</b>').openPopup()}
+function drawArc(lat,lon,ch){var cv=document.getElementById('arc'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height,cy=H-14,r=H-24;ctx.clearRect(0,0,W,H);ctx.beginPath();ctx.moveTo(8,cy);ctx.lineTo(W-8,cy);ctx.strokeStyle='#D0D8E4';ctx.lineWidth=1.5;ctx.stroke();var r2=rs(lat,lon);if(r2.ri){ctx.fillStyle='#B0BACB';ctx.font='9px Outfit,sans-serif';ctx.fillText(ft(r2.ri),Math.max(2,W*r2.ri/24-10),cy+11)}if(r2.se){ctx.fillText(ft(r2.se),Math.min(W-28,W*r2.se/24-10),cy+11)}var pts=[];for(var h=0;h<=24;h+=.2){var p=shAt(lat,lon,h);if(p.alt>0)pts.push({x:W*h/24,y:cy-r*(p.alt/90)})}if(pts.length>1){var g=ctx.createLinearGradient(0,0,0,cy);g.addColorStop(0,'rgba(245,166,35,.25)');g.addColorStop(1,'rgba(245,166,35,0)');ctx.beginPath();ctx.moveTo(pts[0].x,cy);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.lineTo(pts[pts.length-1].x,cy);ctx.closePath();ctx.fillStyle=g;ctx.fill();ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.strokeStyle='#F5A623';ctx.lineWidth=2.5;ctx.stroke()}var tx=W*ch/24;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(tx,cy);ctx.lineTo(tx,8);ctx.strokeStyle='rgba(245,166,35,.5)';ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);var cp=shAt(lat,lon,ch);if(cp.alt>0){var y2=cy-r*(cp.alt/90);ctx.beginPath();ctx.arc(tx,y2,8,0,2*Math.PI);ctx.fillStyle='#F5A623';ctx.shadowColor='rgba(245,166,35,.7)';ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;ctx.beginPath();ctx.arc(tx,y2,3.5,0,2*Math.PI);ctx.fillStyle='#fff';ctx.fill()}else{ctx.beginPath();ctx.arc(tx,cy,5,0,2*Math.PI);ctx.fillStyle='#A0AEC0';ctx.fill()}}
+function upP(lat,lon,nm,sb){SLA=lat;SLO=lon;document.getElementById('pn').textContent=nm||'Valgt sted';document.getElementById('ps').textContent=sb||lat.toFixed(4)+', '+lon.toFixed(4);var now=new Date(TOD+'T00:00:00+01:00');now.setMinutes(now.getMinutes()+Math.round(CRH*60));var p=sol(lat,lon,now),r2=rs(lat,lon),hs=p.alt>3;var ind=document.getElementById('sind');ind.style.display='flex';ind.className='sind '+(hs?'sun':'shade');document.getElementById('sico').textContent=hs?'☀️':(p.alt>0?'🏙️':'🌙');document.getElementById('sttl').textContent=hs?'Sol på stedet':(p.alt>0?'Mulig skygge':'Ingen sol nu');document.getElementById('ssub').textContent=hs?'Solen er '+p.alt.toFixed(1)+'° fra '+azl(p.az):(p.alt>0?'Tjek skyggekort':'Solopgang: '+ft(r2.ri));document.getElementById('badge').style.display='inline-flex';document.getElementById('sr').textContent=ft(r2.ri);document.getElementById('ss').textContent=ft(r2.se);document.getElementById('sa').innerHTML=p.alt.toFixed(1)+'<span class="sunit">°</span>';document.getElementById('saz').textContent=azl(p.az);drawArc(lat,lon,CRH);document.getElementById('hint').style.display='none';document.getElementById('ds').style.display='block'}
 function mkI(hs){return L.divIcon({className:'',html:'<div style="width:20px;height:20px;border-radius:50%;background:'+(hs?'#F5A623':'#8A9BB0')+';border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',iconSize:[20,20],iconAnchor:[10,10]})}
 function rfmk(){MK.forEach(function(m){m.setIcon(mkI(shAt(m._a,m._o,CRH).alt>3))})}
-
-function showPin(lat,lng,nm){
-  if(PIN){MAP.removeLayer(PIN);PIN=null}
-  var ic=L.divIcon({className:'',html:'<div class="pin-wrap"><div class="pin-body"></div></div>',iconSize:[32,42],iconAnchor:[13,40]});
-  PIN=L.marker([lat,lng],{icon:ic,zIndexOffset:1000}).addTo(MAP);
-  PIN.bindPopup('<b style="font-family:Playfair Display,serif">'+nm+'</b>').openPopup();
-}
-
 function near(lat,lng){
   MK.forEach(function(m){MAP.removeLayer(m)});MK=[];
   document.getElementById('pl').innerHTML='';document.getElementById('nbt').style.display='none';
@@ -305,19 +165,26 @@ function near(lat,lng){
     svc.nearbySearch({location:{lat:lat,lng:lng},radius:600,type:t},function(res,status){
       if(status==='OK'&&res)res.forEach(function(p){
         if(al.find(function(x){return x.n===p.name}))return;
-        var ph=p.photos&&p.photos[0]?p.photos[0].getUrl({maxWidth:120,maxHeight:120}):null;
-        al.push({n:p.name,la:p.geometry.location.lat(),ln:p.geometry.location.lng(),t:tl[t],ph:ph})
+        var ph=null;try{if(p.photos&&p.photos.length)ph=p.photos[0].getUrl({maxWidth:140,maxHeight:140})}catch(e){}
+        var rt=p.rating?p.rating.toFixed(1):null,rv=p.user_ratings_total||0;
+        al.push({n:p.name,la:p.geometry.location.lat(),ln:p.geometry.location.lng(),t:tl[t],ph:ph,rt:rt,rv:rv});
       });
       dn++;
       if(dn===tp.length){
+        al.sort(function(a,b){return(b.rt||0)-(a.rt||0)});
         var li=document.getElementById('pl'),sc=0;
         al.forEach(function(p){
           var hs=shAt(p.la,p.ln,CRH).alt>3;if(hs)sc++;
           var m=L.marker([p.la,p.ln],{icon:mkI(hs)}).addTo(MAP);
           m._a=p.la;m._o=p.ln;MK.push(m);
-          m.on('click',function(){upP(p.la,p.ln,p.n,p.t)});
-          var b=document.createElement('button');b.className='pitem'+(hs?' snow':'');
-          var imgEl=p.ph?'<img class="pimg" src="'+p.ph+'" alt="">':'<div class="pimg-ph">🍽️</div>';b.innerHTML=imgEl+'<div class="pinfo"><div class="pn2">'+p.n+'</div><div class="ptyp">'+p.t+'</div></div><div class="psun2 '+(hs?'sun':'shade')+'">'+(hs?'☀️ Sol nu':'🌙 Skygge')+'</div>';
+          m.on('click',function(){MAP.setView([p.la,p.ln],17);showPin(p.la,p.ln,p.n);upP(p.la,p.ln,p.n,p.t)});
+          var b=document.createElement('button');
+          b.className='pitem'+(hs?' snow':'');
+          var imgHtml=p.ph?'<img class="pimg" src="'+p.ph+'" alt="'+p.n+'" loading="lazy">'
+                         :'<div class="pimg-ph">🍽️</div>';
+          var stars='';if(p.rt){for(var i=0;i<5;i++)stars+=i<Math.round(p.rt)?'★':'☆';}
+          var ratHtml=p.rt?'<div class="prat">'+stars+' '+p.rt+'<span> ('+p.rv+')</span></div>':'';
+          b.innerHTML=imgHtml+'<div class="pinner"><div class="pdot '+(hs?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.n+'</div><div class="ptyp">'+p.t+'</div>'+ratHtml+'</div><div class="psun2 '+(hs?'sun':'shade')+'">'+(hs?'☀️<br>Sol':'🌙<br>Skygge')+'</div></div>';
           b.addEventListener('click',function(){MAP.setView([p.la,p.ln],17);showPin(p.la,p.ln,p.n);upP(p.la,p.ln,p.n,p.t)});
           li.appendChild(b);
         });
@@ -327,20 +194,15 @@ function near(lat,lng){
     })
   });
 }
-
-// Autocomplete
 var sugT=null;
 document.getElementById('sinp').addEventListener('input',function(){
-  var q=this.value.trim(),box=document.getElementById('sug');
-  clearTimeout(sugT);
+  var q=this.value.trim(),box=document.getElementById('sug');clearTimeout(sugT);
   if(q.length<2){box.style.display='none';return}
   sugT=setTimeout(function(){
     var ac=new google.maps.places.AutocompleteService();
     ac.getPlacePredictions({input:q,componentRestrictions:{country:'dk'},language:'da'},function(preds,st){
       if(st!==google.maps.places.PlacesServiceStatus.OK||!preds){box.style.display='none';return}
-      box.innerHTML=preds.slice(0,5).map(function(p){
-        return '<div class="si" data-pid="'+p.place_id+'"><div><div class="si-m">'+p.structured_formatting.main_text+'</div><div class="si-s">'+(p.structured_formatting.secondary_text||'')+'</div></div></div>'
-      }).join('');
+      box.innerHTML=preds.slice(0,5).map(function(p){return'<div class="si" data-pid="'+p.place_id+'"><div><div class="si-m">'+p.structured_formatting.main_text+'</div><div class="si-s">'+(p.structured_formatting.secondary_text||'')+'</div></div></div>'}).join('');
       box.style.display='block';
       box.querySelectorAll('.si').forEach(function(el){
         el.addEventListener('mousedown',function(e){
@@ -359,35 +221,24 @@ document.getElementById('sinp').addEventListener('input',function(){
   },250);
 });
 document.getElementById('sinp').addEventListener('blur',function(){setTimeout(function(){document.getElementById('sug').style.display='none'},150)});
-
 function srch(){
   var q=document.getElementById('sinp').value.trim();if(!q)return;
   document.getElementById('sug').style.display='none';
   fetch('https://maps.googleapis.com/maps/api/geocode/json?address='+encodeURIComponent(q.includes(',')?q:q+', Danmark')+'&key='+KEY)
   .then(function(r){return r.json()}).then(function(d){
-    if(d.results&&d.results[0]){
-      var loc=d.results[0].geometry.location,nm=d.results[0].formatted_address.split(',')[0];
-      MAP.setView([loc.lat,loc.lng],17);showPin(loc.lat,loc.lng,nm);upP(loc.lat,loc.lng,nm,d.results[0].formatted_address);near(loc.lat,loc.lng);
-    } else tst('Adresse ikke fundet');
+    if(d.results&&d.results[0]){var loc=d.results[0].geometry.location,nm=d.results[0].formatted_address.split(',')[0];MAP.setView([loc.lat,loc.lng],17);showPin(loc.lat,loc.lng,nm);upP(loc.lat,loc.lng,nm,d.results[0].formatted_address);near(loc.lat,loc.lng)}
+    else tst('Adresse ikke fundet');
   }).catch(function(){tst('Søgning fejlede')});
 }
 document.getElementById('sbtn').addEventListener('click',srch);
 document.getElementById('sinp').addEventListener('keydown',function(e){if(e.key==='Enter'){document.getElementById('sug').style.display='none';srch()}});
-
 window.addEventListener('load',function(){
-  MAP=L.map('map',{zoomControl:true,attributionControl:false}).setView([55.676,12.568],14);
+  MAP=L.map('map',{zoomControl:true,attributionControl:false}).setView([55.676,12.568],15);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(MAP);
   updSh();
-  MAP.on('click',function(e){
-    if(PIN){MAP.removeLayer(PIN);PIN=null}
-    upP(e.latlng.lat,e.latlng.lng);near(e.latlng.lat,e.latlng.lng);
-  });
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(
-      function(p){MAP.setView([p.coords.latitude,p.coords.longitude],14);upP(p.coords.latitude,p.coords.longitude,'Din placering','GPS');near(p.coords.latitude,p.coords.longitude)},
-      function(){near(55.676,12.568)}
-    )
-  } else near(55.676,12.568);
+  MAP.on('click',function(e){if(PIN){MAP.removeLayer(PIN);PIN=null}upP(e.latlng.lat,e.latlng.lng);near(e.latlng.lat,e.latlng.lng)});
+  if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(p){MAP.setView([p.coords.latitude,p.coords.longitude],16);upP(p.coords.latitude,p.coords.longitude,'Din placering','GPS');near(p.coords.latitude,p.coords.longitude)},function(){near(55.676,12.568)})}
+  else near(55.676,12.568);
   document.getElementById('loading').classList.add('hidden');
 });
 </script>
