@@ -568,10 +568,8 @@ function _showDetailOrig(p){
   if(p.price!==null&&PRICE[p.price])chips+='<span class="d-chip">'+PRICE[p.price]+'</span>';
   chips+='<span class="d-chip">'+p.type+'</span>';
   if(isSun)chips+='<span class="d-chip sun">☀️ Sol nu</span>';
-  if(p.outdoor===true)chips+='<span class="d-chip out">🌳 Udeservering</span>';
-  else if(p.outdoor===false)chips+='<span class="d-chip inn">🏠 Kun indendørs</span>';
-  if(p.outdoor===true)chips+='<span class="d-chip outdoor">🌳 Udeservering</span>';
-  else if(p.outdoor===false)chips+='<span class="d-chip indoor">🏠 Kun indendørs</span>';
+  
+  
   document.getElementById('dsbody').innerHTML=
     imgH+
     '<div class="d-name">'+p.name+'</div>'+
@@ -668,7 +666,7 @@ function getOutdoor(places, cb) {
   places.forEach(function(p) {
     svc.getDetails({
       placeId: p.placeId,
-      fields: ['outdoor_seating','serves_beer','serves_wine','reservable','website']
+      fields: ['serves_beer','serves_wine','reservable','website']
     }, function(d, st) {
       if(d) {
         p.outdoor = d.outdoor_seating; // true/false/undefined
@@ -716,8 +714,8 @@ function renderAll(all){
     var meta=[];
     if(p.rating)meta.push('<span class="prat">★ '+p.rating.toFixed(1)+'</span><span> ('+p.reviews+')</span>');
     if(p.price!==null&&PRICE[p.price])meta.push('<span>'+PRICE[p.price]+'</span>');
-    if(p.outdoor===true)meta.push('<span style="color:#2E7D32;font-weight:600">🌳 Udeservering</span>');
-    else if(p.outdoor===false)meta.push('<span style="color:#6B7A8D">🏠 Ingen udeservering</span>');
+    font-weight:600">🌳 Udeservering</span>');
+    else if(
     var btn=document.createElement('button');
     btn.className='pitem'+(isSun?' snow':'');
     btn.innerHTML=imgH+'<div class="pinner"><div class="pdot '+(isSun?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.name+'</div><div class="ptyp">'+p.type+'</div>'+(meta.length?'<div class="pmeta">'+meta.join(' · ')+'</div>':'')+'</div><div class="psun2 '+(isSun?'sun':'shade')+'">'+(isSun?'☀️<br>Sol':'🌙<br>Skygge')+'</div></div>';
@@ -729,9 +727,9 @@ function renderAll(all){
     var mmeta=[];
     if(p.rating)mmeta.push('<span class="mrow-rat">★ '+p.rating.toFixed(1)+'</span><span> ('+p.reviews+')</span>');
     if(p.price!==null&&PRICE[p.price])mmeta.push(PRICE[p.price]);
-    if(p.outdoor===true)mmeta.push('🌳 Ude');
-    if(p.outdoor===true)mmeta.push('<span style="color:#2E7D32;font-weight:600">🌳 Udeservering</span>');
-    else if(p.outdoor===false)mmeta.push('<span style="color:#6B7A8D">🏠 Ingen udeservering</span>');
+    
+    font-weight:600">🌳 Udeservering</span>');
+    else if(
     var mrow=document.createElement('div');
     mrow.className='mrow'+(isSun?' sun':'');
     mrow.innerHTML=mimg+'<div class="mrow-info"><div class="mrow-name">'+p.name+'</div><div class="mrow-typ">'+p.type+'</div>'+(mmeta.length?'<div class="mrow-meta">'+mmeta.join(' · ')+'</div>':'')+'</div><div class="mbadge '+(isSun?'sun':'shade')+'">'+(isSun?'☀️ Sol':'🌙 Skygge')+'</div>';
@@ -786,18 +784,7 @@ function showPin(lat,lon,nm){
   SPIN.bindPopup('<strong style="font-family:Playfair Display,serif">'+nm+'</strong>',{offset:[0,-46],closeButton:false}).openPopup();
   MAP.flyTo([lat,lon],17,{animate:true,duration:0.9});
 }
-function fetchOutdoor(all,svc){
-  var top=all.slice(0,15),done=0;
-  if(!top.length){renderAll(all);return}
-  top.forEach(function(p){
-    // outdoor_seating ikke tilgængeligt i dette API tier
-  if(true){done++;if(done===top.length)renderAll(all);return;}
-  svc.getDetails({placeId:p.placeId,fields:['outdoor_seating']},function(d,st){
-      if(d&&typeof d.outdoor_seating!=='undefined')p.outdoor=d.outdoor_seating;
-      done++;if(done===top.length)renderAll(all);
-    });
-  });
-}
+// fetchOutdoor fjernet
 function doSearch(){
   var q=document.getElementById('sinp').value.trim();if(!q)return;
   document.getElementById('sug').style.display='none';
