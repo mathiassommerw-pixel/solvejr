@@ -4,6 +4,82 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Solvejr — Find sol i Danmark</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js">
+
+// KBH bbox
+var KBH={minLat:55.58,maxLat:55.78,minLon:12.35,maxLon:12.75};
+function inKBH(la,lo){return la>KBH.minLat&&la<KBH.maxLat&&lo>KBH.minLon&&lo<KBH.maxLon}
+
+// Overpass shadow simulation
+var SHLG=null,OPC={},OPL=false;
+
+function updShadowOuter(){
+  if(!MAP||SLA===null)return;
+  if(inKBH(SLA,SLO)){
+    // KBH: fjern evt. overpass skygger
+    if(SHLG){MAP.removeLayer(SHLG);SHLG=null;}
+    // DO tiles håndteres af eksisterende updSh()
+    updSh();
+  } else {
+    // Resten: ryd DO tiles og brug Overpass
+    if(SHL){MAP.removeLayer(SHL);SHL=null;}
+    updOverpass(SLA,SLO);
+  }
+}
+
+function updOverpass(lat,lon){
+  if(!MAP||!window.turf)return;
+  if(SHLG){MAP.removeLayer(SHLG);SHLG=null;}
+  var p=shAt(lat,lon,CRH);
+  if(p.alt<=1)return;
+  var key=Math.round(lat*100)+','+Math.round(lon*100);
+  if(OPC[key]){renderShadows(OPC[key],p.alt,p.az);return;}
+  if(OPL)return;
+  OPL=true;
+  var d=0.009,bbox=(lat-d)+','+(lon-d)+','+(lat+d)+','+(lon+d);
+  var q='[out:json][timeout:15];(way["building"]('+bbox+'););out geom;';
+  fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)})
+  .then(function(r){return r.json()})
+  .then(function(data){
+    OPL=false;
+    OPC[key]=data.elements||[];
+    renderShadows(OPC[key],p.alt,p.az);
+  })
+  .catch(function(){OPL=false;});
+}
+
+function renderShadows(bldgs,alt,az){
+  if(SHLG){MAP.removeLayer(SHLG);SHLG=null;}
+  if(alt<=1)return;
+  var altR=alt*Math.PI/180,azR=az*Math.PI/180;
+  var len=1/Math.tan(altR); // meter per meter højde
+  var shadAz=(az+180)%360,shadR=shadAz*Math.PI/180;
+  var mLat=111320,mLon=111320*Math.cos(56*Math.PI/180);
+  var feats=[];
+  bldgs.forEach(function(b){
+    if(!b.geometry||b.geometry.length<3)return;
+    var h=parseFloat(b.tags&&(b.tags.height||b.tags['building:height']))||
+          (parseFloat(b.tags&&b.tags['building:levels'])||3)*3;
+    var sl=h*len; // skyggelængde i meter
+    var dLat=Math.cos(shadR)*sl/mLat;
+    var dLon=Math.sin(shadR)*sl/mLon;
+    var ring=b.geometry.map(function(g){return[g.lon,g.lat]});
+    var off=ring.map(function(p){return[p[0]+dLon,p[1]+dLat]});
+    try{
+      var hull=turf.convex(turf.featureCollection(
+        ring.concat(off).map(function(p){return turf.point(p)})
+      ));
+      if(hull)feats.push(hull);
+    }catch(e){}
+  });
+  if(!feats.length)return;
+  SHLG=L.geoJSON({type:'FeatureCollection',features:feats},{
+    style:{fillColor:'#1a2332',fillOpacity:0.28,stroke:false}
+  }).addTo(MAP);
+  if(SHLG.bringToBack)SHLG.bringToBack();
+}
+
+</script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -196,7 +272,6 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
   </div>
 </div>
 <div id="toast"></div>
-<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 var MAP,MK=[],PIN=null,SHL=null,SLA=null,SLO=null,LIV=true;
@@ -247,151 +322,14 @@ function goLive(){if(!LIV)return;var n=new Date();setT(n.getHours()+n.getMinutes
 setInterval(function(){if(LIV)goLive()},60000);
 setT(CRH);
 
-
-// ── KBH bounding box ──────────────────────────────
-var KBH_BBOX = {minLat:55.58,maxLat:55.78,minLon:12.35,maxLon:12.75};
-function isInKBH(lat,lon){ return lat>KBH_BBOX.minLat&&lat<KBH_BBOX.maxLat&&lon>KBH_BBOX.minLon&&lon<KBH_BBOX.maxLon; }
-
-// ── Overpass shadow simulation ────────────────────
-var SHADOW_LAYER = null;
-var OVERPASS_CACHE = {};
-var OVERPASS_LOADING = false;
-
-function calcShadows(buildings, sunAlt, sunAz) {
-  if(sunAlt <= 1) return {type:'FeatureCollection',features:[]};
-  
-  var altRad = sunAlt * Math.PI / 180;
-  var azRad = sunAz * Math.PI / 180;
-  
-  var shadows = [];
-  buildings.forEach(function(b) {
-    if(!b.geometry || b.geometry.length < 3) return;
-    
-    // Bygningshøjde: brug height tag, eller levels*3, eller default 9m (3 etager)
-    var h = parseFloat(b.tags && (b.tags['height'] || b.tags['building:height'])) ||
-            (parseFloat(b.tags && b.tags['building:levels']) || 3) * 3;
-    
-    // Skyggelængde i meter = h / tan(solhøjde)
-    var shadowLen = h / Math.tan(altRad);
-    
-    // Skyggeretning er modsat sol-azimut
-    var shadowAz = (sunAz + 180) % 360;
-    var shadowAzRad = shadowAz * Math.PI / 180;
-    
-    // Meter → grader (approx for Danmark ~56°N)
-    var mPerDegLat = 111320;
-    var mPerDegLon = 111320 * Math.cos(56 * Math.PI / 180);
-    
-    var dLat = Math.cos(shadowAzRad) * shadowLen / mPerDegLat;
-    var dLon = Math.sin(shadowAzRad) * shadowLen / mPerDegLon;
-    
-    // Bygningens ring
-    var ring = b.geometry.map(function(g){ return [g.lon, g.lat]; });
-    
-    // Forskyd alle hjørner i skyggeretningen
-    var shadowRing = ring.map(function(pt){ return [pt[0]+dLon, pt[1]+dLat]; });
-    
-    // Kombiner bygning + skygge til ét polygon via convex hull
-    var allPts = ring.concat(shadowRing).map(function(pt){ return turf.point(pt); });
-    try {
-      var hull = turf.convex(turf.featureCollection(allPts));
-      if(hull) shadows.push(hull);
-    } catch(e) {}
-  });
-  
-  // Union af alle skygger for at undgå overlap
-  var fc = {type:'FeatureCollection', features: shadows};
-  return fc;
-}
-
-function updOverpassShadows(lat, lon) {
-  if(!MAP || !window.turf) return;
-  
-  var p = shAt(lat, lon, CRH);
-  
-  // Fjern gammelt shadow layer
-  if(SHADOW_LAYER){ MAP.removeLayer(SHADOW_LAYER); SHADOW_LAYER=null; }
-  if(p.alt <= 1) return;
-  
-  // Cache key baseret på ~100m grid
-  var cacheKey = Math.round(lat*1000)+','+Math.round(lon*1000);
-  
-  if(OVERPASS_CACHE[cacheKey]) {
-    drawShadows(OVERPASS_CACHE[cacheKey], p.alt, p.az);
-    return;
-  }
-  
-  if(OVERPASS_LOADING) return;
-  OVERPASS_LOADING = true;
-  
-  // Hent bygninger inden for ~800m radius
-  var d = 0.008; // ~800m
-  var bbox = (lat-d)+','+(lon-d)+','+(lat+d)+','+(lon+d);
-  var query = '[out:json][timeout:15];(way["building"]('+bbox+'););out geom;';
-  
-  fetch('https://overpass-api.de/api/interpreter', {
-    method: 'POST',
-    body: 'data=' + encodeURIComponent(query)
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(data){
-    OVERPASS_LOADING = false;
-    OVERPASS_CACHE[cacheKey] = data.elements || [];
-    drawShadows(OVERPASS_CACHE[cacheKey], p.alt, p.az);
-  })
-  .catch(function(e){
-    OVERPASS_LOADING = false;
-    console.log('Overpass fejl:', e.message);
-  });
-}
-
-function drawShadows(buildings, sunAlt, sunAz) {
-  if(SHADOW_LAYER){ MAP.removeLayer(SHADOW_LAYER); SHADOW_LAYER=null; }
-  if(sunAlt <= 1) return;
-  
-  var fc = calcShadows(buildings, sunAlt, sunAz);
-  if(!fc.features.length) return;
-  
-  SHADOW_LAYER = L.geoJSON(fc, {
-    style: {
-      fillColor: '#1a2332',
-      fillOpacity: 0.3,
-      stroke: false
-    }
-  }).addTo(MAP);
-  
-  // Sørg for at skyggerne er under markørerne
-  if(SHADOW_LAYER.bringToBack) SHADOW_LAYER.bringToBack();
-}
-
 function updSh(){
-  if(!MAP||CLA===null)return;
-  // Fjern overpass skygger hvis vi skifter til KBH
-  if(SHADOW_LAYER){MAP.removeLayer(SHADOW_LAYER);SHADOW_LAYER=null;}
-  if(SHL){MAP.removeLayer(SHL);SHL=null;}
-  var p=shAt(CLA,CLO,CRH);
-  if(p.alt<=1)return;
-  if(isInKBH(CLA,CLO)){
-    // KBH: brug DigitalOcean DHM tiles
-    var month=pad(new Date(TOD).getMonth()+1);
-    var h=Math.min(21,Math.max(6,Math.round(CRH)));
-    var z=MAP.getZoom?MAP.getZoom():16;
-    var op=z<=16?0.65:Math.max(0,0.65-(z-16)*0.25);
-    if(op<=0)return;
-    SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
-      {tms:true,opacity:op,attribution:'Skygger © SDFE',maxNativeZoom:16,maxZoom:22});
-    SHL.addTo(MAP);
-    MAP.off('zoomend',MAP._zoomShadowFn);
-    MAP._zoomShadowFn=function(){
-      if(!SHL)return;
-      var z2=MAP.getZoom();var op2=z2<=16?0.65:Math.max(0,0.65-(z2-16)*0.25);
-      if(op2<=0){MAP.removeLayer(SHL);SHL=null;}else SHL.setOpacity(op2);
-    };
-    MAP.on('zoomend',MAP._zoomShadowFn);
-  } else {
-    // Resten af Danmark: Overpass + Turf shadow simulation
-    updOverpassShadows(CLA,CLO);
-  }
+  if(!MAP)return;
+  if(SHL){MAP.removeLayer(SHL);SHL=null}
+  var month=pad(new Date(TOD).getMonth()+1);
+  var h=Math.min(21,Math.max(6,Math.round(CRH)));
+  SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
+    {tms:true,opacity:0.65,attribution:'Skygger © SDFE',maxNativeZoom:16,maxZoom:22});
+  SHL.addTo(MAP);
 }
 function showPin(lat,lng,nm){
   if(PIN){MAP.removeLayer(PIN);PIN=null}
@@ -531,7 +469,7 @@ document.getElementById('sinp').addEventListener('input',function(){
             var lat=pl.geometry.location.lat(),lng=pl.geometry.location.lng(),nm=pl.name||pl.formatted_address.split(',')[0];
             document.getElementById('sinp').value=pl.formatted_address||nm;
             document.getElementById('sug').style.display='none';
-            MAP.setView([lat,lng],17);showPin(lat,lng,nm);upP(lat,lng,nm,pl.formatted_address||nm);near(lat,lng);
+            MAP.setView([lat,lng],17);showPin(lat,lng,nm);upP(lat,lng,nm,pl.formatted_address||nm);updShadowOuter();near(lat,lng);
           });
         });
       });
@@ -549,7 +487,7 @@ function srch(){
     if(d.results&&d.results[0]){
       var loc=d.results[0].geometry.location,nm=d.results[0].formatted_address.split(',')[0];
       MAP.setView([loc.lat,loc.lng],17);showPin(loc.lat,loc.lng,nm);
-      upP(loc.lat,loc.lng,nm,d.results[0].formatted_address);near(loc.lat,loc.lng);
+      upP(loc.lat,loc.lng,nm,d.results[0].formatted_address);updShadowOuter();near(loc.lat,loc.lng);
     } else tst('Adresse ikke fundet');
   }).catch(function(){tst('Søgning fejlede')});
 }
@@ -562,11 +500,11 @@ window.addEventListener('load',function(){
   updSh();
   MAP.on('click',function(e){
     if(PIN){MAP.removeLayer(PIN);PIN=null}
-    upP(e.latlng.lat,e.latlng.lng);near(e.latlng.lat,e.latlng.lng);
+    upP(e.latlng.lat,e.latlng.lng);updShadowOuter();near(e.latlng.lat,e.latlng.lng);
   });
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
-      function(p){MAP.setView([p.coords.latitude,p.coords.longitude],17);upP(p.coords.latitude,p.coords.longitude,'Din placering','GPS');near(p.coords.latitude,p.coords.longitude)},
+      function(p){MAP.setView([p.coords.latitude,p.coords.longitude],17);upP(p.coords.latitude,p.coords.longitude,'Din placering','GPS');updShadowOuter();near(p.coords.latitude,p.coords.longitude)},
       function(){near(55.676,12.568)}
     );
   } else near(55.676,12.568);
