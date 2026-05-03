@@ -696,6 +696,17 @@ document.getElementById('sinp').addEventListener('keydown',function(e){
 MAP=L.map('map',{zoomControl:false}).setView([56.0,10.2],7);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:22}).addTo(MAP);
 L.control.zoom({position:'topright'}).addTo(MAP);
+
+// Opdater steder når kortet flyttes
+var _nearTimer=null;
+MAP.on('moveend',function(){
+  clearTimeout(_nearTimer);
+  _nearTimer=setTimeout(function(){
+    var c=MAP.getCenter();
+    near(c.lat,c.lng);
+  },800);
+});
+
 MAP.on('click',function(e){
   SLA=e.latlng.lat;SLO=e.latlng.lng;
   upPanel(SLA,SLO,'Valgt sted');
