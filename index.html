@@ -156,7 +156,29 @@ function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','S
 function updateLight(){
   if(!MAP)return;
   var p=sunAt(CLA||55.68,CLO||12.57,CRH);
-  if(p.alt<=0){MAP.setLight({color:'#8898B0',intensity:0.25,anchor:'map',position:[1.15,210,30]});return;}
+  // Mapbox GL JS v3 setLights() API - giver ægte bygningsskygger
+  var azRad=p.az*Math.PI/180;
+  // Konverter sol-azimut og altitude til Mapbox directional light direction
+  // direction er [azimuth_deg, polar_deg] i Mapbox koordinater
+  MAP.setLights([{
+    id:'sun',
+    type:'directional',
+    properties:{
+      color: p.alt>0 ? '#fff8e7' : '#8898B0',
+      intensity: p.alt>0 ? Math.min(0.9,0.25+p.alt/90*0.65) : 0.2,
+      direction:[p.az, Math.max(5,p.alt)],
+      'cast-shadows': true,
+      'shadow-intensity': p.alt>0 ? Math.min(0.85, p.alt/90*0.85) : 0
+    }
+  },{
+    id:'ambient',
+    type:'ambient',
+    properties:{
+      color:'#f0ede8',
+      intensity: p.alt>0 ? 0.3 : 0.5
+    }
+  }]);
+});return;}
   MAP.setLight({anchor:'map',color:'#fff8e7',intensity:Math.min(0.9,0.25+p.alt/90*0.65),position:[1.15,p.az,Math.max(15,p.alt)]});
   if(MAP.getLayer('3d-buildings'))MAP.setPaintProperty('3d-buildings','fill-extrusion-ambient-occlusion-intensity',Math.min(0.55,p.alt/90*0.55));
 }
@@ -286,7 +308,7 @@ function doSearch(){
 document.getElementById('sbtn').addEventListener('click',doSearch);
 document.getElementById('sinp').addEventListener('keydown',function(e){if(e.key==='Enter'){document.getElementById('sug').style.display='none';doSearch();}});
 mapboxgl.accessToken=MBKEY;
-MAP=new mapboxgl.Map({container:'map',style:'mapbox://styles/mapbox/light-v11',center:[10.2,56.0],zoom:6.5,pitch:45,bearing:0,antialias:true});
+MAP=new mapboxgl.Map({container:'map',style:'mapbox://styles/mapbox/standard',center:[10.2,56.0],zoom:6.5,pitch:45,bearing:0,antialias:true});
 MAP.addControl(new mapboxgl.NavigationControl({showCompass:true}),'top-right');
 MAP.on('load',function(){
   MAP.addLayer({id:'3d-buildings',source:'composite','source-layer':'building',filter:['==','extrude','true'],type:'fill-extrusion',minzoom:13,paint:{
@@ -295,7 +317,7 @@ MAP.on('load',function(){
     'fill-extrusion-base':['interpolate',['linear'],['zoom'],13,0,13.5,['get','min_height']],
     'fill-extrusion-opacity':0.85,
     'fill-extrusion-ambient-occlusion-intensity':0.4,
-    'fill-extrusion-ambient-occlusion-radius':3.0
+    'fill-extrusion-ambient-occlusion-radius':3.0,'fill-extrusion-cast-shadows':true
   }});
   updateLight();setTime(CRH);
   MAP.on('click',function(e){updPanel(e.lngLat.lat,e.lngLat.lng,'Valgt sted');loadNearby(e.lngLat.lat,e.lngLat.lng);MAP.flyTo({center:[e.lngLat.lng,e.lngLat.lat],zoom:Math.max(MAP.getZoom(),15),pitch:55,duration:600});});
