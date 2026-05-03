@@ -457,7 +457,6 @@ function detailHTML(p,W){
   if(p.rating)chips+='<span class="d-chip"><span style="color:var(--warm);font-weight:700">&#9733; '+p.rating.toFixed(1)+'</span> ('+p.reviews+')</span>';
   if(p.price!==null&&p.price!==undefined&&PRICE[p.price])chips+='<span class="d-chip">'+PRICE[p.price]+'</span>';
   chips+='<span class="d-chip">'+p.type+'</span>';
-  if(isSun)chips+='<span class="d-chip sun">&#9728; Sol nu</span>';
   var links='';
   if(p.website)links+='<a href="'+p.website+'" target="_blank">&#127760; Website</a>';
   if(p.phone)links+='<a href="tel:'+p.phone+'">&#128222; '+p.phone+'</a>';
