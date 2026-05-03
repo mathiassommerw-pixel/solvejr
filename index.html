@@ -418,6 +418,25 @@ function updMk(){
     var isSun=shAt(m.la,m.lo,CRH).alt>4;
     m.mk.getElement()&&(m.mk.getElement().style.background=isSun?'#F5A623':'#8A9BB0');
   });
+  // Opdater badges i listerne
+  if(!window.ALLE||!window.ALLE.length)return;
+  var sunny=0;
+  window.ALLE.forEach(function(p,i){
+    var isSun=shAt(p.lat,p.lon,CRH).alt>4;
+    if(isSun)sunny++;
+    var dBtn=document.getElementById('pl').children[i];
+    if(dBtn){
+      dBtn.className='pitem'+(isSun?' snow':'');
+      var dot=dBtn.querySelector('.pdot');if(dot)dot.className='pdot '+(isSun?'sun':'shade');
+      var b=dBtn.querySelector('.psun2');if(b){b.className='psun2 '+(isSun?'sun':'shade');b.innerHTML=isSun?'☀️<br>Sol':'🌙<br>Skygge';}
+    }
+    var mRow=document.getElementById('msbody').children[i];
+    if(mRow){
+      mRow.className='mrow'+(isSun?' sun':'');
+      var mb=mRow.querySelector('.mbadge');if(mb){mb.className='mbadge '+(isSun?'sun':'shade');mb.textContent=isSun?'☀️ Sol':'🌙 Skygge';}
+    }
+  });
+  var el=document.getElementById('mssun');if(el)el.textContent=sunny+' i sol · '+(window.ALLE.length-sunny)+' i skygge';
 }
 
 // ── Detail indhold ────────────────────────────────
@@ -583,6 +602,7 @@ function near(lat,lon){
 }
 
 function renderAll(all){
+  window.ALLE=all;
   all.sort(function(a,b){
     var as=shAt(a.lat,a.lon,CRH).alt>4?1:0;
     var bs=shAt(b.lat,b.lon,CRH).alt>4?1:0;
