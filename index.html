@@ -253,18 +253,17 @@ function sunPos(lat,lon,date){
   return{alt:alt,az:az};
 }
 function shAt(lat,lon,h){
-  // h er lokal tid - konverter til UTC ved hjælp af browserens offset
-  var tzOffset = new Date().getTimezoneOffset(); // minutter bag UTC (dansk sommer: -120)
+  var tz=new Date().getTimezoneOffset();
   var d=new Date(TOD+'T00:00:00Z');
-  d.setUTCMinutes(Math.round(h*60) + tzOffset);
+  d.setUTCMinutes(Math.round(h*60)+tz);
   return sunPos(lat,lon,d);
 }
 function rS(lat,lon){
-  var tzOffset = new Date().getTimezoneOffset();
+  var tz=new Date().getTimezoneOffset();
   var ri=null,se=null,pv=null;
   for(var m=0;m<=1440;m+=3){
     var d=new Date(TOD+'T00:00:00Z');
-    d.setUTCMinutes(m + tzOffset);
+    d.setUTCMinutes(m+tz);
     var a=sunPos(lat,lon,d).alt;
     if(pv!==null){if(pv<0&&a>=0&&!ri)ri=m/60;if(pv>=0&&a<0&&!se)se=m/60;}
     pv=a;
