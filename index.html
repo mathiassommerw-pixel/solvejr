@@ -6,7 +6,25 @@
 <title>Solvejr — Find sol i Danmark</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+var SEARCH_PIN = null;
+
+function showPin(lat, lon, nm) {
+  // Fjern gammel søge-markør
+  if(SEARCH_PIN){ MAP.removeLayer(SEARCH_PIN); SEARCH_PIN=null; }
+  // Opret markør med sol-farvet pin
+  var el = document.createElement('div');
+  el.innerHTML = '<div class="search-pin"></div>';
+  el.style.cssText = 'width:32px;height:42px;display:flex;align-items:flex-end;justify-content:center';
+  var icon = L.divIcon({html:el.outerHTML, className:'', iconSize:[32,42], iconAnchor:[16,42]});
+  SEARCH_PIN = L.marker([lat,lon],{icon:icon, zIndexOffset:1000}).addTo(MAP);
+  // Popup med navn
+  SEARCH_PIN.bindPopup('<strong>'+nm+'</strong>', {offset:[0,-38], closeButton:false}).openPopup();
+  // Zoom ind
+  MAP.flyTo([lat,lon], 17, {animate:true, duration:0.9});
+}
+
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--sun:#F5A623;--warm:#E8863A;--pale:#FFF3DC;--bg:#FAFAF8;--txt:#1A2332;--mut:#6B7A8D;--bdr:rgba(27,35,50,.09);--lt:#EEF1F6;--pw:370px;--bh:60px}
@@ -147,6 +165,9 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 @media(min-width:701px){
   #msheet,#dsheet,#tpill{display:none!important}
 }
+
+.search-pin{width:32px;height:32px;border-radius:50% 50% 50% 0;background:var(--sun);border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.3);transform:rotate(-45deg);position:relative}
+.search-pin::after{content:'';width:10px;height:10px;background:#fff;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 </style>
 </head>
 <body>
@@ -564,7 +585,7 @@ document.getElementById('sinp').addEventListener('input',function(){
             var lat=pl.geometry.location.lat(),lon=pl.geometry.location.lng(),nm=pl.name||pl.formatted_address.split(',')[0];
             document.getElementById('sinp').value=nm;box.style.display='none';
             SLA=lat;SLO=lon;
-            MAP.flyTo([lat,lon],16,{animate:true,duration:0.9});
+            showPin(lat,lon,nm);
             upPanel(lat,lon,nm);near(lat,lon);updSh();
           });
         }
