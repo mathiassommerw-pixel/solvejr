@@ -722,9 +722,12 @@ var _nearTimer=null;
 MAP.on('moveend',function(){
   clearTimeout(_nearTimer);
   _nearTimer=setTimeout(function(){
+    if(MAP.getZoom()<14)return;
     var c=MAP.getCenter();
+    SLA=c.lat;SLO=c.lng;
     near(c.lat,c.lng);
-  },800);
+    updSh();
+  },1000);
 });
 
 MAP.on('click',function(e){
