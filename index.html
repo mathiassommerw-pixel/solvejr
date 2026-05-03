@@ -16,7 +16,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 @keyframes glow{0%,100%{box-shadow:0 0 0 4px rgba(245,166,35,.15)}50%{box-shadow:0 0 0 8px rgba(245,166,35,.08)}}
 .logo-name{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--txt);letter-spacing:-.5px}
 .logo-name em{color:var(--sun);font-style:normal}
-#srch{flex:1;max-width:460px;display:flex;align-items:center;background:var(--lt);border-radius:50px;padding:0 6px 0 18px;gap:8px;border:1.5px solid transparent;transition:.2s}
+#srch{display:flex;align-items:center;background:var(--lt);border-radius:50px;padding:0 6px 0 18px;gap:8px;border:1.5px solid transparent;transition:.2s}
 #srch:focus-within{background:#fff;border-color:var(--sun);box-shadow:0 0 0 3px rgba(245,166,35,.12)}
 #sinp{flex:1;border:none;outline:none;background:transparent;font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--txt);padding:10px 0}
 #sinp::placeholder{color:var(--mut)}
@@ -70,17 +70,28 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .lsun{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,var(--sun));animation:lg 2s ease-in-out infinite;margin-bottom:18px}
 @keyframes lg{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 .ltxt{font-family:'Playfair Display',serif;font-size:1rem;color:var(--mut)}
+
+#suggestions{position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.12);margin-top:6px;overflow:hidden;z-index:9998;display:none}
+.sug-item{padding:11px 18px;cursor:pointer;font-size:.88rem;color:var(--txt);border-bottom:1px solid var(--bdr);transition:background .15s}
+.sug-item:last-child{border-bottom:none}
+.sug-item:hover{background:var(--lt)}
+.sug-item b{color:var(--sun)}
+#srch{position:relative}
+
+.search-pin{background:none;border:none}
+.search-pin-inner{width:36px;height:36px;background:var(--sun);border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 4px 16px rgba(245,166,35,.5);animation:bounce .4s ease}
+@keyframes bounce{0%{transform:rotate(-45deg) scale(0)}70%{transform:rotate(-45deg) scale(1.2)}100%{transform:rotate(-45deg) scale(1)}}
 </style>
 </head>
 <body>
 <div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
 <div id="bar">
   <a class="logo" href="#"><div class="logo-sun"></div><div class="logo-name">Sol<em>vejr</em></div></a>
-  <div id="srch">
+  <div id="srch-wrap" style="flex:1;max-width:460px;position:relative"><div id="srch">
     <svg style="width:15px;height:15px;fill:var(--mut);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
     <input type="text" id="sinp" placeholder="Søg adresse, café eller restaurant…" autocomplete="off">
-    <button id="sbtn"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
-  </div>
+    </div><div id="suggestions"></div><button id="sbtn" style="display:none"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
+  </div><div id="suggestions"></div></div>
   <div id="tc"><div class="tlbl">Tid</div><div id="tdis">12:00</div><input type="range" id="tsl" min="0" max="1440" value="720" step="5"></div>
   <button id="lbtn" class="on"><span class="dot"></span> Live</button>
 </div>
@@ -174,6 +185,56 @@ function srch(){
     else tst('Adresse ikke fundet');
   }).catch(function(){tst('Søgning fejlede')});
 }
+
+var searchPin = null;
+
+function showPin(lat, lng, name) {
+  if (searchPin) MAP.removeLayer(searchPin);
+  var icon = L.divIcon({
+    className: 'search-pin',
+    html: '<div class="search-pin-inner"></div>',
+    iconSize: [36, 36],
+    iconAnchor: [10, 36]
+  });
+  searchPin = L.marker([lat, lng], {icon: icon}).addTo(MAP);
+  searchPin.bindPopup('<b>' + name + '</b>').openPopup();
+}
+
+var sugTimeout = null;
+document.getElementById('sinp').addEventListener('input', function() {
+  var q = this.value.trim();
+  clearTimeout(sugTimeout);
+  var box = document.getElementById('suggestions');
+  if (q.length < 2) { box.style.display = 'none'; return; }
+  sugTimeout = setTimeout(function() {
+    fetch('https://maps.googleapis.com/maps/api/place/autocomplete/json?input=' + encodeURIComponent(q) + '&components=country:dk&language=da&key=' + KEY)
+    .then(function(r){ return r.json() })
+    .then(function(data) {
+      if (!data.predictions || !data.predictions.length) { box.style.display='none'; return; }
+      box.innerHTML = data.predictions.slice(0,5).map(function(p) {
+        var main = p.structured_formatting.main_text;
+        var sec = p.structured_formatting.secondary_text || '';
+        return '<div class="sug-item" data-place="'+p.place_id+'" data-desc="'+p.description+'"><b>'+main+'</b> <span style="color:var(--mut);font-size:.8rem">'+sec+'</span></div>';
+      }).join('');
+      box.style.display = 'block';
+      Array.from(box.querySelectorAll('.sug-item')).forEach(function(el) {
+        el.addEventListener('click', function() {
+          var desc = this.getAttribute('data-desc');
+          document.getElementById('sinp').value = desc;
+          box.style.display = 'none';
+          srch();
+        });
+      });
+    }).catch(function(){ box.style.display='none' });
+  }, 250);
+});
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#srch-wrap')) {
+    document.getElementById('suggestions').style.display = 'none';
+  }
+});
+
 window.addEventListener('load',function(){
   MAP=L.map('map',{zoomControl:true,attributionControl:false}).setView([55.676,12.568],14);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(MAP);
