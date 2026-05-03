@@ -234,53 +234,33 @@ function toast(m){var t=document.getElementById('toast');t.textContent=m;t.class
 
 // ── Sol-matematik ─────────────────────────────────
 function sunPos(lat,lon,date){
-  // NOAA Solar Calculator algoritme
-  var rad=Math.PI/180;
-  var JD=date.getTime()/86400000+2440587.5;
-  var T=(JD-2451545)/36525;
-  // Geometrisk middellangivelse
-  var L0=(280.46646+T*(36000.76983+T*0.0003032))%360;
-  // Middelanomali
-  var M=(357.52911+T*(35999.05029-0.0001537*T))*rad;
-  // Ligning om centrum
-  var C=(1.914602-T*(0.004817+0.000014*T))*Math.sin(M)+(0.019993-0.000101*T)*Math.sin(2*M)+0.000289*Math.sin(3*M);
-  var sunLon=(L0+C)*rad;
-  // Skråhed af ekliptikken
-  var e=(23.439291111-T*(0.013004167+T*(0.000000164-T*0.000000504)))*rad;
-  // Rektascension og deklination
-  var sinDec=Math.sin(e)*Math.sin(sunLon);
-  var dec=Math.asin(sinDec);
-  // Tidsligning
-  var y=Math.tan(e/2);y*=y;
-  var EqT=4*(y*Math.sin(2*L0*rad)-2*0.016708634*Math.sin(M)+4*0.016708634*y*Math.sin(M)*Math.cos(2*L0*rad)-0.5*y*y*Math.sin(4*L0*rad)-1.25*0.016708634*0.016708634*Math.sin(2*M))*180/Math.PI;
-  // Sandt solnoon
+  var jd=date.getTime()/86400000+2440587.5,n=jd-2451545;
+  var L=((280.46+0.9856474*n)%360+360)%360;
+  var g=(357.528+0.9856003*n)*Math.PI/180;
+  var lam=((L+1.915*Math.sin(g)+0.02*Math.sin(2*g))*Math.PI/180);
+  var eps=(23.439-0.0000004*n)*Math.PI/180;
+  var sinD=Math.sin(eps)*Math.sin(lam),cosD=Math.cos(Math.asin(sinD));
   var UT=date.getUTCHours()+date.getUTCMinutes()/60+date.getUTCSeconds()/3600;
-  var HA=((UT*60+EqT+lon*4)%1440)/4-180;
-  if(HA<-180)HA+=360;if(HA>180)HA-=360;
-  var HA_rad=HA*rad;
-  var lat_rad=lat*rad;
-  var sinAlt=Math.sin(lat_rad)*Math.sin(dec)+Math.cos(lat_rad)*Math.cos(dec)*Math.cos(HA_rad);
-  var alt=Math.asin(sinAlt)/rad;
-  var cosAz=(Math.sin(dec)-Math.sin(lat_rad)*sinAlt)/(Math.cos(lat_rad)*Math.cos(alt*rad));
-  cosAz=Math.max(-1,Math.min(1,cosAz));
-  var az=Math.acos(cosAz)/rad;
-  if(HA>0)az=360-az;
+  var GMST=((6.697375+0.0657098242*n+UT)%24+24)%24;
+  var LST=((GMST+lon/15)%24+24)%24;
+  var HA=(LST-12)*15*Math.PI/180;
+  var lr=lat*Math.PI/180;
+  var sinA=Math.sin(lr)*sinD+Math.cos(lr)*cosD*Math.cos(HA);
+  var alt=Math.asin(Math.max(-1,Math.min(1,sinA)))*180/Math.PI;
+  var cosAz=(sinD-Math.sin(lr)*sinA)/(Math.cos(lr)*Math.cos(alt*Math.PI/180));
+  var az=Math.acos(Math.max(-1,Math.min(1,cosAz)))*180/Math.PI;
+  if(Math.sin(HA)>0)az=360-az;
   return{alt:alt,az:az};
-};
 }
 function shAt(lat,lon,h){
-  // h er LOKAL tid - konverter til UTC
-  var tz=new Date().getTimezoneOffset(); // -120 for UTC+2
   var d=new Date(TOD+'T00:00:00Z');
-  d.setUTCMinutes(Math.round(h*60)+tz);
+  d.setUTCMinutes(Math.round(h*60)-60);
   return sunPos(lat,lon,d);
 }
 function rS(lat,lon){
-  var tz=new Date().getTimezoneOffset();
   var ri=null,se=null,pv=null;
   for(var m=0;m<=1440;m+=3){
-    var d=new Date(TOD+'T00:00:00Z');
-    d.setUTCMinutes(m+tz);
+    var d=new Date(TOD+'T00:00:00Z');d.setUTCMinutes(m-60);
     var a=sunPos(lat,lon,d).alt;
     if(pv!==null){if(pv<0&&a>=0&&!ri)ri=m/60;if(pv>=0&&a<0&&!se)se=m/60;}
     pv=a;
@@ -291,20 +271,24 @@ function fH(h){if(h===null)return'&#8212;';return pad(Math.floor(h))+':'+pad(Mat
 function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(a/22.5)%16]}
 
 // ── Skyggekort ────────────────────────────────────
-
 function updSh(){
-  if(!MAP||SLA===null)return;
-  if(SHL){MAP.removeLayer(SHL);SHL=null;}
-  var p=shAt(SLA,SLO,CRH);
+  if(!MAP)return;
+  if(SHL){MAP.removeLayer(SHL);SHL=null}
+  var p=shAt(SLA||55.676,SLO||12.568,CRH);
   if(p.alt<=1)return;
   var month=pad(new Date(TOD).getMonth()+1);
   var h=Math.min(21,Math.max(6,Math.round(CRH)));
   var z=MAP.getZoom(),op=z<=16?0.65:Math.max(0,0.65-(z-16)*0.25);
   if(op<=0)return;
-  SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',{tms:true,opacity:op,attribution:'',maxNativeZoom:16,maxZoom:22});
+  SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
+    {tms:true,opacity:op,attribution:'',maxNativeZoom:16,maxZoom:22});
   SHL.addTo(MAP);
   MAP.off('zoomend',MAP._shz);
-  MAP._shz=function(){if(!SHL)return;var z2=MAP.getZoom(),op2=z2<=16?0.65:Math.max(0,0.65-(z2-16)*0.25);if(op2<=0){MAP.removeLayer(SHL);SHL=null;}else SHL.setOpacity(op2);};
+  MAP._shz=function(){
+    if(!SHL)return;
+    var z2=MAP.getZoom(),op2=z2<=16?0.65:Math.max(0,0.65-(z2-16)*0.25);
+    if(op2<=0){MAP.removeLayer(SHL);SHL=null;}else SHL.setOpacity(op2);
+  };
   MAP.on('zoomend',MAP._shz);
 }
 
@@ -332,14 +316,9 @@ function syncUI(h){
   ms.value=Math.round(h*60);
   ms.style.background='linear-gradient(to right,#F5A623 '+pct+',#C8D1DC '+pct+')';
 }
-var _upPanelTimer=null;
 function setT(h){
   CRH=h;syncUI(h);updSh();updMk();
-  // Debounce upPanel - det er tungt (beregner solopgang/ned)
-  clearTimeout(_upPanelTimer);
-  _upPanelTimer=setTimeout(function(){
-    if(SLA!==null)upPanel(SLA,SLO,document.getElementById('pname').textContent);
-  },150);
+  if(SLA!==null)upPanel(SLA,SLO,document.getElementById('pname').textContent);
 }
 document.getElementById('tsl').addEventListener('input',function(){
   LIV=false;document.getElementById('lbtn').classList.remove('on');
