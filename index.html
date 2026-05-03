@@ -1,192 +1,113 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Solvejr — Find sol i Danmark</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--sun:#F5A623;--warm:#E8863A;--pale:#FFF3DC;--bg:#FAFAF8;--txt:#1A2332;--mut:#6B7A8D;--bdr:rgba(27,35,50,.08);--lt:#E8EEF5;--pw:380px;--bh:64px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--sun:#F5A623;--warm:#E8863A;--pale:#FFF3DC;--bg:#FAFAF8;--txt:#1A2332;--mut:#6B7A8D;--bdr:rgba(27,35,50,.09);--lt:#EEF1F6;--pw:370px;--bh:60px}
 html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--txt)}
-#bar{position:fixed;top:0;left:0;right:0;height:var(--bh);background:var(--bg);border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:14px;padding:0 20px;z-index:1000;box-shadow:0 1px 24px rgba(0,0,0,.06)}
-.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;text-decoration:none}
-.logo-sun{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,var(--sun));box-shadow:0 0 0 4px rgba(245,166,35,.15);animation:glow 3s ease-in-out infinite;flex-shrink:0}
-@keyframes glow{0%,100%{box-shadow:0 0 0 4px rgba(245,166,35,.15)}50%{box-shadow:0 0 0 8px rgba(245,166,35,.08)}}
-.logo-name{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--txt);letter-spacing:-.5px}
-.logo-name em{color:var(--sun);font-style:normal}
-#sw{flex:1;max-width:460px;position:relative}
-#srch{display:flex;align-items:center;background:var(--lt);border-radius:50px;padding:0 6px 0 18px;gap:8px;border:1.5px solid transparent;transition:.2s}
-#srch:focus-within{background:#fff;border-color:var(--sun);box-shadow:0 0 0 3px rgba(245,166,35,.12)}
-#sinp{flex:1;border:none;outline:none;background:transparent;font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--txt);padding:10px 0}
+
+/* TOP BAR */
+#bar{position:fixed;top:0;left:0;right:0;height:var(--bh);background:#fff;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:12px;padding:0 16px;z-index:1000;box-shadow:0 1px 12px rgba(0,0,0,.06)}
+.logo{display:flex;align-items:center;gap:8px;flex-shrink:0;text-decoration:none}
+.logo-sun{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,#F5A623);box-shadow:0 0 0 5px rgba(245,166,35,.13);animation:glow 3s ease-in-out infinite;flex-shrink:0}
+@keyframes glow{0%,100%{box-shadow:0 0 0 5px rgba(245,166,35,.13)}50%{box-shadow:0 0 0 9px rgba(245,166,35,.06)}}
+.logo-name{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--txt)}.logo-name em{color:var(--sun);font-style:normal}
+#sw{flex:1;max-width:420px;position:relative}
+#srch{display:flex;align-items:center;background:var(--lt);border-radius:50px;padding:0 5px 0 14px;gap:8px;border:1.5px solid transparent;transition:.2s}
+#srch:focus-within{background:#fff;border-color:var(--sun);box-shadow:0 0 0 3px rgba(245,166,35,.1)}
+#sinp{flex:1;border:none;outline:none;background:transparent;font-family:'Outfit',sans-serif;font-size:.86rem;color:var(--txt);padding:9px 0;min-width:0}
 #sinp::placeholder{color:var(--mut)}
-#sbtn{background:var(--sun);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-#sbtn svg{width:15px;height:15px;fill:#fff}
-#sug{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.12);overflow:hidden;z-index:9999;display:none}
-.si{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;font-size:.86rem;color:var(--txt);border-bottom:1px solid var(--bdr);transition:background .12s}
-.si:last-child{border-bottom:none}.si:hover{background:var(--lt)}
-.si-m{font-weight:600}.si-s{font-size:.75rem;color:var(--mut);margin-top:1px}
-#tc{display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--lt);border-radius:50px;padding:6px 16px 6px 12px}
-.tlbl{font-size:.7rem;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
-#tdis{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--txt);min-width:3.2rem;text-align:center}
-#tsl{width:100px;-webkit-appearance:none;height:3px;border-radius:2px;background:linear-gradient(to right,var(--sun) var(--p,50%),#D0D8E4 var(--p,50%));outline:none;cursor:pointer}
-#tsl::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--sun);border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-#lbtn{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:7px 14px;border-radius:50px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;background:var(--lt);color:var(--mut);transition:.2s}
+#sbtn{background:var(--sun);border:none;border-radius:50%;width:29px;height:29px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#sbtn svg{width:12px;height:12px;fill:#fff}
+#sug{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.13);overflow:hidden;z-index:9999;display:none}
+.si{padding:10px 15px;cursor:pointer;border-bottom:1px solid var(--bdr);transition:background .1s}.si:last-child{border-bottom:none}.si:hover,.si:active{background:var(--lt)}
+.si-m{font-weight:600;font-size:.83rem}.si-s{font-size:.73rem;color:var(--mut);margin-top:1px}
+
+/* DESKTOP: tid + live knap */
+#tc{display:flex;align-items:center;gap:9px;background:var(--lt);border-radius:50px;padding:5px 13px 5px 11px;flex-shrink:0}
+.tlbl{font-size:.62rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+#tdis{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--txt);min-width:2.6rem;text-align:center}
+#tsl{width:86px;-webkit-appearance:none;height:3px;border-radius:2px;background:linear-gradient(to right,var(--sun) var(--p,50%),#C8D1DC var(--p,50%));outline:none;cursor:pointer}
+#tsl::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--sun);border:2.5px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.2)}
+#lbtn{padding:5px 12px;border-radius:50px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.73rem;font-weight:600;display:flex;align-items:center;gap:5px;background:var(--lt);color:var(--mut);transition:.2s;flex-shrink:0}
 #lbtn.on{background:var(--sun);color:#fff}
-.dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:blink 1.5s ease-in-out infinite}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 1.5s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-#map{position:fixed;top:var(--bh);left:0;right:var(--pw);bottom:0;z-index:1}
-#panel{position:fixed;top:var(--bh);right:0;bottom:0;width:var(--pw);background:var(--bg);border-left:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden;z-index:2}
-#ptop{padding:20px 20px 14px;border-bottom:1px solid var(--bdr);background:#fff}
-.pname{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--txt);line-height:1.2;margin-bottom:3px}
-.psub{font-size:.78rem;color:var(--mut)}
-.sind{display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px 13px;border-radius:12px;border:1.5px solid;transition:.4s}
-.sind.sun{background:var(--pale);border-color:rgba(245,166,35,.3);color:#8B5E00}
-.sind.shade{background:#EDF0F5;border-color:rgba(43,58,78,.15);color:#4A5568}
-.sind-ico{font-size:1.3rem}.sind-txt{flex:1}.sind-ttl{font-weight:600;font-size:.88rem}.sind-sub{font-size:.73rem;opacity:.7;margin-top:1px}
-.badge{display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:3px 10px;border-radius:50px;font-size:.68rem;font-weight:600;text-transform:uppercase;background:#E3F2FD;color:#1565C0}
-#pbody{flex:1;overflow-y:auto;padding:18px 20px}
-.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
-.scard{background:var(--lt);border-radius:12px;padding:12px;border:1px solid var(--bdr)}
-.slbl{font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:3px}
-.sval{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--txt)}
-.sunit{font-family:'Outfit',sans-serif;font-size:.72rem;color:var(--mut)}
-.sectitle{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:8px}
-.arcbox{background:var(--lt);border-radius:14px;padding:11px;margin-bottom:18px}
-.plist{display:flex;flex-direction:column;gap:7px}
-.pitem{display:flex;align-items:stretch;background:#fff;border:1.5px solid var(--bdr);border-radius:12px;cursor:pointer;transition:.2s;text-align:left;width:100%;overflow:hidden}
-.pitem:hover{border-color:var(--sun);box-shadow:0 4px 16px rgba(245,166,35,.1);transform:translateY(-1px)}
-.pitem.snow{border-color:rgba(245,166,35,.4);background:#FFFBF2}
-.pimg{width:72px;object-fit:cover;flex-shrink:0}
-.pimg-ph{width:72px;background:var(--lt);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.8rem}
-.pinner{flex:1;min-width:0;padding:10px 12px;display:flex;align-items:center;gap:8px}
-.pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:2px}
-.pdot.sun{background:var(--sun)}.pdot.shade{background:#A0AEC0}
+
+/* MAP */
+#map{position:fixed;top:var(--bh);left:0;right:var(--pw);bottom:0}
+
+/* DESKTOP SIDE PANEL */
+#panel{position:fixed;top:var(--bh);right:0;bottom:0;width:var(--pw);background:var(--bg);border-left:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden}
+#ptop{padding:16px 18px 14px;border-bottom:1px solid var(--bdr);background:#fff;flex-shrink:0}
+.pname{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;line-height:1.2}
+.psub{font-size:.74rem;color:var(--mut);margin-top:2px}
+.sind{display:flex;align-items:center;gap:10px;margin-top:10px;padding:9px 12px;border-radius:11px;border:1.5px solid}
+.sind.sun{background:var(--pale);border-color:rgba(245,166,35,.35);color:#7A5100}
+.sind.shade{background:#EDF0F5;border-color:rgba(0,0,0,.08);color:#4A5568}
+.sind-ico{font-size:1.2rem}.sind-ttl{font-weight:600;font-size:.83rem}.sind-sub{font-size:.69rem;opacity:.7;margin-top:1px}
+#pbody{flex:1;overflow-y:auto;padding:14px 16px}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px}
+.scard{background:var(--lt);border-radius:10px;padding:10px}
+.slbl{font-size:.61rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:2px}
+.sval{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700}
+.sunit{font-family:'Outfit',sans-serif;font-size:.68rem;color:var(--mut)}
+.sectit{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:7px}
+.arcbox{background:var(--lt);border-radius:12px;padding:9px;margin-bottom:14px}
+.plist{display:flex;flex-direction:column;gap:6px}
+.pitem{display:flex;align-items:center;background:#fff;border:1.5px solid var(--bdr);border-radius:11px;cursor:pointer;transition:.18s;text-align:left;width:100%;overflow:hidden}
+.pitem:hover{border-color:var(--sun);box-shadow:0 3px 12px rgba(245,166,35,.1);transform:translateY(-1px)}
+.pitem.snow{border-color:rgba(245,166,35,.35);background:#FFFBF2}
+.pimg{width:60px;height:60px;object-fit:cover;flex-shrink:0}
+.pimg-ph{width:60px;height:60px;background:var(--lt);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.pinner{flex:1;min-width:0;padding:9px 11px;display:flex;align-items:center;gap:7px}
+.pdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}.pdot.sun{background:var(--sun)}.pdot.shade{background:#A0AEC0}
 .pinfo{flex:1;min-width:0}
-.pn2{font-weight:600;font-size:.86rem;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ptyp{font-size:.71rem;color:var(--mut);margin-top:1px}
-.pmeta{font-size:.71rem;color:var(--mut);margin-top:3px;display:flex;align-items:center;gap:6px}
-.prat{color:#E8863A;font-weight:600}
-.pprice{color:var(--mut)}
-.psun2{font-size:.72rem;font-weight:600;flex-shrink:0;text-align:center;line-height:1.4}
+.pn2{font-weight:600;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ptyp{font-size:.68rem;color:var(--mut);margin-top:1px}
+.pmeta{font-size:.68rem;color:var(--mut);margin-top:2px}
+.prat{color:var(--warm);font-weight:600}
+.psun2{font-size:.68rem;font-weight:600;text-align:center;flex-shrink:0;line-height:1.4}
 .psun2.sun{color:var(--warm)}.psun2.shade{color:#90A0B0}
-.hint{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center;height:100%}
-.hi{font-size:2.8rem;margin-bottom:1rem;opacity:.35}
-.ht{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--mut);margin-bottom:.4rem}
-.hx{font-size:.8rem;color:var(--mut);line-height:1.6;opacity:.7}
-#toast{position:fixed;bottom:22px;left:calc(50% - var(--pw)/2);transform:translateX(-50%) translateY(8px);background:var(--txt);color:#fff;padding:9px 18px;border-radius:50px;font-size:.8rem;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-#loading{position:fixed;inset:0;background:rgba(250,250,248,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(4px);transition:opacity .4s}
-#loading.gone{opacity:0;pointer-events:none}
-.lsun{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,var(--sun));animation:lg 2s ease-in-out infinite;margin-bottom:18px}
-@keyframes lg{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-.ltxt{font-family:'Playfair Display',serif;font-size:1rem;color:var(--mut)}
-.pin-wrap{width:32px;height:42px}
-.pin-body{width:26px;height:26px;background:var(--sun);border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 4px 16px rgba(245,166,35,.5);animation:pb .5s cubic-bezier(.36,.07,.19,.97)}
-@keyframes pb{0%{transform:rotate(-45deg) translateY(-20px);opacity:0}60%{transform:rotate(-45deg) translateY(4px)}100%{transform:rotate(-45deg);opacity:1}}
+.hint{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center;height:100%;gap:.7rem}
+.hi{font-size:2.2rem;opacity:.3}.ht{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--mut)}
+.hx{font-size:.76rem;color:var(--mut);line-height:1.6;opacity:.7}
 
-/* ── Mobil ───────────────────────── */
-@media (max-width: 700px) {
-  :root { --pw: 100%; --bh: 54px }
-
-  /* Kort fylder hele skærmen */
-  #map { right: 0 !important; bottom: 0 !important; }
-
-  /* Panel som bottom sheet */
-  #panel {
-    top: auto !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    height: 55vh;
-    border-left: none !important;
-    border-top: 1px solid var(--bdr);
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 -4px 24px rgba(0,0,0,.12);
-    transform: translateY(calc(100% - 68px));
-    transition: transform .35s cubic-bezier(.4,0,.2,1);
-    z-index: 500;
-  }
-  #panel.open { transform: translateY(0); }
-
-  /* Handle øverst i panel */
-  #panel::before {
-    content: '';
-    display: block;
-    width: 36px;
-    height: 4px;
-    border-radius: 2px;
-    background: #D0D8E4;
-    margin: 10px auto 0;
-    flex-shrink: 0;
-  }
-
-  /* Tidsslider i bar */
-  #tc { display: none; }
-
-  /* Tidspill svæver over kortet */
-  #tpill {
-    display: flex !important;
-    position: fixed;
-    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-    left: 50%;
-    transform: translateX(-50%);
-    background: #fff;
-    border-radius: 50px;
-    padding: 6px 14px;
-    box-shadow: 0 4px 20px rgba(0,0,0,.15);
-    z-index: 501;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid var(--bdr);
-  }
-
-  /* Søgefelt smallere */
-  #sw { max-width: none; }
-
-  /* Panel-top vises som peek-label */
-  #ptop { cursor: pointer; }
-  #pbody { -webkit-overflow-scrolling: touch; }
-}
-@media (min-width: 701px) {
-  #tpill { display: none !important; }
-}
-
-@media(max-width:700px){
-  #map{right:0!important;bottom:0!important}
-  #panel{display:none!important}
-  #tc{display:none!important}
-  #msheet,#tpill{display:flex!important}
-}
-@media(min-width:701px){
-  #msheet,#dsheet,#tpill{display:none!important}
-}
-#msheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.13);z-index:600;flex-direction:column;max-height:75vh;display:none}
-#msheet-handle{padding:10px 0 6px;display:flex;justify-content:center;cursor:pointer;flex-shrink:0}
-.handle-bar{width:34px;height:4px;border-radius:2px;background:#D0D8E4}
-#msheet-top{padding:0 16px 10px;flex-shrink:0;border-bottom:1px solid var(--bdr)}
-.ms-sun{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700}
-.ms-count{font-size:.71rem;color:var(--mut);margin-top:2px}
-#msheet-body{overflow-y:auto;flex:1;padding:10px 12px 20px;-webkit-overflow-scrolling:touch}
-.mrow{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;cursor:pointer;border:1.5px solid var(--bdr);margin-bottom:7px;background:#fff;transition:opacity .15s}
+/* MOBIL: bottom sheet */
+#msheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.13);z-index:600;display:flex;flex-direction:column;height:45vh;transition:height .3s ease}
+#msheet.tall{height:75vh}
+#msh{padding:10px 0 6px;display:flex;justify-content:center;cursor:pointer;flex-shrink:0}
+.hbar{width:34px;height:4px;border-radius:2px;background:#D0D8E4}
+#mstop{padding:0 16px 10px;flex-shrink:0;border-bottom:1px solid var(--bdr)}
+#mssun{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700}
+#mscount{font-size:.71rem;color:var(--mut);margin-top:2px}
+#msbody{overflow-y:auto;flex:1;padding:10px 12px 12px;-webkit-overflow-scrolling:touch}
+.mrow{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;cursor:pointer;border:1.5px solid var(--bdr);margin-bottom:7px;background:#fff;-webkit-tap-highlight-color:transparent}
 .mrow.sun{border-color:rgba(245,166,35,.35);background:#FFFBF2}
 .mrow:active{opacity:.75}
-.mrow-img{width:48px;height:48px;border-radius:9px;flex-shrink:0;background:var(--lt);display:flex;align-items:center;justify-content:center;font-size:1.3rem;overflow:hidden}
-.mrow-img img{width:48px;height:48px;object-fit:cover;border-radius:9px}
+.mrow-img{width:50px;height:50px;border-radius:9px;flex-shrink:0;background:var(--lt);display:flex;align-items:center;justify-content:center;font-size:1.3rem;overflow:hidden}
+.mrow-img img{width:50px;height:50px;object-fit:cover;border-radius:9px}
 .mrow-info{flex:1;min-width:0}
 .mrow-name{font-weight:600;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mrow-typ{font-size:.7rem;color:var(--mut);margin-top:1px}
 .mrow-meta{font-size:.7rem;color:var(--mut);margin-top:2px}
 .mrow-rat{color:var(--warm);font-weight:600}
-.mrow-badge{flex-shrink:0;font-size:.69rem;font-weight:600;padding:3px 8px;border-radius:50px}
-.mrow-badge.sun{background:var(--pale);color:#8B5E00}
-.mrow-badge.shade{background:#EDF0F5;color:#4A5568}
-#dsheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -6px 28px rgba(0,0,0,.15);z-index:700;flex-direction:column;max-height:92vh;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:none}
+.mbadge{flex-shrink:0;font-size:.69rem;font-weight:600;padding:3px 9px;border-radius:50px}
+.mbadge.sun{background:var(--pale);color:#8B5E00}.mbadge.shade{background:#EDF0F5;color:#4A5568}
+
+/* MOBIL: detail sheet */
+#dsheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -6px 28px rgba(0,0,0,.15);z-index:700;display:flex;flex-direction:column;max-height:92vh;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1)}
 #dsheet.open{transform:translateY(0)}
-#dsheet-handle{padding:10px 0 4px;display:flex;justify-content:center;cursor:pointer;flex-shrink:0}
-#dclose{position:absolute;top:12px;right:14px;width:28px;height:28px;border-radius:50%;background:var(--lt);border:none;cursor:pointer;font-size:.9rem;color:var(--mut)}
-#dsheet-body{overflow-y:auto;flex:1;padding:0 16px 24px;-webkit-overflow-scrolling:touch}
-.d-img{width:100%;height:145px;object-fit:cover;border-radius:12px;margin-bottom:12px;background:var(--lt);display:flex;align-items:center;justify-content:center;font-size:2.5rem;overflow:hidden}
+#dsh{padding:10px 0 4px;display:flex;justify-content:center;cursor:pointer;flex-shrink:0}
+#dcl{position:absolute;top:12px;right:14px;width:28px;height:28px;border-radius:50%;background:var(--lt);border:none;cursor:pointer;font-size:.95rem;color:var(--mut);display:flex;align-items:center;justify-content:center}
+#dsbody{overflow-y:auto;flex:1;padding:0 16px 28px;-webkit-overflow-scrolling:touch}
+.d-img{width:100%;height:145px;border-radius:12px;margin-bottom:12px;background:var(--lt);display:flex;align-items:center;justify-content:center;font-size:2.5rem;overflow:hidden}
 .d-img img{width:100%;height:145px;object-fit:cover;border-radius:12px}
 .d-name{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;line-height:1.2}
 .d-addr{font-size:.74rem;color:var(--mut);margin-top:3px;margin-bottom:10px}
@@ -197,532 +118,510 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .d-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .d-chip{padding:4px 11px;border-radius:50px;font-size:.72rem;font-weight:500;background:var(--lt)}
 .d-chip.sun{background:var(--pale);color:#8B5E00}
-.d-arc-box{background:var(--lt);border-radius:12px;padding:9px;margin-bottom:12px}
-#tpill{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:#fff;border-radius:50px;padding:7px 14px;box-shadow:0 4px 18px rgba(0,0,0,.14);z-index:601;align-items:center;gap:10px;border:1px solid var(--bdr);display:none;white-space:nowrap}
-.tp-lbl{font-size:.6rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
-#tp-dis{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--txt);min-width:2.4rem;text-align:center}
-#tp-sl{width:100px;-webkit-appearance:none;height:3px;border-radius:2px;background:linear-gradient(to right,var(--sun) 50%,#C8D1DC 50%);outline:none;cursor:pointer;touch-action:none}
-#tp-sl::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--sun);border:3px solid #fff;box-shadow:0 1px 8px rgba(0,0,0,.22)}
-#tp-live{background:none;border:none;cursor:pointer;font-size:1.1rem;padding:0;line-height:1}
+.d-arc{background:var(--lt);border-radius:12px;padding:9px;margin-top:8px}
+
+/* MOBIL: tid pill */
+#tpill{position:fixed;bottom:calc(47vh + 10px);left:50%;transform:translateX(-50%);background:#fff;border-radius:50px;padding:7px 14px;box-shadow:0 4px 18px rgba(0,0,0,.14);z-index:601;display:flex;align-items:center;gap:10px;border:1px solid var(--bdr);white-space:nowrap;transition:bottom .3s ease}
+#tpill.tall{bottom:calc(77vh + 10px)}
+.tplbl{font-size:.6rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+#tpdis{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--txt);min-width:2.4rem;text-align:center}
+#tpsl{width:110px;-webkit-appearance:none;height:3px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--sun) 50%,#C8D1DC 50%);touch-action:none}
+#tpsl::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--sun);border:3px solid #fff;box-shadow:0 1px 8px rgba(0,0,0,.22)}
+#tplive{background:none;border:none;cursor:pointer;font-size:1.1rem;padding:0;line-height:1}
+
+/* LOADING + TOAST */
+#loading{position:fixed;inset:0;background:rgba(250,250,248,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;transition:opacity .4s}
+#loading.gone{opacity:0;pointer-events:none}
+.lsun{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE08A,#F5A623);animation:glow 2s ease-in-out infinite;margin-bottom:14px}
+.ltxt{font-family:'Playfair Display',serif;font-size:.9rem;color:var(--mut)}
+#toast{position:fixed;top:calc(var(--bh) + 10px);left:50%;transform:translateX(-50%) translateY(-4px);background:var(--txt);color:#fff;padding:7px 16px;border-radius:50px;font-size:.75rem;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.leaflet-control-attribution{display:none}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  #map{right:0!important}
+  #panel{display:none!important}
+  #tc,#lbtn{display:none!important}
+}
+@media(min-width:701px){
+  #msheet,#dsheet,#tpill{display:none!important}
+}
 </style>
 </head>
 <body>
 <div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
+
+<!-- TOP BAR (delt desktop+mobil) -->
 <div id="bar">
   <a class="logo" href="#"><div class="logo-sun"></div><div class="logo-name">Sol<em>vejr</em></div></a>
   <div id="sw">
     <div id="srch">
-      <svg style="width:15px;height:15px;fill:var(--mut);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
-      <input type="text" id="sinp" placeholder="Søg adresse, café eller restaurant…" autocomplete="off">
-      <button id="sbtn"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
+      <svg style="width:13px;height:13px;fill:var(--mut);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
+      <input id="sinp" type="text" placeholder="Søg adresse eller sted…" autocomplete="off">
+      <button id="sbtn"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
     </div>
     <div id="sug"></div>
   </div>
-  <div id="tc"><div class="tlbl">Tid</div><div id="tdis">--:--</div><input type="range" id="tsl" min="0" max="1439" value="720" step="5"></div>
-  <button id="lbtn" class="on"><span class="dot"></span> Live</button>
+  <div id="tc">
+    <div class="tlbl">Tid</div>
+    <div id="tdis">--:--</div>
+    <input id="tsl" type="range" min="0" max="1439" value="720" step="5">
+  </div>
+  <button id="lbtn" class="on"><span class="dot"></span>Live</button>
 </div>
+
+<!-- MAP -->
 <div id="map"></div>
+
+<!-- DESKTOP PANEL -->
 <div id="panel">
   <div id="ptop">
-    <div class="pname" id="pn">Solvejr</div>
-    <div class="psub" id="ps">Find sol i Danmark</div>
+    <div class="pname" id="pname">Solvejr</div>
+    <div class="psub" id="psub">Find sol i Danmark</div>
     <div id="sind" class="sind shade" style="display:none">
       <div class="sind-ico" id="sico">🌙</div>
-      <div class="sind-txt"><div class="sind-ttl" id="sttl">Ingen sol</div><div class="sind-sub" id="ssub"></div></div>
+      <div><div class="sind-ttl" id="sttl">—</div><div class="sind-sub" id="ssub">—</div></div>
     </div>
-    <div id="badge" class="badge" style="display:none">🏗️ DHM Skyggekort aktivt</div>
   </div>
   <div id="pbody">
-    <div class="hint" id="hint"><div class="hi">🌞</div><div class="ht">Søg en adresse</div><div class="hx">Find caféer og restauranter med sol — eller planlæg fremad med tidslinjen</div></div>
+    <div class="hint" id="hint">
+      <div class="hi">☀️</div><div class="ht">Søg en adresse</div>
+      <div class="hx">Find caféer, restauranter og barer med sol — bygningsskygger beregnes i realtid</div>
+    </div>
     <div id="ds" style="display:none">
       <div class="sgrid">
-        <div class="scard"><div class="slbl">Solopgang</div><div class="sval" id="sr">—</div></div>
-        <div class="scard"><div class="slbl">Solnedgang</div><div class="sval" id="ss">—</div></div>
-        <div class="scard"><div class="slbl">Solhøjde</div><div class="sval" id="sa">—<span class="sunit">°</span></div></div>
-        <div class="scard"><div class="slbl">Retning</div><div class="sval" id="saz">—</div></div>
+        <div class="scard"><div class="slbl">Solopgang</div><div class="sval" id="dsr">—</div></div>
+        <div class="scard"><div class="slbl">Solnedgang</div><div class="sval" id="dss">—</div></div>
+        <div class="scard"><div class="slbl">Solhøjde</div><div class="sval" id="dsa">—<span class="sunit">°</span></div></div>
+        <div class="scard"><div class="slbl">Retning</div><div class="sval" id="dsaz">—</div></div>
       </div>
-      <div class="sectitle">Solbane i dag</div>
-      <div class="arcbox"><canvas id="arc" width="310" height="120"></canvas></div>
-      <div class="sectitle" id="nbt" style="display:none">Steder i nærheden</div>
+      <div class="sectit">Solbane i dag</div>
+      <div class="arcbox"><canvas id="arc" width="300" height="100"></canvas></div>
+      <div class="sectit" id="nltl" style="display:none">Steder i nærheden</div>
       <div class="plist" id="pl"></div>
     </div>
   </div>
 </div>
-<div id="toast"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-var MAP,MK=[],PIN=null,SHL=null,SLA=null,SLO=null,LIV=true;
-var CRH=new Date().getHours()+new Date().getMinutes()/60;
-var TOD=new Date().toISOString().slice(0,10);
-var KEY='AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ',DFT='e807bdf1dd535ce2356f498fc79bccaf';
-var PRICE=['','€','\u20ac\u20ac','\u20ac\u20ac\u20ac','\u20ac\u20ac\u20ac\u20ac'];
-
-function rad(d){return d*Math.PI/180}
-function deg(r){return r*180/Math.PI}
-function sol(lat,lon,dt){
-  var jd=dt.getTime()/86400000+2440587.5,n=jd-2451545,L=(280.46+0.9856474*n)%360;
-  var g=rad(((357.528+0.9856003*n)%360+360)%360),lam=rad(L+1.915*Math.sin(g)+.02*Math.sin(2*g));
-  var eps=rad(23.439-.0000004*n),sd=Math.sin(eps)*Math.sin(lam),cd=Math.cos(Math.asin(sd));
-  var uh=dt.getUTCHours()+dt.getUTCMinutes()/60+dt.getUTCSeconds()/3600;
-  var lst=((6.697375+0.0657098242*n+uh+lon/15)%24+24)%24,ha=rad((lst-12)*15),lr=rad(lat);
-  var sa=Math.sin(lr)*sd+Math.cos(lr)*cd*Math.cos(ha),alt=deg(Math.asin(Math.max(-1,Math.min(1,sa))));
-  var ca=(sd-Math.sin(lr)*sa)/(Math.cos(lr)*Math.cos(rad(alt))),az=deg(Math.acos(Math.max(-1,Math.min(1,ca))));
-  if(Math.sin(ha)>0)az=360-az;
-  return{alt:alt,az:az}
-}
-function shAt(lat,lon,h){var d=new Date(TOD+'T00:00:00+01:00');d.setMinutes(d.getMinutes()+Math.round(h*60));return sol(lat,lon,d)}
-function rs(lat,lon){
-  var ri=null,se=null,pv=null;
-  for(var m=0;m<=1440;m+=5){
-    var d=new Date(TOD+'T00:00:00Z');d.setUTCMinutes(d.getUTCMinutes()-60+m);
-    var a=sol(lat,lon,d).alt;
-    if(pv!==null){if(pv<0&&a>=0&&!ri)ri=m/60-.04;if(pv>=0&&a<0&&!se)se=m/60-.04}
-    pv=a;
-  }
-  return{ri:ri,se:se}
-}
-function ft(h){if(h===null)return'—';return pad(Math.floor(h))+':'+pad(Math.round((h%1)*60))}
-function pad(n){return String(n).padStart(2,'0')}
-function ts(h){return pad(Math.floor(h))+':'+pad(Math.round((h%1)*60)%60)}
-function azl(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(a/22.5)%16]}
-function tst(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2800)}
-
-var tsl=document.getElementById('tsl'),tdi=document.getElementById('tdis');
-function setT(h){CRH=h;tsl.value=Math.round(h*60);tdi.textContent=ts(h);tsl.style.setProperty('--p',(h/24*100).toFixed(1)+'%')}
-tsl.addEventListener('input',function(){
-  LIV=false;document.getElementById('lbtn').classList.remove('on');
-  setT(parseInt(this.value)/60);rfmk();updSh();
-  if(SLA!==null)upP(SLA,SLO,document.getElementById('pn').textContent,document.getElementById('ps').textContent);
-});
-document.getElementById('lbtn').addEventListener('click',function(){LIV=!LIV;this.classList.toggle('on',LIV);if(LIV)goLive()});
-function goLive(){if(!LIV)return;var n=new Date();setT(n.getHours()+n.getMinutes()/60);rfmk();updSh();if(SLA!==null)upP(SLA,SLO,document.getElementById('pn').textContent,document.getElementById('ps').textContent)}
-setInterval(function(){if(LIV)goLive()},60000);
-setT(CRH);
-
-function updSh(){
-  if(!MAP)return;
-  if(SHL){MAP.removeLayer(SHL);SHL=null}
-  var month=pad(new Date(TOD).getMonth()+1);
-  var h=Math.min(21,Math.max(6,Math.round(CRH)));
-  SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
-    {tms:true,opacity:0.65,attribution:'Skygger © SDFE',maxNativeZoom:16,maxZoom:22});
-  SHL.addTo(MAP);
-}
-function showPin(lat,lng,nm){
-  if(PIN){MAP.removeLayer(PIN);PIN=null}
-  var ic=L.divIcon({className:'',html:'<div class="pin-wrap"><div class="pin-body"></div></div>',iconSize:[32,42],iconAnchor:[13,40]});
-  PIN=L.marker([lat,lng],{icon:ic,zIndexOffset:1000}).addTo(MAP);
-  PIN.bindPopup('<b style="font-family:Playfair Display,serif">'+nm+'</b>').openPopup();
-}
-
-function drawArc(lat,lon,ch){
-  var cv=document.getElementById('arc'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height,cy=H-14,r=H-24;
-  ctx.clearRect(0,0,W,H);
-  ctx.beginPath();ctx.moveTo(8,cy);ctx.lineTo(W-8,cy);ctx.strokeStyle='#D0D8E4';ctx.lineWidth=1.5;ctx.stroke();
-  var r2=rs(lat,lon);
-  if(r2.ri){ctx.fillStyle='#B0BACB';ctx.font='9px Outfit,sans-serif';ctx.fillText(ft(r2.ri),Math.max(2,W*r2.ri/24-10),cy+11)}
-  if(r2.se){ctx.fillText(ft(r2.se),Math.min(W-28,W*r2.se/24-10),cy+11)}
-  var pts=[];
-  for(var h=0;h<=24;h+=.2){var p=shAt(lat,lon,h);if(p.alt>0)pts.push({x:W*h/24,y:cy-r*(p.alt/90)})}
-  if(pts.length>1){
-    var g=ctx.createLinearGradient(0,0,0,cy);
-    g.addColorStop(0,'rgba(245,166,35,.25)');g.addColorStop(1,'rgba(245,166,35,0)');
-    ctx.beginPath();ctx.moveTo(pts[0].x,cy);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.lineTo(pts[pts.length-1].x,cy);ctx.closePath();ctx.fillStyle=g;ctx.fill();
-    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.strokeStyle='#F5A623';ctx.lineWidth=2.5;ctx.stroke();
-  }
-  var tx=W*ch/24;
-  ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(tx,cy);ctx.lineTo(tx,8);ctx.strokeStyle='rgba(245,166,35,.5)';ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);
-  var cp=shAt(lat,lon,ch);
-  if(cp.alt>0){
-    var y2=cy-r*(cp.alt/90);
-    ctx.beginPath();ctx.arc(tx,y2,8,0,2*Math.PI);ctx.fillStyle='#F5A623';ctx.shadowColor='rgba(245,166,35,.7)';ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;
-    ctx.beginPath();ctx.arc(tx,y2,3.5,0,2*Math.PI);ctx.fillStyle='#fff';ctx.fill();
-  } else {
-    ctx.beginPath();ctx.arc(tx,cy,5,0,2*Math.PI);ctx.fillStyle='#A0AEC0';ctx.fill();
-  }
-}
-
-function upP(lat,lon,nm,sb){
-  SLA=lat;SLO=lon;
-  document.getElementById('pn').textContent=nm||'Valgt sted';
-  document.getElementById('ps').textContent=sb||lat.toFixed(4)+', '+lon.toFixed(4);
-  var now=new Date(TOD+'T00:00:00+01:00');now.setMinutes(now.getMinutes()+Math.round(CRH*60));
-  var p=sol(lat,lon,now),r2=rs(lat,lon),hs=p.alt>3;
-  var ind=document.getElementById('sind');
-  ind.style.display='flex';ind.className='sind '+(hs?'sun':'shade');
-  document.getElementById('sico').textContent=hs?'☀️':(p.alt>0?'🏙️':'🌙');
-  document.getElementById('sttl').textContent=hs?'Sol på stedet':(p.alt>0?'Mulig skygge':'Ingen sol nu');
-  document.getElementById('ssub').textContent=hs?'Solen er '+p.alt.toFixed(1)+'° fra '+azl(p.az):(p.alt>0?'Tjek skyggekort':'Solopgang: '+ft(r2.ri));
-  document.getElementById('badge').style.display='inline-flex';
-  document.getElementById('sr').textContent=ft(r2.ri);document.getElementById('ss').textContent=ft(r2.se);
-  document.getElementById('sa').innerHTML=p.alt.toFixed(1)+'<span class="sunit">°</span>';
-  document.getElementById('saz').textContent=azl(p.az);
-  drawArc(lat,lon,CRH);
-  document.getElementById('hint').style.display='none';document.getElementById('ds').style.display='block';
-}
-
-function mkI(hs){return L.divIcon({className:'',html:'<div style="width:20px;height:20px;border-radius:50%;background:'+(hs?'#F5A623':'#8A9BB0')+';border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',iconSize:[20,20],iconAnchor:[10,10]})}
-function rfmk(){MK.forEach(function(m){m.setIcon(mkI(shAt(m._a,m._o,CRH).alt>3))})}
-
-function near(lat,lng){
-  MK.forEach(function(m){MAP.removeLayer(m)});MK=[];
-  document.getElementById('pl').innerHTML='';document.getElementById('nbt').style.display='none';
-  var svc=new google.maps.places.PlacesService(document.createElement('div'));
-  var tp=['cafe','restaurant','bar'],tl={cafe:'Café',restaurant:'Restaurant',bar:'Bar'},al=[],dn=0;
-  tp.forEach(function(t){
-    svc.nearbySearch({location:{lat:lat,lng:lng},radius:600,type:t},function(res,status){
-      if(status==='OK'&&res){
-        res.forEach(function(p){
-          if(al.find(function(x){return x.n===p.name}))return;
-          var ph=null;
-          try{if(p.photos&&p.photos.length)ph=p.photos[0].getUrl({maxWidth:140,maxHeight:140})}catch(e){}
-          al.push({
-            n:p.name,
-            la:p.geometry.location.lat(),
-            ln:p.geometry.location.lng(),
-            t:tl[t],
-            ph:ph,
-            rt:p.rating||null,
-            rv:p.user_ratings_total||0,
-            pl:typeof p.price_level==='number'?p.price_level:null
-          });
-        });
-      }
-      dn++;
-      if(dn===tp.length){
-        al.sort(function(a,b){return(b.rt||0)-(a.rt||0)});
-        var li=document.getElementById('pl'),sc=0;
-        al.forEach(function(p){
-          var hs=shAt(p.la,p.ln,CRH).alt>3;if(hs)sc++;
-          var m=L.marker([p.la,p.ln],{icon:mkI(hs)}).addTo(MAP);
-          m._a=p.la;m._o=p.ln;MK.push(m);
-          m.on('click',function(){MAP.setView([p.la,p.ln],17);showPin(p.la,p.ln,p.n);upP(p.la,p.ln,p.n,p.t)});
-          var b=document.createElement('button');
-          b.className='pitem'+(hs?' snow':'');
-          // Billede
-          var imgHtml=p.ph
-            ?('<img class="pimg" src="'+p.ph+'" alt="" loading="lazy">')
-            :'<div class="pimg-ph">🍽️</div>';
-          // Rating
-          var stars='';
-          if(p.rt){for(var i=0;i<5;i++)stars+=i<Math.round(p.rt)?'★':'☆'}
-          // Pris
-          var priceStr=p.pl!==null?PRICE[p.pl]:'';
-          // Meta linje
-          var metaParts=[];
-          if(p.rt)metaParts.push('<span class="prat">'+stars+' '+p.rt.toFixed(1)+'</span><span>('+p.rv+')</span>');
-          if(priceStr)metaParts.push('<span class="pprice">'+priceStr+'</span>');
-          var metaHtml=metaParts.length?'<div class="pmeta">'+metaParts.join('')+'</div>':'';
-          b.innerHTML=imgHtml+'<div class="pinner"><div class="pdot '+(hs?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.n+'</div><div class="ptyp">'+p.t+'</div>'+metaHtml+'</div><div class="psun2 '+(hs?'sun':'shade')+'">'+(hs?'☀️<br>Sol':'🌙<br>Skygge')+'</div></div>';
-          b.addEventListener('click',function(){MAP.setView([p.la,p.ln],17);showPin(p.la,p.ln,p.n);upP(p.la,p.ln,p.n,p.t)});
-          li.appendChild(b);
-        });
-        if(al.length){document.getElementById('nbt').style.display='block';tst('☀️ '+sc+' i sol · 🌙 '+(al.length-sc)+' i skygge')}
-        else tst('Ingen steder fundet');
-      }
-    });
-  });
-}
-
-var sugT=null;
-document.getElementById('sinp').addEventListener('input',function(){
-  var q=this.value.trim(),box=document.getElementById('sug');
-  clearTimeout(sugT);
-  if(q.length<2){box.style.display='none';return}
-  sugT=setTimeout(function(){
-    var ac=new google.maps.places.AutocompleteService();
-    ac.getPlacePredictions({input:q,componentRestrictions:{country:'dk'},language:'da'},function(preds,st){
-      if(st!==google.maps.places.PlacesServiceStatus.OK||!preds){box.style.display='none';return}
-      box.innerHTML=preds.slice(0,5).map(function(p){
-        return '<div class="si" data-pid="'+p.place_id+'"><div><div class="si-m">'+p.structured_formatting.main_text+'</div><div class="si-s">'+(p.structured_formatting.secondary_text||'')+'</div></div></div>';
-      }).join('');
-      box.style.display='block';
-      box.querySelectorAll('.si').forEach(function(el){
-        el.addEventListener('mousedown',function(e){
-          e.preventDefault();
-          var ps=new google.maps.places.PlacesService(document.createElement('div'));
-          ps.getDetails({placeId:this.dataset.pid,fields:['geometry','name','formatted_address']},function(pl,s){
-            if(s!==google.maps.places.PlacesServiceStatus.OK)return;
-            var lat=pl.geometry.location.lat(),lng=pl.geometry.location.lng(),nm=pl.name||pl.formatted_address.split(',')[0];
-            document.getElementById('sinp').value=pl.formatted_address||nm;
-            document.getElementById('sug').style.display='none';
-            MAP.setView([lat,lng],17);showPin(lat,lng,nm);upP(lat,lng,nm,pl.formatted_address||nm);near(lat,lng);
-          });
-        });
-      });
-    });
-  },250);
-});
-document.getElementById('sinp').addEventListener('blur',function(){setTimeout(function(){document.getElementById('sug').style.display='none'},150)});
-
-function srch(){
-  var q=document.getElementById('sinp').value.trim();if(!q)return;
-  document.getElementById('sug').style.display='none';
-  fetch('https://maps.googleapis.com/maps/api/geocode/json?address='+encodeURIComponent(q.includes(',')?q:q+', Danmark')+'&key='+KEY)
-  .then(function(r){return r.json()})
-  .then(function(d){
-    if(d.results&&d.results[0]){
-      var loc=d.results[0].geometry.location,nm=d.results[0].formatted_address.split(',')[0];
-      MAP.setView([loc.lat,loc.lng],17);showPin(loc.lat,loc.lng,nm);
-      upP(loc.lat,loc.lng,nm,d.results[0].formatted_address);near(loc.lat,loc.lng);
-    } else tst('Adresse ikke fundet');
-  }).catch(function(){tst('Søgning fejlede')});
-}
-document.getElementById('sbtn').addEventListener('click',srch);
-document.getElementById('sinp').addEventListener('keydown',function(e){if(e.key==='Enter'){document.getElementById('sug').style.display='none';srch()}});
-
-window.addEventListener('load',function(){
-  MAP=L.map('map',{zoomControl:true,attributionControl:false}).setView([55.676,12.568],17);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(MAP);
-  updSh();
-  MAP.on('click',function(e){
-    if(PIN){MAP.removeLayer(PIN);PIN=null}
-    upP(e.latlng.lat,e.latlng.lng);near(e.latlng.lat,e.latlng.lng);
-  });
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(
-      function(p){MAP.setView([p.coords.latitude,p.coords.longitude],17);upP(p.coords.latitude,p.coords.longitude,'Din placering','GPS');near(p.coords.latitude,p.coords.longitude)},
-      function(){near(55.676,12.568)}
-    );
-  } else near(55.676,12.568);
-  document.getElementById('loading').classList.add('gone');
-});
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
-
-<div id="tpill" style="display:none">
-  <span style="font-size:.6rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.08em">Tid</span>
-  <span id="tpilldis" style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--txt);min-width:2.5rem;text-align:center">--:--</span>
-  <input id="tpillsl" type="range" min="0" max="1439" value="720" step="5" style="width:100px;-webkit-appearance:none;height:3px;border-radius:2px;background:linear-gradient(to right,#F5A623 50%,#CBD3DE 50%);outline:none;cursor:pointer">
-  <button id="tpilllbtn" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:0">&#9728;&#65039;</button>
-</div>
-<script>
-// Mobil responsivt
-(function(){
-  var isMobile = function(){ return window.innerWidth <= 700; };
-
-  // Panel toggle ved tryk på ptop
-  document.getElementById('ptop').addEventListener('click', function(){
-    if(!isMobile()) return;
-    var p = document.getElementById('panel');
-    p.classList.toggle('open');
-  });
-
-  // Sync tidspill med tidsslider
-  var tpillsl = document.getElementById('tpillsl');
-  var tpilldis = document.getElementById('tpilldis');
-  var mainTsl = document.getElementById('tsl');
-  var mainTdis = document.getElementById('tdis');
-
-  function syncPill(h){
-    var H = Math.floor(h), M = Math.round((h%1)*60)%60;
-    var t = String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');
-    if(tpilldis) tpilldis.textContent = t;
-    if(tpillsl) { tpillsl.value = Math.round(h*60); syncSliderBg(tpillsl); }
-  }
-
-  function syncSliderBg(sl){
-    var pct = (parseInt(sl.value)/1439*100).toFixed(1)+'%';
-    sl.style.background = 'linear-gradient(to right,#F5A623 '+pct+',#CBD3DE '+pct+')';
-  }
-
-  if(tpillsl) tpillsl.addEventListener('input', function(){
-    var h = parseInt(this.value)/60;
-    syncSliderBg(this);
-    // Kald den eksisterende setT funktion
-    if(typeof setT === 'function') setT(h);
-    else if(typeof CRH !== 'undefined') {
-      CRH = h;
-      if(mainTsl) mainTsl.value = this.value;
-      if(mainTdis) mainTdis.textContent = tpilldis.textContent;
-      if(typeof updSh === 'function') updSh();
-      if(typeof updateMarkers === 'function') updateMarkers();
-    }
-  });
-
-  // Sync når hoved-slideren ændres
-  if(mainTsl) mainTsl.addEventListener('input', function(){
-    syncPill(parseInt(this.value)/60);
-  });
-
-  // Live knap på pill
-  var tpilllbtn = document.getElementById('tpilllbtn');
-  var mainLbtn = document.getElementById('lbtn');
-  if(tpilllbtn && mainLbtn) {
-    tpilllbtn.addEventListener('click', function(){
-      if(mainLbtn) mainLbtn.click();
-    });
-  }
-
-  // Initial sync
-  setTimeout(function(){
-    if(mainTdis) syncPill(CRH||12);
-  }, 500);
-
-  // Luk panel når man trykker på kortet
-  document.getElementById('map').addEventListener('click', function(){
-    if(!isMobile()) return;
-    document.getElementById('panel').classList.remove('open');
-  });
-})();
-</script>
 
 <!-- MOBIL BOTTOM SHEET -->
 <div id="msheet">
-  <div id="msheet-handle"><div class="handle-bar"></div></div>
-  <div id="msheet-top">
-    <div class="ms-sun" id="ms-sun">Søg en adresse for at finde sol</div>
-    <div class="ms-count" id="ms-count"></div>
+  <div id="msh"><div class="hbar"></div></div>
+  <div id="mstop">
+    <div id="mssun">Søg en adresse for at finde sol</div>
+    <div id="mscount"></div>
   </div>
-  <div id="msheet-body"></div>
+  <div id="msbody"></div>
 </div>
+
 <!-- MOBIL DETAIL SHEET -->
 <div id="dsheet">
-  <div id="dsheet-handle"><div class="handle-bar"></div></div>
-  <button id="dclose">✕</button>
-  <div id="dsheet-body"></div>
+  <div id="dsh"><div class="hbar"></div></div>
+  <button id="dcl">✕</button>
+  <div id="dsbody"></div>
 </div>
+
 <!-- MOBIL TID PILL -->
 <div id="tpill">
-  <div class="tp-lbl">Tid</div>
-  <div id="tp-dis">--:--</div>
-  <input id="tp-sl" type="range" min="0" max="1439" value="720" step="5">
-  <button id="tp-live">☀️</button>
+  <div class="tplbl">Tid</div>
+  <div id="tpdis">--:--</div>
+  <input id="tpsl" type="range" min="0" max="1439" value="720" step="5">
+  <button id="tplive">☀️</button>
 </div>
-<script>
-// ── Mobil ekstra funktioner ────────────────────────
-var PRICE2=['','€','€€','€€€','€€€€'];
 
-// Sync tidsvisning på begge slidere
-var _origSetT = window.setT;
-function setT(h){
-  if(typeof _origSetT === 'function') _origSetT(h);
-  // Sync mobil pill
-  var t = (function(h){var p=String(Math.floor(h)).padStart(2,'0'),m=String(Math.round(h%1*60)%60).padStart(2,'0');return p+':'+m;})(h);
-  var tpd = document.getElementById('tp-dis');
-  var tps = document.getElementById('tp-sl');
-  if(tpd) tpd.textContent = t;
-  if(tps){
-    tps.value = Math.round(h*60);
-    var pct=(Math.round(h*60)/1439*100).toFixed(1)+'%';
-    tps.style.background='linear-gradient(to right,#F5A623 '+pct+',#C8D1DC '+pct+')';
+<div id="toast"></div>
+
+<script>
+// ── Globals ───────────────────────────────────────
+var MAP, MARKERS=[], LIV=true, SHL=null;
+var CRH = new Date().getHours() + new Date().getMinutes()/60;
+var TOD = new Date().toISOString().slice(0,10);
+var SLA=null, SLO=null;
+var PRICE=['','€','€€','€€€','€€€€'];
+var GMKEY='AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ';
+var isMob=function(){return window.innerWidth<=700};
+
+// ── Sol-matematik ─────────────────────────────────
+function pad(n){return String(n).padStart(2,'0')}
+function ts(h){return pad(Math.floor(h))+':'+pad(Math.round(h%1*60)%60)}
+function rad(d){return d*Math.PI/180}
+function deg(r){return r*180/Math.PI}
+function sunPos(lat,lon,date){
+  var jd=date.getTime()/86400000+2440587.5,n=jd-2451545;
+  var L=((280.46+0.9856474*n)%360+360)%360;
+  var g=rad(((357.528+0.9856003*n)%360+360)%360);
+  var lam=rad(L+1.915*Math.sin(g)+0.02*Math.sin(2*g));
+  var eps=rad(23.439-0.0000004*n);
+  var sinD=Math.sin(eps)*Math.sin(lam),cosD=Math.cos(Math.asin(sinD));
+  var UT=date.getUTCHours()+date.getUTCMinutes()/60+date.getUTCSeconds()/3600;
+  var GMST=((6.697375+0.0657098242*n+UT)%24+24)%24;
+  var LST=((GMST+lon/15)%24+24)%24;
+  var HA=rad((LST-12)*15),lr=rad(lat);
+  var sinA=Math.sin(lr)*sinD+Math.cos(lr)*cosD*Math.cos(HA);
+  var alt=deg(Math.asin(Math.max(-1,Math.min(1,sinA))));
+  var cosAz=(sinD-Math.sin(lr)*sinA)/(Math.cos(lr)*Math.cos(rad(alt)));
+  var az=deg(Math.acos(Math.max(-1,Math.min(1,cosAz))));
+  if(Math.sin(HA)>0)az=360-az;
+  return{alt:alt,az:az};
+}
+function shAt(lat,lon,h){
+  var d=new Date(TOD+'T00:00:00Z');
+  d.setUTCMinutes(Math.round(h*60)-60);
+  return sunPos(lat,lon,d);
+}
+function rS(lat,lon){
+  var ri=null,se=null,pv=null;
+  for(var m=0;m<=1440;m+=3){
+    var d=new Date(TOD+'T00:00:00Z');d.setUTCMinutes(m-60);
+    var a=sunPos(lat,lon,d).alt;
+    if(pv!==null){if(pv<0&&a>=0&&!ri)ri=m/60;if(pv>=0&&a<0&&!se)se=m/60;}
+    pv=a;
   }
+  return{ri:ri,se:se};
+}
+function fH(h){if(h===null)return'—';return pad(Math.floor(h))+':'+pad(Math.round(h%1*60)%60)}
+function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(a/22.5)%16]}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2600)}
+
+// ── Skyggekort ─────────────────────────────────────
+function updSh(){
+  if(!MAP)return;
+  if(SHL){MAP.removeLayer(SHL);SHL=null}
+  var p=shAt(SLA||55.676,SLO||12.568,CRH);
+  if(p.alt<=1)return;
+  var month=pad(new Date(TOD).getMonth()+1);
+  var h=Math.min(21,Math.max(6,Math.round(CRH)));
+  var z=MAP.getZoom();
+  var op=z<=16?0.65:Math.max(0,0.65-(z-16)*0.25);
+  if(op<=0)return;
+  SHL=L.tileLayer('https://tiles.fra1.digitaloceanspaces.com/'+month+'/617_72/tiles/'+pad(h)+'/{z}/{x}/{y}.png',
+    {tms:true,opacity:op,attribution:'',maxNativeZoom:16,maxZoom:22});
+  SHL.addTo(MAP);
+  MAP.off('zoomend',MAP._shz);
+  MAP._shz=function(){
+    if(!SHL)return;
+    var z2=MAP.getZoom(),op2=z2<=16?0.65:Math.max(0,0.65-(z2-16)*0.25);
+    if(op2<=0){MAP.removeLayer(SHL);SHL=null;}else SHL.setOpacity(op2);
+  };
+  MAP.on('zoomend',MAP._shz);
 }
 
-// Mobil slider input
-document.getElementById('tp-sl').addEventListener('input', function(){
-  LIV=false;
-  document.getElementById('lbtn').classList.remove('on');
+// ── Tid ────────────────────────────────────────────
+function syncUI(h){
+  var t=ts(h), pct=(Math.round(h*60)/1439*100).toFixed(1)+'%';
+  // Desktop
+  var dsl=document.getElementById('tsl');
+  if(dsl){dsl.value=Math.round(h*60);dsl.style.setProperty('--p',pct);}
+  document.getElementById('tdis').textContent=t;
+  // Mobil pill
+  document.getElementById('tpdis').textContent=t;
+  var msl=document.getElementById('tpsl');
+  msl.value=Math.round(h*60);
+  msl.style.background='linear-gradient(to right,#F5A623 '+pct+',#C8D1DC '+pct+')';
+}
+
+function setT(h){
+  CRH=h; syncUI(h);
+  updSh(); updMarkers();
+  if(SLA!==null) upPanel(SLA,SLO,document.getElementById('pname').textContent);
+}
+
+// Desktop slider
+document.getElementById('tsl').addEventListener('input',function(){
+  LIV=false;document.getElementById('lbtn').classList.remove('on');
   setT(parseInt(this.value)/60);
 });
 
-// Mobil live knap
-document.getElementById('tp-live').addEventListener('click', function(){
+// Mobil slider — direkte event, ingen wrapper
+document.getElementById('tpsl').addEventListener('input',function(){
+  LIV=false;
+  setT(parseInt(this.value)/60);
+});
+
+// Live knapper
+function toggleLive(){
   LIV=!LIV;
   document.getElementById('lbtn').classList.toggle('on',LIV);
   if(LIV){var n=new Date();setT(n.getHours()+n.getMinutes()/60);}
-});
+}
+document.getElementById('lbtn').addEventListener('click',toggleLive);
+document.getElementById('tplive').addEventListener('click',toggleLive);
+setInterval(function(){if(LIV){var n=new Date();setT(n.getHours()+n.getMinutes()/60);}},60000);
 
-// Detail sheet luk
-document.getElementById('dclose').addEventListener('click', function(){
-  var ds=document.getElementById('dsheet');
-  ds.classList.remove('open');
-  setTimeout(function(){ds.style.display='none';},350);
-});
-document.getElementById('dsheet-handle').addEventListener('click', function(){
-  document.getElementById('dclose').click();
-});
-
-// Patch near() til også at bygge mobil-liste
-var _origNear = window.near;
-function near(lat,lon){
-  if(typeof _origNear==='function') _origNear(lat,lon);
-  document.getElementById('ms-count').textContent='Henter steder…';
-  document.getElementById('msheet-body').innerHTML='';
+// ── Sol-bue graf ───────────────────────────────────
+function drawArc(lat,lon,id){
+  var cv=document.getElementById(id||'arc');if(!cv)return;
+  var ctx=cv.getContext('2d'),W=cv.width,H=cv.height,base=H-12,r=H-20;
+  ctx.clearRect(0,0,W,H);
+  ctx.beginPath();ctx.moveTo(6,base);ctx.lineTo(W-6,base);ctx.strokeStyle='#CDD4DF';ctx.lineWidth=1.5;ctx.stroke();
+  var pts=[];
+  for(var h=0;h<=24;h+=0.25){var a=shAt(lat,lon,h);if(a.alt>0)pts.push({x:W*h/24,y:base-r*(a.alt/85)})}
+  if(pts.length>1){
+    var gr=ctx.createLinearGradient(0,0,0,base);gr.addColorStop(0,'rgba(245,166,35,.22)');gr.addColorStop(1,'rgba(245,166,35,0)');
+    ctx.beginPath();ctx.moveTo(pts[0].x,base);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.lineTo(pts[pts.length-1].x,base);ctx.closePath();ctx.fillStyle=gr;ctx.fill();
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(function(p){ctx.lineTo(p.x,p.y)});ctx.strokeStyle='#F5A623';ctx.lineWidth=2;ctx.stroke();
+  }
+  var nx=W*CRH/24,cp=shAt(lat,lon,CRH);
+  ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(nx,base);ctx.lineTo(nx,4);ctx.strokeStyle='rgba(245,166,35,.4)';ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);
+  if(cp.alt>0){var sy=base-r*(cp.alt/85);ctx.beginPath();ctx.arc(nx,sy,6,0,2*Math.PI);ctx.fillStyle='#F5A623';ctx.shadowColor='rgba(245,166,35,.6)';ctx.shadowBlur=10;ctx.fill();ctx.shadowBlur=0;ctx.beginPath();ctx.arc(nx,sy,2.5,0,2*Math.PI);ctx.fillStyle='#fff';ctx.fill();}
+  else{ctx.beginPath();ctx.arc(nx,base,4,0,2*Math.PI);ctx.fillStyle='#9AAAB8';ctx.fill();}
+  var rs=rS(lat,lon);ctx.fillStyle='#9AAAB8';ctx.font='8px Outfit,sans-serif';
+  if(rs.ri)ctx.fillText(fH(rs.ri),Math.max(2,W*rs.ri/24-10),H);
+  if(rs.se)ctx.fillText(fH(rs.se),Math.min(W-28,W*rs.se/24-10),H);
 }
 
-// Patch showPin til at åbne mobil detail sheet
-function showMobileDetail(p){
-  var isSun=typeof shAt==='function'?shAt(p.lat,p.lon,CRH).alt>4:false;
-  var sp=typeof shAt==='function'?shAt(p.lat,p.lon,CRH):{alt:0,az:0};
-  var rs=typeof rS==='function'?rS(p.lat,p.lon):{ri:null,se:null};
-  function fH2(h){if(h===null)return'—';var H=Math.floor(h),M=Math.round(h%1*60)%60;return String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');}
-  function azN2(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(a/22.5)%16];}
+// ── Desktop panel ──────────────────────────────────
+function upPanel(lat,lon,nm){
+  SLA=lat;SLO=lon;
+  document.getElementById('pname').textContent=nm||'Valgt sted';
+  var p=shAt(lat,lon,CRH),isSun=p.alt>4;
+  var si=document.getElementById('sind');si.style.display='flex';si.className='sind '+(isSun?'sun':'shade');
+  document.getElementById('sico').textContent=isSun?'☀️':(p.alt>0?'🏙️':'🌙');
+  document.getElementById('sttl').textContent=isSun?'Sol på stedet':(p.alt>0?'Mulig skygge':'Solen er nede');
+  document.getElementById('ssub').textContent=p.alt.toFixed(1)+'° · '+azN(p.az);
+  var rs=rS(lat,lon);
+  document.getElementById('dsr').textContent=fH(rs.ri);
+  document.getElementById('dss').textContent=fH(rs.se);
+  document.getElementById('dsa').innerHTML=p.alt.toFixed(1)+'<span class="sunit">°</span>';
+  document.getElementById('dsaz').textContent=azN(p.az);
+  drawArc(lat,lon,'arc');
+  document.getElementById('hint').style.display='none';
+  document.getElementById('ds').style.display='block';
+}
+
+// ── Markører ───────────────────────────────────────
+function updMarkers(){
+  MARKERS.forEach(function(m){
+    var isSun=shAt(m.la,m.lo,CRH).alt>4;
+    m.el.style.background=isSun?'#F5A623':'#8A9BB0';
+  });
+}
+
+// ── Mobil detail sheet ─────────────────────────────
+function showDetail(p){
+  var isSun=shAt(p.lat,p.lon,CRH).alt>4;
+  var sp=shAt(p.lat,p.lon,CRH),rs=rS(p.lat,p.lon);
   var imgH=p.photo?'<div class="d-img"><img src="'+p.photo+'" alt=""></div>':'<div class="d-img">🍽️</div>';
   var chips='';
   if(p.rating)chips+='<span class="d-chip"><span style="color:var(--warm);font-weight:700">★ '+p.rating.toFixed(1)+'</span> ('+p.reviews+')</span>';
-  if(p.price!==null&&p.price!==undefined&&PRICE2[p.price])chips+='<span class="d-chip">'+PRICE2[p.price]+'</span>';
+  if(p.price!==null&&PRICE[p.price])chips+='<span class="d-chip">'+PRICE[p.price]+'</span>';
   chips+='<span class="d-chip">'+p.type+'</span>';
   if(isSun)chips+='<span class="d-chip sun">☀️ Sol nu</span>';
-  document.getElementById('dsheet-body').innerHTML=
+  document.getElementById('dsbody').innerHTML=
     imgH+
     '<div class="d-name">'+p.name+'</div>'+
-    '<div class="d-addr">'+(p.address||'')+'</div>'+
+    '<div class="d-addr">'+(p.addr||'')+'</div>'+
     '<div class="d-sind '+(isSun?'sun':'shade')+'">'+
       '<div class="d-sind-ico">'+(isSun?'☀️':'🌙')+'</div>'+
-      '<div><div class="d-sind-ttl">'+(isSun?'Sol på stedet':'Mulig skygge/aften')+'</div>'+
-      '<div class="d-sind-sub">'+sp.alt.toFixed(1)+'° · '+azN2(sp.az)+'</div></div>'+
+      '<div><div class="d-sind-ttl">'+(isSun?'Sol på stedet':'Skygge/aften')+'</div>'+
+      '<div class="d-sind-sub">'+sp.alt.toFixed(1)+'° · '+azN(sp.az)+'</div></div>'+
     '</div>'+
     '<div class="d-chips">'+chips+'</div>'+
     '<div class="sgrid" style="margin-bottom:12px">'+
-      '<div class="scard"><div class="slbl">Solopgang</div><div class="sval">'+fH2(rs.ri)+'</div></div>'+
-      '<div class="scard"><div class="slbl">Solnedgang</div><div class="sval">'+fH2(rs.se)+'</div></div>'+
+      '<div class="scard"><div class="slbl">Solopgang</div><div class="sval">'+fH(rs.ri)+'</div></div>'+
+      '<div class="scard"><div class="slbl">Solnedgang</div><div class="sval">'+fH(rs.se)+'</div></div>'+
       '<div class="scard"><div class="slbl">Solhøjde</div><div class="sval">'+sp.alt.toFixed(1)+'<span class="sunit">°</span></div></div>'+
-      '<div class="scard"><div class="slbl">Retning</div><div class="sval">'+azN2(sp.az)+'</div></div>'+
+      '<div class="scard"><div class="slbl">Retning</div><div class="sval">'+azN(sp.az)+'</div></div>'+
     '</div>'+
     '<div class="sectit" style="margin-bottom:6px">Solbane i dag</div>'+
-    '<div class="d-arc-box"><canvas id="darc" width="290" height="95"></canvas></div>';
+    '<div class="d-arc"><canvas id="darc" width="290" height="95"></canvas></div>';
   var ds=document.getElementById('dsheet');
   ds.style.display='flex';
-  requestAnimationFrame(function(){ds.classList.add('open');});
-  // Tegn arc
-  if(typeof drawArc==='function'){
-    setTimeout(function(){drawArc(p.lat,p.lon,'darc');},80);
-  }
+  requestAnimationFrame(function(){ds.classList.add('open')});
+  setTimeout(function(){drawArc(p.lat,p.lon,'darc')},80);
   MAP.flyTo([p.lat,p.lon],17,{animate:true,duration:0.7});
 }
+document.getElementById('dcl').addEventListener('click',function(){
+  var ds=document.getElementById('dsheet');ds.classList.remove('open');
+  setTimeout(function(){ds.style.display='none'},350);
+});
+document.getElementById('dsh').addEventListener('click',function(){
+  document.getElementById('dcl').click();
+});
 
-// Patch showPlaces til at bygge mobil-liste
-// Override render-funktionen
-var _origShPl = window.shPl;
-window._shPlOrig=function shPlInner(a){
-  if(typeof _origShPl==='function') _origShPl(a);
-  // Byg mobil-liste
-  var mpl=document.getElementById('msheet-body');
-  mpl.innerHTML='';
-  var sunny=0;
-  a.forEach(function(p){
-    var isSun=typeof shAt==='function'?shAt(p.lat,p.lon,CRH).alt>4:false;
-    if(isSun)sunny++;
-    var mimgH=p.photo?'<div class="mrow-img"><img src="'+p.photo+'" alt="" loading="lazy"></div>':'<div class="mrow-img">🍽️</div>';
-    var mmeta=[];
-    if(p.rating)mmeta.push('<span class="mrow-rat">★ '+p.rating.toFixed(1)+'</span><span> ('+p.reviews+')</span>');
-    if(p.price!==null&&p.price!==undefined&&PRICE2[p.price])mmeta.push(PRICE2[p.price]);
-    var mrow=document.createElement('div');
-    mrow.className='mrow'+(isSun?' sun':'');
-    mrow.innerHTML=mimgH+
-      '<div class="mrow-info">'+
-        '<div class="mrow-name">'+p.name+'</div>'+
-        '<div class="mrow-typ">'+p.type+'</div>'+
-        (mmeta.length?'<div class="mrow-meta">'+mmeta.join(' · ')+'</div>':'')+
-      '</div>'+
-      '<div class="mrow-badge '+(isSun?'sun':'shade')+'">'+(isSun?'☀️ Sol':'🌙 Skygge')+'</div>';
-    mrow.addEventListener('click',function(){showMobileDetail(p);});
-    mpl.appendChild(mrow);
+// Bottom sheet toggle
+document.getElementById('msh').addEventListener('click',function(){
+  var ms=document.getElementById('msheet');
+  var pill=document.getElementById('tpill');
+  ms.classList.toggle('tall');
+  pill.classList.toggle('tall');
+});
+
+// ── Google Places ──────────────────────────────────
+function near(lat,lon){
+  MARKERS.forEach(function(m){m.mk.remove()});MARKERS=[];
+  document.getElementById('pl').innerHTML='';
+  document.getElementById('nltl').style.display='none';
+  document.getElementById('msbody').innerHTML='';
+  document.getElementById('mscount').textContent='Henter steder…';
+
+  var svc=new google.maps.places.PlacesService(document.createElement('div'));
+  var types=['cafe','restaurant','bar'];
+  var tlbl={cafe:'Café',restaurant:'Restaurant',bar:'Bar'};
+  var all=[],done=0;
+
+  types.forEach(function(t){
+    svc.nearbySearch({location:{lat:lat,lng:lon},radius:600,type:t},function(res,st){
+      if(st==='OK'&&res){
+        res.forEach(function(p){
+          if(all.find(function(x){return x.name===p.name}))return;
+          var ph=null;
+          try{if(p.photos&&p.photos.length)ph=p.photos[0].getUrl({maxWidth:140,maxHeight:140})}catch(e){}
+          var addr='';try{addr=p.vicinity||''}catch(e){}
+          all.push({
+            name:p.name,lat:p.geometry.location.lat(),lon:p.geometry.location.lng(),
+            type:tlbl[t],photo:ph,rating:p.rating||null,
+            reviews:p.user_ratings_total||0,
+            price:typeof p.price_level==='number'?p.price_level:null,
+            addr:addr
+          });
+        });
+      }
+      done++;
+      if(done===types.length) renderAll(all);
+    });
   });
-  document.getElementById('ms-sun').textContent=sunny+' i sol · '+(a.length-sunny)+' i skygge';
-  document.getElementById('ms-count').textContent=a.length+' steder inden for 600m';
 }
 
-// Init: sync tid pill ved load
-setTimeout(function(){
-  var n=new Date();
-  var h=n.getHours()+n.getMinutes()/60;
-  var t=String(Math.floor(h)).padStart(2,'0')+':'+String(Math.round(h%1*60)%60).padStart(2,'0');
-  var tpd=document.getElementById('tp-dis');if(tpd)tpd.textContent=t;
-  var tps=document.getElementById('tp-sl');
-  if(tps){tps.value=Math.round(h*60);var pct=(Math.round(h*60)/1439*100).toFixed(1)+'%';tps.style.background='linear-gradient(to right,#F5A623 '+pct+',#C8D1DC '+pct+')';}
-},800);
+function renderAll(all){
+  // Sol-steder øverst, derefter rating
+  all.sort(function(a,b){
+    var as=shAt(a.lat,a.lon,CRH).alt>4?1:0;
+    var bs=shAt(b.lat,b.lon,CRH).alt>4?1:0;
+    if(bs!==as)return bs-as;
+    return(b.rating||0)-(a.rating||0);
+  });
+
+  var sunny=0;
+  var dpl=document.getElementById('pl');
+  var mpl=document.getElementById('msbody');
+  dpl.innerHTML=''; mpl.innerHTML='';
+
+  all.forEach(function(p){
+    var isSun=shAt(p.lat,p.lon,CRH).alt>4;
+    if(isSun)sunny++;
+
+    // Markør
+    var el=document.createElement('div');
+    el.style.cssText='width:20px;height:20px;border-radius:50%;background:'+(isSun?'#F5A623':'#8A9BB0')+';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.25)';
+    var icon=L.divIcon({html:el.outerHTML,className:'',iconSize:[20,20],iconAnchor:[10,10]});
+    var mk=L.marker([p.lat,p.lon],{icon:icon}).addTo(MAP);
+    var elRef={style:{background:isSun?'#F5A623':'#8A9BB0'}};
+    MARKERS.push({la:p.lat,lo:p.lon,el:elRef,mk:mk});
+    mk.on('click',function(){
+      upPanel(p.lat,p.lon,p.name);
+      if(isMob()){showDetail(p);}
+      else{MAP.flyTo([p.lat,p.lon],17,{animate:true,duration:0.7});updSh();}
+    });
+
+    // ── Desktop kort ──
+    var imgH=p.photo?'<img class="pimg" src="'+p.photo+'" alt="" loading="lazy">':'<div class="pimg-ph">🍽️</div>';
+    var meta=[];
+    if(p.rating)meta.push('<span class="prat">★ '+p.rating.toFixed(1)+'</span><span> ('+p.reviews+')</span>');
+    if(p.price!==null&&PRICE[p.price])meta.push('<span>'+PRICE[p.price]+'</span>');
+    var btn=document.createElement('button');
+    btn.className='pitem'+(isSun?' snow':'');
+    btn.innerHTML=imgH+'<div class="pinner"><div class="pdot '+(isSun?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.name+'</div><div class="ptyp">'+p.type+'</div>'+(meta.length?'<div class="pmeta">'+meta.join(' · ')+'</div>':'')+'</div><div class="psun2 '+(isSun?'sun':'shade')+'">'+(isSun?'☀️<br>Sol':'🌙<br>Skygge')+'</div></div>';
+    btn.addEventListener('click',function(){MAP.flyTo([p.lat,p.lon],17,{animate:true,duration:0.7});upPanel(p.lat,p.lon,p.name);updSh();});
+    dpl.appendChild(btn);
+
+    // ── Mobil kort ──
+    var mimg=p.photo?'<div class="mrow-img"><img src="'+p.photo+'" alt="" loading="lazy"></div>':'<div class="mrow-img">🍽️</div>';
+    var mmeta=[];
+    if(p.rating)mmeta.push('<span class="mrow-rat">★ '+p.rating.toFixed(1)+'</span><span> ('+p.reviews+')</span>');
+    if(p.price!==null&&PRICE[p.price])mmeta.push(PRICE[p.price]);
+    var mrow=document.createElement('div');
+    mrow.className='mrow'+(isSun?' sun':'');
+    mrow.innerHTML=mimg+'<div class="mrow-info"><div class="mrow-name">'+p.name+'</div><div class="mrow-typ">'+p.type+'</div>'+(mmeta.length?'<div class="mrow-meta">'+mmeta.join(' · ')+'</div>':'')+'</div><div class="mbadge '+(isSun?'sun':'shade')+'">'+(isSun?'☀️ Sol':'🌙 Skygge')+'</div>';
+    mrow.addEventListener('click',function(){showDetail(p);});
+    mpl.appendChild(mrow);
+  });
+
+  if(all.length){
+    document.getElementById('nltl').style.display='block';
+    document.getElementById('mssun').textContent=sunny+' i sol · '+(all.length-sunny)+' i skygge';
+    document.getElementById('mscount').textContent=all.length+' steder inden for 600m';
+    toast('☀️ '+sunny+' i sol · 🌙 '+(all.length-sunny)+' i skygge');
+  }
+}
+
+// ── Søgning ────────────────────────────────────────
+var sugT=null;
+document.getElementById('sinp').addEventListener('input',function(){
+  var q=this.value.trim(),box=document.getElementById('sug');
+  clearTimeout(sugT);if(q.length<2){box.style.display='none';return}
+  sugT=setTimeout(function(){
+    var ac=new google.maps.places.AutocompleteService();
+    ac.getPlacePredictions({input:q,componentRestrictions:{country:'dk'},language:'da'},function(preds,st){
+      if(st!=='OK'||!preds){box.style.display='none';return}
+      box.innerHTML=preds.slice(0,5).map(function(p){return'<div class="si" data-pid="'+p.place_id+'"><div class="si-m">'+p.structured_formatting.main_text+'</div><div class="si-s">'+(p.structured_formatting.secondary_text||'')+'</div></div>'}).join('');
+      box.style.display='block';
+      box.querySelectorAll('.si').forEach(function(el){
+        function go(){
+          var ps=new google.maps.places.PlacesService(document.createElement('div'));
+          ps.getDetails({placeId:el.dataset.pid,fields:['geometry','name','formatted_address']},function(pl,st){
+            if(st!=='OK')return;
+            var lat=pl.geometry.location.lat(),lon=pl.geometry.location.lng(),nm=pl.name||pl.formatted_address.split(',')[0];
+            document.getElementById('sinp').value=nm;box.style.display='none';
+            SLA=lat;SLO=lon;
+            MAP.flyTo([lat,lon],16,{animate:true,duration:0.9});
+            upPanel(lat,lon,nm);near(lat,lon);updSh();
+          });
+        }
+        el.addEventListener('mousedown',function(e){e.preventDefault();go()});
+        el.addEventListener('touchend',function(e){e.preventDefault();go()});
+      });
+    });
+  },240);
+});
+document.getElementById('sinp').addEventListener('blur',function(){setTimeout(function(){document.getElementById('sug').style.display='none'},200)});
+function doSearch(){
+  var q=document.getElementById('sinp').value.trim();if(!q)return;
+  document.getElementById('sug').style.display='none';
+  fetch('https://maps.googleapis.com/maps/api/geocode/json?address='+encodeURIComponent(q+', Danmark')+'&key='+GMKEY)
+  .then(function(r){return r.json()}).then(function(d){
+    if(d.results&&d.results[0]){
+      var loc=d.results[0].geometry.location,nm=d.results[0].formatted_address.split(',')[0];
+      SLA=loc.lat;SLO=loc.lng;
+      MAP.flyTo([loc.lat,loc.lng],16,{animate:true,duration:0.9});
+      upPanel(loc.lat,loc.lng,nm);near(loc.lat,loc.lng);updSh();
+    }else toast('Adresse ikke fundet');
+  }).catch(function(){toast('Søgning fejlede')});
+}
+document.getElementById('sbtn').addEventListener('click',doSearch);
+document.getElementById('sinp').addEventListener('keydown',function(e){if(e.key==='Enter'){document.getElementById('sug').style.display='none';doSearch()}});
+
+// ── Leaflet ────────────────────────────────────────
+MAP=L.map('map',{zoomControl:false}).setView([56.0,10.2],7);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:22}).addTo(MAP);
+L.control.zoom({position:'topright'}).addTo(MAP);
+MAP.on('click',function(e){
+  SLA=e.latlng.lat;SLO=e.latlng.lng;
+  upPanel(SLA,SLO,'Valgt sted');
+  near(SLA,SLO);updSh();
+  if(isMob()){var ds=document.getElementById('dsheet');ds.classList.remove('open');setTimeout(function(){ds.style.display='none'},350);}
+});
+
+// GPS/start
+function init(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(pos){
+      SLA=pos.coords.latitude;SLO=pos.coords.longitude;
+      MAP.flyTo([SLA,SLO],16,{animate:true,duration:1});
+      upPanel(SLA,SLO,'Din placering');near(SLA,SLO);updSh();
+    },function(){goKBH()});
+  }else goKBH();
+}
+function goKBH(){
+  SLA=55.676;SLO=12.568;
+  MAP.flyTo([SLA,SLO],15,{animate:true,duration:1});
+  upPanel(SLA,SLO,'København');near(SLA,SLO);updSh();
+}
+
+setT(CRH);
+init();
+setTimeout(function(){document.getElementById('loading').classList.add('gone')},700);
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
 </body>
 </html>
