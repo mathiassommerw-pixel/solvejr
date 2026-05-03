@@ -170,6 +170,6 @@ window.initMap = function(){ if(window._mapInited) return; window._mapInited = t
 function srch(){var q=document.getElementById('sinp').value.trim();if(!q)return;GC.geocode({address:q.includes(',')?q:q+', Danmark'},function(r,s){if(s==='OK'&&r[0]){var l=r[0].geometry.location;GM.setCenter(l);GM.setZoom(15);upP(l.lat(),l.lng(),r[0].formatted_address.split(',')[0],r[0].formatted_address);near(l.lat(),l.lng())}else tst('Adresse ikke fundet')})}
 window.gm_authFailure=function(){document.getElementById('map').innerHTML='<div style="display:flex;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:1rem;font-family:Outfit,sans-serif;color:#6B7A8D"><div style="font-size:2.5rem">⚠️</div><b>Google Maps fejl</b></div>';document.getElementById('loading').classList.add('hidden')};
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places&callback=initMap"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places&callback=initMap&loading=async" async defer></script>
 </body>
 </html>
