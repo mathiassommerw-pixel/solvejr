@@ -317,7 +317,7 @@ function near(lat,lng){
           m._a=p.la;m._o=p.ln;MK.push(m);
           m.on('click',function(){upP(p.la,p.ln,p.n,p.t)});
           var b=document.createElement('button');b.className='pitem'+(hs?' snow':'');
-          b.innerHTML='<div class="pdot '+(hs?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.n+'</div><div class="ptyp">'+p.t+'</div></div><div class="psun2 '+(hs?'sun':'shade')+'">'+(hs?'☀️ Sol nu':'🌙 Skygge')+'</div>';
+          var imgEl=p.ph?'<img class="pimg" src="'+p.ph+'" alt="">':'<div class="pimg-ph">🍽️</div>';b.innerHTML=imgEl+'<div class="pinfo"><div class="pn2">'+p.n+'</div><div class="ptyp">'+p.t+'</div></div><div class="psun2 '+(hs?'sun':'shade')+'">'+(hs?'☀️ Sol nu':'🌙 Skygge')+'</div>';
           b.addEventListener('click',function(){MAP.panTo([p.la,p.ln]);upP(p.la,p.ln,p.n,p.t)});
           li.appendChild(b);
         });
