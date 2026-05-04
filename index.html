@@ -614,7 +614,7 @@ function renderAll(all){
     if(p.price!==null&&PRICE[p.price])meta.push(PRICE[p.price]);
     var btn=document.createElement('button');
     btn.className='pitem'+(isSun?' snow':'');
-    btn.innerHTML=imgH+'<div class="pinner"><div class="pdot '+(isSun?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.name+'</div><div class="ptyp">'+p.type+'</div>'+(meta.length?'<div class="pmeta">'+meta.join(' · ')+'</div>':'')+'</div><div class="psun2 '+(isSun?'sun':'shade')+'">'+'</div></div>';
+    btn.innerHTML=imgH+'<div class="pinner"><div class="pdot '+(isSun?'sun':'shade')+'"></div><div class="pinfo"><div class="pn2">'+p.name+'</div><div class="ptyp">'+p.type+'</div>'+(meta.length?'<div class="pmeta">'+meta.join(' · ')+'</div>':'')+'</div></div>';
     btn.addEventListener('click',function(){openDetail(p);});
     dpl.appendChild(btn);
     // Mobil
