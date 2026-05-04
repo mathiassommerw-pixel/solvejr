@@ -191,6 +191,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .si-recent-del{background:none;border:none;color:var(--mut);cursor:pointer;font-size:.8rem;padding:2px 4px;opacity:.6}
 .si-recent-del:hover{opacity:1}
 .si-recent-head{padding:6px 15px 4px;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);border-bottom:1px solid var(--bdr)}
+.si-recent{padding:8px 15px;cursor:pointer;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px}.si-recent:hover{background:var(--lt)}.si-recent:last-child{border-bottom:none}.si-recent-icon{color:var(--mut);font-size:.85rem;flex-shrink:0}.si-recent-text{font-size:.83rem;flex:1}.si-recent-del{background:none;border:none;color:var(--mut);cursor:pointer;font-size:.8rem;padding:2px 6px;opacity:.6;flex-shrink:0}.si-recent-del:hover{opacity:1;color:var(--txt)}.si-recent-head{padding:6px 15px 4px;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);border-bottom:1px solid var(--bdr)}
 </style>
 </head>
 <body>
@@ -882,7 +883,33 @@ function showRecent(){
       e.preventDefault();
       var nm=el.dataset.nm;
       document.getElementById('sinp').value=nm;
+ 
+var RKEY='sv_recent';
+function getRecent(){try{return JSON.parse(localStorage.getItem(RKEY)||'[]');}catch(e){return [];}}
+function saveRecent(nm){if(!nm)return;var l=getRecent().filter(function(x){return x!==nm;});l.unshift(nm);localStorage.setItem(RKEY,JSON.stringify(l.slice(0,5)));}
+function delRecent(nm){localStorage.setItem(RKEY,JSON.stringify(getRecent().filter(function(x){return x!==nm;})));}
+function showRecent(){
+  var list=getRecent();
+  var box=document.getElementById('sug');
+  if(!list.length){box.style.display='none';return;}
+  box.innerHTML='<div class="si-recent-head">Seneste søgninger</div>'+
+    list.map(function(nm){return '<div class="si-recent" data-nm="'+nm+'"><span class="si-recent-icon">⏱</span><span class="si-recent-text">'+nm+'</span><button class="si-recent-del" data-del="'+nm+'">✕</button></div>';}).join('');
+  box.style.display='block';
+  box.querySelectorAll('.si-recent').forEach(function(el){
+    function go(e){
+      if(e.target.dataset.del){delRecent(e.target.dataset.del);showRecent();return;}
+      var nm=el.dataset.nm;
+      document.getElementById('sinp').value=nm;
       box.style.display='none';
+      document.getElementById('scl').style.display='block';
+      doSearch();
+    }
+    el.addEventListener('mousedown',function(e){e.preventDefault();go(e);});
+    el.addEventListener('touchend',function(e){e.preventDefault();go(e);});
+  });
+}
+document.getElementById('sinp').addEventListener('focus',function(){if(!this.value)showRecent();});
+     box.style.display='none';
       document.getElementById('scl').style.display='block';
       doSearch();
     });
