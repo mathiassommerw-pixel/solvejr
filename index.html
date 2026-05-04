@@ -224,11 +224,15 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 #gps-btn:hover{background:var(--lt);transform:scale(1.05)}
 @media(max-width:700px){#gps-btn{bottom:calc(47vh + 12px)}}
 
-#month-pill{position:fixed;top:calc(var(--bh)+52px);left:50%;transform:translateX(-50%);background:rgba(255,255,255,.95);border-radius:50px;padding:4px 6px;box-shadow:0 2px 12px rgba(0,0,0,.12);z-index:601;display:flex;align-items:center;gap:2px;border:1px solid var(--bdr)}
-.m-btn{background:none;border:none;cursor:pointer;font-size:.65rem;font-weight:600;padding:3px 7px;border-radius:50px;color:var(--mut);transition:.15s;line-height:1.4;letter-spacing:.02em}
-.m-btn:hover{background:var(--lt);color:var(--txt)}
-.m-btn.active{background:var(--sun);color:#fff}
-@media(min-width:701px){#month-pill{top:calc(var(--bh)+10px);left:auto;right:calc(var(--pw)+16px);transform:none}}
+
+
+
+
+@media(min-width:701px){}
+#mpill{position:fixed;top:calc(var(--bh)+52px);left:50%;transform:translateX(-50%);background:rgba(255,255,255,.95);border-radius:50px;padding:4px 5px;box-shadow:0 2px 12px rgba(0,0,0,.12);z-index:602;display:flex;gap:1px;border:1px solid var(--bdr);white-space:nowrap}
+.mb{background:none;border:none;cursor:pointer;font-size:.62rem;font-weight:600;padding:3px 6px;border-radius:50px;color:var(--mut);transition:.15s}
+.mb:hover,.mb.on{background:var(--sun);color:#fff}
+@media(min-width:701px){#mpill{top:calc(var(--bh)+10px);left:auto;right:calc(var(--pw)+16px);transform:none}}
 </style>
 </head>
 <body>
@@ -1101,9 +1105,7 @@ document.getElementById('gps-btn').addEventListener('click',function(){
   );
 });
 
-document.querySelectorAll('.m-btn').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('.m-btn').forEach(function(b){b.classList.remove('active');});
+document.querySelectorAll(');
     this.classList.add('active');
     CUR_MONTH=pad(parseInt(this.dataset.m));
     updSh();
@@ -1112,14 +1114,16 @@ document.querySelectorAll('.m-btn').forEach(function(btn){
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
-<div id="fav-panel"><div id="fav-head"><div id="fav-title">&#9825; Favoritter</div><button id="fav-cl">&#215;</button></div><div id="fav-body"></div></div><div id="month-pill"><button class="m-btn" data-m="1">Jan</button><button class="m-btn" data-m="2">Feb</button><button class="m-btn" data-m="3">Mar</button><button class="m-btn" data-m="4">Apr</button><button class="m-btn active" data-m="5">Maj</button><button class="m-btn" data-m="6">Jun</button><button class="m-btn" data-m="7">Jul</button><button class="m-btn" data-m="8">Aug</button><button class="m-btn" data-m="9">Sep</button><button class="m-btn" data-m="10">Okt</button><button class="m-btn" data-m="11">Nov</button><button class="m-btn" data-m="12">Dec</button></div>
+<div id="fav-panel"><div id="fav-head"><div id="fav-title">&#9825; Favoritter</div><button id="fav-cl">&#215;</button></div><div id="fav-body"></div></div>
 
-<div id="month-pill"><button class="m-btn" data-m="1">Jan</button><button class="m-btn" data-m="2">Feb</button><button class="m-btn" data-m="3">Mar</button><button class="m-btn" data-m="4">Apr</button><button class="m-btn active" data-m="5">Maj</button><button class="m-btn" data-m="6">Jun</button><button class="m-btn" data-m="7">Jul</button><button class="m-btn" data-m="8">Aug</button><button class="m-btn" data-m="9">Sep</button><button class="m-btn" data-m="10">Okt</button><button class="m-btn" data-m="11">Nov</button><button class="m-btn" data-m="12">Dec</button></div>
+
+
+<div id="mpill"><button class="mb" data-m="1">Jan</button><button class="mb" data-m="2">Feb</button><button class="mb" data-m="3">Mar</button><button class="mb" data-m="4">Apr</button><button class="mb on" data-m="5">Maj</button><button class="mb" data-m="6">Jun</button><button class="mb" data-m="7">Jul</button><button class="mb" data-m="8">Aug</button><button class="mb" data-m="9">Sep</button><button class="mb" data-m="10">Okt</button><button class="mb" data-m="11">Nov</button><button class="mb" data-m="12">Dec</button></div>
 <script>
-document.querySelectorAll('.m-btn').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('.m-btn').forEach(function(b){b.classList.remove('active');});
-    this.classList.add('active');
+document.querySelectorAll('.mb').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.mb').forEach(function(x){x.classList.remove('on');});
+    this.classList.add('on');
     CUR_MONTH=('0'+this.dataset.m).slice(-2);
     updSh();
   });
