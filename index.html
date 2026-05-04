@@ -579,7 +579,7 @@ function loadDetail(p,mobile){
   },function(d,st){
     if(st==='OK'&&d){
       if(d.photos&&d.photos.length){
-        p.photos=d.photos.slice(0,6).map(function(ph){
+        p.photos=d.photos.slice(0,10).map(function(ph){
           try{return ph.getUrl({maxWidth:600,maxHeight:400});}catch(e){return null;}
         }).filter(Boolean);
       }
