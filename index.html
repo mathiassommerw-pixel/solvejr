@@ -509,9 +509,9 @@ function detailHTML(p,W){
       '<div class="d-addr">'+(p.addr||'')+'</div>'+
       openH+
       (links?'<div class="d-links">'+links+'</div>':'')+hoursH+(function(){
-    if(!p.revs||!p.revs.length)return '';
+    if(!p.revArr||!p.revArr.length)return '';
     var h='<div class="d-review-label">Anmeldelser</div><div class="d-reviews">';
-    p.revs.slice(0,5).forEach(function(rv){
+    p.revArr.slice(0,5).forEach(function(rv){
       var stars='';for(var i=0;i<5;i++)stars+=i<rv.rating?'★':'☆';
       var init=(rv.author_name||'?').slice(0,1).toUpperCase();
       var bg=['#F5A623','#E8863A','#6B7A8D','#4A5568','#2D3748'];
@@ -561,10 +561,10 @@ function loadDetail(p,mobile){
         }).filter(Boolean);
       }
       p.openNow=d.opening_hours?d.opening_hours.open_now:null;
-      p.revs=d.reviews||null;
+      p.revArr=d.reviews||null;
       p.reviews=d.reviews||null;
       p.hours=d.opening_hours&&d.opening_hours.weekday_text?d.opening_hours.weekday_text:null;
-      p.revs=d.reviews||null;
+      p.revArr=d.reviews||null;
       p.website=d.website||null;
       p.phone=d.formatted_phone_number||null;
     }
