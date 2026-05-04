@@ -53,7 +53,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .sval{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700}
 .sunit{font-family:'Outfit',sans-serif;font-size:.68rem;color:var(--mut)}
 .sectit{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:7px}
-.arcbox{background:var(--lt);border-radius:12px;padding:9px;margin-bottom:14px}
+
 .plist{display:flex;flex-direction:column;gap:6px}
 .pitem{display:flex;align-items:center;background:#fff;border:1.5px solid var(--bdr);border-radius:11px;cursor:pointer;transition:.18s;text-align:left;width:100%;overflow:hidden}
 .pitem:hover{border-color:var(--sun);box-shadow:0 3px 12px rgba(245,166,35,.1);transform:translateY(-1px)}
@@ -198,8 +198,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
         <div class="scard"><div class="slbl">Solhøjde</div><div class="sval" id="dsa">&#8212;<span class="sunit">°</span></div></div>
         <div class="scard"><div class="slbl">Retning</div><div class="sval" id="dsaz">&#8212;</div></div>
       </div>
-      <div class="sectit">Solbane i dag</div>
-      <div class="arcbox"><canvas id="arc" width="300" height="100"></canvas></div>
+      
       <div class="sectit" id="nltl" style="display:none">Steder i nærheden</div>
       <div class="plist" id="pl"></div>
     </div>
@@ -509,7 +508,7 @@ function loadDetail(p,mobile){
     } else {
       document.getElementById('dpbody').innerHTML=detailHTML(p,270);
     }
-    setTimeout(function(){drawArc(p.lat,p.lon,'darc');},80);
+    
   });
 }
 
