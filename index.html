@@ -743,6 +743,33 @@ setT(CRH);
 setTimeout(updNight,500);setTimeout(function(){document.getElementById('loading').classList.add('gone');},700);
 </script>
 
+(function(){
+  var ds=document.getElementById("dsheet");
+  var startY=0,startT=0,dragging=false;
+  ds.addEventListener("touchstart",function(e){
+    startY=e.touches[0].clientY;
+    startT=Date.now();
+    dragging=true;
+    ds.style.transition="none";
+  },{passive:true});
+  ds.addEventListener("touchmove",function(e){
+    if(!dragging)return;
+    var dy=e.touches[0].clientY-startY;
+    if(dy>0)ds.style.transform="translateY("+dy+"px)";
+  },{passive:true});
+  ds.addEventListener("touchend",function(e){
+    if(!dragging)return;
+    dragging=false;
+    ds.style.transition="transform .35s cubic-bezier(.4,0,.2,1)";
+    var dy=e.changedTouches[0].clientY-startY;
+    var dt=Date.now()-startT;
+    if(dy>80||(dy>30&&dt<300)){
+      document.getElementById("dscl").click();
+    } else {
+      ds.style.transform="";
+    }
+  },{passive:true});
+})();
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
 </body>
 </html>
