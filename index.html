@@ -367,7 +367,7 @@ function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','S
 function updSh(){
   if(!MAP||SLA===null)return;
   if(SHL){MAP.removeLayer(SHL);SHL=null;}
-  var month=pad(new Date(TOD).getMonth()+1);
+  var month=CUR_MONTH||pad(new Date(TOD).getMonth()+1);
   // Brug lokal time direkte til tiles - præcis som shady.dk
   var h=Math.min(21,Math.max(6,Math.round(CRH)));
   // Beregn faktisk solhøjde med SunCalc for opacity
