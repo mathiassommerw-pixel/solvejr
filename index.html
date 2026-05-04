@@ -262,7 +262,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 <div id="panel">
   <div id="ptop">
     <div class="pname" id="pname">Solvejr</div>
-    <div class="psub">Find sol i Danmark</div>
+    <div class="psub">Find sol eller skygge i dit område</div>
     <div id="sind" class="sind shade" style="display:none">
       <div class="sind-ico" id="sico">&#127769;</div>
       <div><div class="sind-ttl" id="sttl">&#8212;</div><div class="sind-sub" id="ssub">&#8212;</div></div>
@@ -750,7 +750,7 @@ function renderAll(all){
     mpl.appendChild(mrow);
   });
   if(all.length){
-    document.getElementById('nltl').style.display='block';
+    var nltl=document.getElementById('nltl');nltl.style.display='block';nltl.textContent=''+all.length+' steder inden for 600m · Find sol eller skygge i dit område';
     
     document.getElementById('mscount').textContent='Find sol eller skygge i dit område · '+all.length+' steder inden for 600m';
     
