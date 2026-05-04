@@ -1,0 +1,18 @@
+{
+  "name": "Solvejr Copenhagen",
+  "short_name": "Solvejr",
+  "description": "Find sol eller skygge i dit område (København)",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFAF8",
+  "theme_color": "#F5A623",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "og-image.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
