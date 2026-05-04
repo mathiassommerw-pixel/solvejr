@@ -223,6 +223,12 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 #gps-btn{position:fixed;bottom:12px;right:12px;width:40px;height:40px;border-radius:50%;background:#fff;border:none;box-shadow:0 2px 10px rgba(0,0,0,.2);cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:500;transition:.2s}
 #gps-btn:hover{background:var(--lt);transform:scale(1.05)}
 @media(max-width:700px){#gps-btn{bottom:calc(47vh + 12px)}}
+
+#month-pill{position:fixed;top:calc(var(--bh)+52px);left:50%;transform:translateX(-50%);background:rgba(255,255,255,.95);border-radius:50px;padding:4px 6px;box-shadow:0 2px 12px rgba(0,0,0,.12);z-index:601;display:flex;align-items:center;gap:2px;border:1px solid var(--bdr)}
+.m-btn{background:none;border:none;cursor:pointer;font-size:.65rem;font-weight:600;padding:3px 7px;border-radius:50px;color:var(--mut);transition:.15s;line-height:1.4;letter-spacing:.02em}
+.m-btn:hover{background:var(--lt);color:var(--txt)}
+.m-btn.active{background:var(--sun);color:#fff}
+@media(min-width:701px){#month-pill{top:calc(var(--bh)+10px);left:auto;right:calc(var(--pw)+16px);transform:none}}
 </style>
 </head>
 <body>
@@ -297,6 +303,7 @@ function updNight(){if(!window.SunCalc||SLA===null)return;var d=new Date(TOD+'T0
 var MAP, MARKERS=[], LIV=true, SHL=null, SPIN=null;
 var CRH=new Date().getHours();
 var TOD=new Date().toISOString().slice(0,10);
+var CUR_MONTH=pad(new Date().getMonth()+1);
 var SLA=null, SLO=null;
 var PRICE=['','€','€€','€€€','€€€€'];
 var GMKEY='AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ';
@@ -361,7 +368,7 @@ function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','S
 function updSh(){
   if(!MAP||SLA===null)return;
   if(SHL){MAP.removeLayer(SHL);SHL=null;}
-  var month=pad(new Date(TOD).getMonth()+1);
+  var month=CUR_MONTH||pad(new Date(TOD).getMonth()+1);
   // Brug lokal time direkte til tiles - præcis som shady.dk
   var h=Math.min(21,Math.max(6,Math.round(CRH)));
   // Beregn faktisk solhøjde med SunCalc for opacity
@@ -1092,6 +1099,15 @@ document.getElementById('gps-btn').addEventListener('click',function(){
     },
     {timeout:10000,enableHighAccuracy:true}
   );
+});
+
+document.querySelectorAll('.m-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.m-btn').forEach(function(b){b.classList.remove('active');});
+    this.classList.add('active');
+    CUR_MONTH=pad(parseInt(this.dataset.m));
+    updSh();
+  });
 });
 </script>
 
