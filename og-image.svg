@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#FAFAF8"/>
+  <!-- Sol -->
+  <defs>
+    <radialGradient id="sun" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FFE08A"/>
+      <stop offset="100%" stop-color="#F5A623"/>
+    </radialGradient>
+  </defs>
+  <circle cx="220" cy="315" r="140" fill="rgba(245,166,35,0.06)"/>
+  <circle cx="220" cy="315" r="110" fill="rgba(245,166,35,0.12)"/>
+  <circle cx="220" cy="315" r="80" fill="url(#sun)"/>
+  <!-- Solvejr tekst -->
+  <text x="380" y="300" font-family="Georgia,serif" font-size="110" font-weight="bold" fill="#1A2332">Sol</text>
+  <text x="600" y="300" font-family="Georgia,serif" font-size="110" font-weight="bold" fill="#F5A623">vejr</text>
+  <!-- Copenhagen -->
+  <text x="383" y="345" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#6B7A8D" letter-spacing="8">COPENHAGEN</text>
+  <!-- Tagline -->
+  <text x="383" y="410" font-family="Arial,sans-serif" font-size="28" fill="#6B7A8D">Find cafeer og restauranter med sol i</text>
+  <text x="383" y="450" font-family="Arial,sans-serif" font-size="28" fill="#6B7A8D">K&#xF8;benhavn</text>
+  <!-- Dekorativ linje -->
+  <rect x="383" y="365" width="60" height="3" rx="1.5" fill="#F5A623"/>
+</svg>
