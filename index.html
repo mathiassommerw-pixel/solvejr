@@ -164,7 +164,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 @media(max-width:700px){
   #map{right:0!important}
   #panel,#dpanel{display:none!important}
-  #tc,#lbtn{display:none!important}#fav-btn{display:block!important}
+  #tc,#lbtn{display:none!important}
 }
 @media(min-width:701px){
   #msheet,#dsheet,#tpill{display:none!important}
@@ -218,7 +218,6 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .fav-heart{font-size:1.2rem;cursor:pointer;padding:4px;background:none;border:none;transition:.15s;line-height:1}
 .fav-heart:hover{transform:scale(1.2)}
 @media(max-width:700px){#fav-panel{top:auto;left:0;right:0;bottom:0;width:100%;border-radius:18px 18px 0 0;border-left:none;max-height:85vh}}
-#mssun,#mscount{display:none}
 </style>
 </head>
 <body>
@@ -272,7 +271,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 </div>
 <div id="msheet">
   <div id="msh"><div class="hbar"></div></div>
-  <div id="mstop"><button id="mob-fav-btn" style="display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;color:var(--mut);padding:2px 0;width:100%"><span style="font-size:1.4rem">&#9825;</span>Mine favoritter</button></div>
+  <div id="mstop" style="display:flex;align-items:center;gap:8px"><div style="flex:1"><div id="mssun">Søg en adresse for at finde sol</div><div id="mscount"></div></div><button id="mob-fav-btn" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--mut);flex-shrink:0;padding:4px 8px;line-height:1">&#9825;</button></div>
   <div id="msbody"></div>
 </div>
 <div id="dsheet">
@@ -1052,8 +1051,8 @@ document.getElementById('fav-btn').addEventListener('click',function(){renderFav
 document.getElementById('fav-cl').addEventListener('click',function(){document.getElementById('fav-panel').classList.remove('open');});
 
 setTimeout(function(){
-  var mfb=document.getElementById('mob-fav-btn');
-  if(mfb){mfb.addEventListener('click',function(){if(typeof renderFavs==='function'){renderFavs();document.getElementById('fav-panel').classList.toggle('open');}});}
+  var b=document.getElementById('mob-fav-btn');
+  if(b)b.addEventListener('click',function(){if(typeof renderFavs==='function'){renderFavs();document.getElementById('fav-panel').classList.toggle('open');}});
 },600);
 </script>
 
