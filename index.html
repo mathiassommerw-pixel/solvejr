@@ -1051,6 +1051,12 @@ function renderFavs(){
 document.getElementById('fav-btn').addEventListener('click',function(){renderFavs();document.getElementById('fav-panel').classList.toggle('open');});
 
 
+
+document.addEventListener('click',function(e){
+  if(e.target && e.target.id==='fav-cl'){
+    document.getElementById('fav-panel').classList.remove('open');
+  }
+});
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
