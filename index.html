@@ -711,7 +711,7 @@ document.getElementById('sinp').addEventListener('input',function(){
             document.getElementById('sinp').value=nm;
             box.style.display='none';
             SLA=lat;SLO=lon;
-            showPin(lat,lon,nm);
+            saveRecent(nm);showPin(lat,lon,nm);
             upPanel(lat,lon,nm);
             near(lat,lon);
             updSh();
@@ -736,13 +736,42 @@ function doSearch(){
       var loc=d.results[0].geometry.location;
       var nm=d.results[0].formatted_address.split(',')[0];
       SLA=loc.lat;SLO=loc.lng;
-      showPin(loc.lat,loc.lng,nm);
+      saveRecent(nm);showPin(loc.lat,loc.lng,nm);
       upPanel(loc.lat,loc.lng,nm);
       near(loc.lat,loc.lng);
       updSh();
     }else toast('Adresse ikke fundet');
   }).catch(function(){toast('Søgning fejlede');});
 }
+
+// Seneste søgninger
+var RKEY='sv_recent';
+function getRecent(){try{return JSON.parse(localStorage.getItem(RKEY)||'[]');}catch(e){return[];}}
+function saveRecent(nm){if(!nm)return;var l=getRecent().filter(function(x){return x!==nm;});l.unshift(nm);localStorage.setItem(RKEY,JSON.stringify(l.slice(0,5)));}
+function delRecent(nm){localStorage.setItem(RKEY,JSON.stringify(getRecent().filter(function(x){return x!==nm;})));}
+function showRecent(){
+  var list=getRecent();var box=document.getElementById('sug');
+  if(!list.length){box.style.display='none';return;}
+  box.innerHTML='<div class="si-recent-head">Seneste søgninger</div>'+list.map(function(nm){
+    return '<div class="si-recent" data-nm="'+encodeURIComponent(nm)+'"><span class="si-recent-icon">⏱</span><span class="si-recent-text">'+nm+'</span><button class="si-recent-del" data-del="'+encodeURIComponent(nm)+'">×</button></div>';
+  }).join('');
+  box.style.display='block';
+  box.querySelectorAll('.si-recent').forEach(function(el){
+    function go(e){
+      var del=e.target.dataset.del;
+      if(del){e.preventDefault();delRecent(decodeURIComponent(del));showRecent();return;}
+      e.preventDefault();
+      var nm=decodeURIComponent(el.dataset.nm);
+      document.getElementById('sinp').value=nm;
+      box.style.display='none';
+      if(document.getElementById('scl'))document.getElementById('scl').style.display='block';
+      doSearch();
+    }
+    el.addEventListener('mousedown',function(e){go(e);});
+    el.addEventListener('touchend',function(e){go(e);});
+  });
+}
+document.getElementById('sinp').addEventListener('focus',function(){if(!this.value)showRecent();});
 document.getElementById('sbtn').addEventListener('click',doSearch);
 document.getElementById('sinp').addEventListener('keydown',function(e){
   if(e.key==='Enter'){document.getElementById('sug').style.display='none';doSearch();}
