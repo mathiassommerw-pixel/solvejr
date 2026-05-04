@@ -783,11 +783,23 @@ function addGalArrows(gal) {
   var prev = document.createElement('button');
   prev.className = 'gal-arrow prev';
   prev.innerHTML = '&#8249;';
-  prev.addEventListener('click', function(e){ e.stopPropagation(); gal.scrollBy({left:-150,behavior:'smooth'}); });
+  prev.addEventListener('click', function(e){
+    e.stopPropagation();
+    var imgs = gal.querySelectorAll('img');
+    if(!imgs.length) return;
+    var imgW = imgs[0].offsetWidth + 6; // bredde + gap
+    gal.scrollBy({left: -imgW, behavior: 'smooth'});
+  });
   var next = document.createElement('button');
   next.className = 'gal-arrow next';
   next.innerHTML = '&#8250;';
-  next.addEventListener('click', function(e){ e.stopPropagation(); gal.scrollBy({left:150,behavior:'smooth'}); });
+  next.addEventListener('click', function(e){
+    e.stopPropagation();
+    var imgs = gal.querySelectorAll('img');
+    if(!imgs.length) return;
+    var imgW = imgs[0].offsetWidth + 6;
+    gal.scrollBy({left: imgW, behavior: 'smooth'});
+  });
   wrap.appendChild(prev);
   wrap.appendChild(next);
 }
