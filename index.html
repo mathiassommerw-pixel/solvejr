@@ -217,7 +217,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .fav-note::placeholder{color:var(--mut)}
 .fav-heart{font-size:1.2rem;cursor:pointer;padding:4px;background:none;border:none;transition:.15s;line-height:1}
 .fav-heart:hover{transform:scale(1.2)}
-@media(max-width:700px){#fav-panel{top:auto;left:0;right:0;bottom:0;width:100%;border-radius:18px 18px 0 0;border-left:none;max-height:85vh;z-index:800}#fav-btn{display:block!important}}
+@media(max-width:700px){#fav-panel{top:auto;left:0;right:0;bottom:0;width:100%;border-radius:18px 18px 0 0;border-left:none;max-height:85vh}}
 </style>
 </head>
 <body>
@@ -271,7 +271,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 </div>
 <div id="msheet">
   <div id="msh"><div class="hbar"></div></div>
-  <div id="mstop" style="display:flex;align-items:center"><div style="flex:1"><div id="mssun">Søg en adresse for at finde sol</div><div id="mscount"></div></div>
+  <div id="mstop"><div id="mssun">Søg en adresse for at finde sol</div><div id="mscount"></div></div>
   <div id="msbody"></div>
 </div>
 <div id="dsheet">
@@ -298,7 +298,7 @@ var GMKEY='AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ';
 function isMob(){return window.innerWidth<=700}
 function pad(n){return String(n).padStart(2,'0')}
 function ts(h){return pad(Math.floor(h))+':'+pad(Math.round(h%1*60)%60)}
-function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){ // addFavHeartt.classList.remove('show')},2600)}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2600)}
 
 // ── Sol-matematik ─────────────────────────────────
 function sunPos(lat,lon,date){
@@ -1049,17 +1049,6 @@ function renderFavs(){
 }
 document.getElementById('fav-btn').addEventListener('click',function(){renderFavs();document.getElementById('fav-panel').classList.toggle('open');});
 document.getElementById('fav-cl').addEventListener('click',function(){document.getElementById('fav-panel').classList.remove('open');});
-
-// Mobil favorit knap
-setTimeout(function(){
-  var mfb=document.getElementById('mob-fav-btn');
-  if(mfb){
-    mfb.addEventListener('click',function(){
-      renderFavs();
-      document.getElementById('fav-panel').classList.toggle('open');
-    });
-  }
-},500);
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
