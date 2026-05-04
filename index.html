@@ -235,6 +235,9 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 @media(min-width:701px){#mpill{top:68px;left:auto;right:calc(var(--pw)+12px);transform:none}}
 .d-maps-btn{display:inline-flex;align-items:center;gap:5px;margin-bottom:12px;padding:7px 14px;border-radius:50px;border:1.5px solid var(--bdr);background:#fff;font-family:"Outfit",sans-serif;font-size:.75rem;font-weight:600;color:var(--txt);text-decoration:none;transition:.15s}
 .d-maps-btn:hover{border-color:var(--sun);background:var(--pale)}
+#weather{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:50px;background:var(--lt);font-size:.72rem;font-weight:500;color:var(--mut);flex-shrink:0;cursor:default}
+#weather .w-icon{font-size:.9rem;line-height:1}
+@media(max-width:700px){#weather{display:none}}
 </style>
 </head>
 <body>
@@ -254,7 +257,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
     <div id="tdis">--:--</div>
     <input id="tsl" type="range" min="0" max="1380" value="720" step="60">
   </div>
-  <button id="fav-btn" title="Mine favoritter">&#9825;</button><button id="lbtn" class="on"><span class="dot"></span>Live</button>
+  <div id="weather"><span class="w-icon">⛅</span><span id="w-txt">Henter vejr...</span></div><button id="fav-btn" title="Mine favoritter">&#9825;</button><button id="lbtn" class="on"><span class="dot"></span>Live</button>
 </div>
 <div id="map"></div><div id="nov"></div>
 <div id="dpanel">
@@ -1126,6 +1129,35 @@ document.getElementById('gps-btn').addEventListener('click',function(){
     {timeout:10000,enableHighAccuracy:true}
   );
 });
+
+// Vejr-integration via Open-Meteo
+function loadWeather(lat,lon){
+  var codes={0:'☀️ Klar',1:'🌤️ Mest klar',2:'⛅ Delvist skyet',3:'☁️ Overskyet',45:'🌫️ Tåge',48:'🌫️ Tåge',51:'🌧️ Let regn',61:'🌧️ Regn',71:'❄️ Sne',80:'🌧️ Byger',95:'⛈️ Tordenvejr'};
+  fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=weathercode,cloudcover,temperature_2m&timezone=Europe/Copenhagen')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var code=d.current.weathercode;
+      var temp=Math.round(d.current.temperature_2m);
+      var cloud=d.current.cloudcover;
+      var label=codes[code]||('⛅ '+cloud+'% skyer');
+      var el=document.getElementById('w-txt');
+      if(el)el.textContent=label+' · '+temp+'°';
+    })
+    .catch(function(){
+      var el=document.getElementById('w-txt');
+      if(el)el.parentNode.style.display='none';
+    });
+}
+// Kald vejr når GPS er klar
+var _origStart=start;
+start=function(lat,lon,nm){
+  _origStart(lat,lon,nm);
+  loadWeather(lat,lon);
+};
+// Opdater vejr hvert 10. minut
+setInterval(function(){
+  if(SLA!==null)loadWeather(SLA,SLO);
+},600000);
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
