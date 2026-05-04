@@ -752,7 +752,7 @@ function renderAll(all){
   if(all.length){
     var nltl=document.getElementById('nltl');nltl.style.display='block';nltl.textContent=''+all.length+' steder inden for 600m · Find sol eller skygge i dit område (København)';
     
-    document.getElementById('mscount').textContent='Find sol eller skygge i dit område (København) · '+all.length+' steder inden for 600m';
+    document.getElementById('mscount').innerHTML='Find sol eller skygge i dit område (København)<br><small style="font-weight:400;opacity:.7">'+all.length+' steder inden for 600m</small>';
     
   }
 }
