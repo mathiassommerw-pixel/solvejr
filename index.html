@@ -182,6 +182,15 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .gal-btn.next{right:8px}
 .logo-city{font-size:.55rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-top:-2px;line-height:1}
 #scl{display:none;background:none;border:none;cursor:pointer;color:var(--mut);font-size:1rem;padding:4px;line-height:1;flex-shrink:0}#scl:hover{color:var(--txt)}
+
+.si-recent{padding:8px 15px;cursor:pointer;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px;transition:background .1s}
+.si-recent:hover,.si-recent:active{background:var(--lt)}
+.si-recent:last-child{border-bottom:none}
+.si-recent-icon{color:var(--mut);font-size:.85rem;flex-shrink:0}
+.si-recent-text{font-size:.83rem;flex:1}
+.si-recent-del{background:none;border:none;color:var(--mut);cursor:pointer;font-size:.8rem;padding:2px 4px;opacity:.6}
+.si-recent-del:hover{opacity:1}
+.si-recent-head{padding:6px 15px 4px;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);border-bottom:1px solid var(--bdr)}
 </style>
 </head>
 <body>
@@ -840,6 +849,59 @@ scl.addEventListener('click',function(){
   document.getElementById('sug').style.display='none';
   sinp.focus();
 });
+
+// Seneste søgninger
+var RECENT_KEY='solvejr_recent';
+var MAX_RECENT=5;
+function getRecent(){try{return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');}catch(e){return [];}}
+function saveRecent(nm){
+  var list=getRecent().filter(function(x){return x!==nm;});
+  list.unshift(nm);
+  list=list.slice(0,MAX_RECENT);
+  localStorage.setItem(RECENT_KEY,JSON.stringify(list));
+}
+function delRecent(nm){
+  localStorage.setItem(RECENT_KEY,JSON.stringify(getRecent().filter(function(x){return x!==nm;})));
+}
+function showRecent(){
+  var list=getRecent();
+  var box=document.getElementById('sug');
+  if(!list.length){box.style.display='none';return;}
+  box.innerHTML='<div class="si-recent-head">Seneste søgninger</div>'+
+    list.map(function(nm){
+      return '<div class="si-recent" data-nm="'+nm+'">'+
+        '<span class="si-recent-icon">⏱</span>'+
+        '<span class="si-recent-text">'+nm+'</span>'+
+        '<button class="si-recent-del" data-del="'+nm+'">&#x2715;</button>'+
+      '</div>';
+    }).join('');
+  box.style.display='block';
+  box.querySelectorAll('.si-recent').forEach(function(el){
+    el.addEventListener('mousedown',function(e){
+      if(e.target.dataset.del){e.preventDefault();delRecent(e.target.dataset.del);showRecent();return;}
+      e.preventDefault();
+      var nm=el.dataset.nm;
+      document.getElementById('sinp').value=nm;
+      box.style.display='none';
+      document.getElementById('scl').style.display='block';
+      doSearch();
+    });
+    el.addEventListener('touchend',function(e){
+      if(e.target.dataset.del){e.preventDefault();delRecent(e.target.dataset.del);showRecent();return;}
+      e.preventDefault();
+      var nm=el.dataset.nm;
+      document.getElementById('sinp').value=nm;
+      box.style.display='none';
+      document.getElementById('scl').style.display='block';
+      doSearch();
+    });
+  });
+}
+// Vis seneste når feltet fokuseres og er tomt
+document.getElementById('sinp').addEventListener('focus',function(){
+  if(!this.value)showRecent();
+});
+
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
