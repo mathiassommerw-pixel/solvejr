@@ -217,7 +217,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .fav-note::placeholder{color:var(--mut)}
 .fav-heart{font-size:1.2rem;cursor:pointer;padding:4px;background:none;border:none;transition:.15s;line-height:1}
 .fav-heart:hover{transform:scale(1.2)}
-@media(max-width:700px){#fav-panel{top:auto;left:0;right:0;bottom:0;width:100%;border-radius:18px 18px 0 0;border-left:none;max-height:85vh}}
+@media(max-width:700px){#fav-panel{position:fixed;top:var(--bh);left:0;right:0;bottom:0;width:100%;border-radius:0;border-left:none;height:auto;z-index:900}#fav-body{overflow-y:scroll!important;-webkit-overflow-scrolling:touch;flex:1}}
 #mssun{display:none!important}
 </style>
 </head>
