@@ -262,7 +262,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 <div id="panel">
   <div id="ptop">
     <div class="pname" id="pname">Solvejr</div>
-    <div class="psub">Find sol eller skygge i dit område</div>
+    <div class="psub">Find sol eller skygge i dit område (København)</div>
     <div id="sind" class="sind shade" style="display:none">
       <div class="sind-ico" id="sico">&#127769;</div>
       <div><div class="sind-ttl" id="sttl">&#8212;</div><div class="sind-sub" id="ssub">&#8212;</div></div>
@@ -286,7 +286,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 </div>
 <div id="msheet">
   <div id="msh"><div class="hbar"></div></div>
-  <div id="mstop" style="display:flex;align-items:center;gap:8px"><div style="flex:1"><div id="mssun">Søg en adresse for at finde sol</div><div id="mscount">Find sol eller skygge i dit område</div></div><button id="mob-fav-btn" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--mut);flex-shrink:0;padding:4px 8px;line-height:1" onclick="renderFavs();document.getElementById('fav-panel').classList.toggle('open')">&#9825;</button></div>
+  <div id="mstop" style="display:flex;align-items:center;gap:8px"><div style="flex:1"><div id="mssun">Søg en adresse for at finde sol</div><div id="mscount">Find sol eller skygge i dit område (København)</div></div><button id="mob-fav-btn" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--mut);flex-shrink:0;padding:4px 8px;line-height:1" onclick="renderFavs();document.getElementById('fav-panel').classList.toggle('open')">&#9825;</button></div>
   <div id="msbody"></div>
 </div>
 <div id="dsheet">
@@ -750,9 +750,9 @@ function renderAll(all){
     mpl.appendChild(mrow);
   });
   if(all.length){
-    var nltl=document.getElementById('nltl');nltl.style.display='block';nltl.textContent=''+all.length+' steder inden for 600m · Find sol eller skygge i dit område';
+    var nltl=document.getElementById('nltl');nltl.style.display='block';nltl.textContent=''+all.length+' steder inden for 600m · Find sol eller skygge i dit område (København)';
     
-    document.getElementById('mscount').textContent='Find sol eller skygge i dit område · '+all.length+' steder inden for 600m';
+    document.getElementById('mscount').textContent='Find sol eller skygge i dit område (København) · '+all.length+' steder inden for 600m';
     
   }
 }
