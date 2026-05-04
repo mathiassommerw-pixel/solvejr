@@ -6,16 +6,7 @@
 <title>Solvejr — Find sol i Danmark</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-// Mobil swipe
-var _ds=document.getElementById('dsheet');
-if(_ds){
-  var _sy=0;
-  _ds.addEventListener('touchstart',function(e){_sy=e.touches[0].clientY;_ds.style.transition='none';},{passive:true});
-  _ds.addEventListener('touchmove',function(e){var dy=e.touches[0].clientY-_sy;if(dy>0)_ds.style.transform='translateY('+dy+'px)';},{passive:true});
-  _ds.addEventListener('touchend',function(e){_ds.style.transition='transform .35s cubic-bezier(.4,0,.2,1)';var dy=e.changedTouches[0].clientY-_sy;if(dy>80)document.getElementById('dscl').click();else _ds.style.transform='';},{passive:true});
-}
-</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -82,11 +73,11 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .hi{font-size:2.2rem;opacity:.3}.ht{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--mut)}
 .hx{font-size:.76rem;color:var(--mut);line-height:1.6;opacity:.7}
 /* Detail panel */
-
-
-
-
-
+#dpanel{position:fixed;top:var(--bh);right:0;bottom:0;width:320px;background:#fff;border-left:1px solid var(--bdr);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:3;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
+#dpanel.open{right:var(--pw)}
+#map.dp{right:calc(var(--pw) + 320px);transition:right .3s cubic-bezier(.4,0,.2,1)}
+#dpcl{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--lt);border:none;cursor:pointer;font-size:.9rem;color:var(--mut);z-index:4;display:flex;align-items:center;justify-content:center}
+#dpbody{overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
 .d-gal{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .d-gal::-webkit-scrollbar{display:none}
 .d-gal img{height:140px;width:auto;border-radius:10px;flex-shrink:0;object-fit:cover}
@@ -108,13 +99,13 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .d-load{padding:40px 16px;text-align:center;color:var(--mut);font-size:.85rem}
 /* Search pin */
 .spin{width:24px;height:36px;display:flex;flex-direction:column;align-items:center}
-.spin-c{width:22px;height:22px;border-radius:50%;background:#E53E3E;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
-.spin-t{width:3px;flex:1;background:#E53E3E;border-radius:0 0 2px 2px}
+.spin-c{width:22px;height:22px;border-radius:50%;background:var(--sun);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.spin-t{width:3px;flex:1;background:var(--sun);border-radius:0 0 2px 2px}
 /* Mobil bottom sheet */
 #msheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.13);z-index:600;display:flex;flex-direction:column;height:45vh;transition:height .3s ease}
 #msheet.tall{height:75vh}
 #msh{padding:10px 0 6px;display:flex;justify-content:center;cursor:pointer;flex-shrink:0}
-.hbar{width:44px;height:5px;border-radius:3px;background:#B0B8C4}
+.hbar{width:34px;height:4px;border-radius:2px;background:#D0D8E4}
 #mstop{padding:0 16px 10px;flex-shrink:0;border-bottom:1px solid var(--bdr)}
 #mssun{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700}
 #mscount{font-size:.71rem;color:var(--mut);margin-top:2px}
@@ -155,7 +146,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .leaflet-control-attribution{display:none}
 @media(max-width:700px){
   #map{right:0!important}
-  #panel,
+  #panel,#dpanel{display:none!important}
   #tc,#lbtn{display:none!important}
 }
 @media(min-width:701px){
@@ -163,7 +154,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 }
 #nov{position:fixed;top:var(--bh);left:0;right:var(--pw);bottom:0;pointer-events:none;z-index:1;background:rgba(10,15,30,0);transition:background 2s ease}
 @media(max-width:700px){#nov{right:0}}
-.arcbox,.d-arc,.sectit{display:none!important}</style>
+</style>
 </head>
 <body>
 <div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
@@ -185,7 +176,10 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
   <button id="lbtn" class="on"><span class="dot"></span>Live</button>
 </div>
 <div id="map"></div><div id="nov"></div>
-
+<div id="dpanel">
+  <button id="dpcl">&#x2715;</button>
+  <div id="dpbody"><div class="d-load">Vaelg et sted</div></div>
+</div>
 <div id="panel">
   <div id="ptop">
     <div class="pname" id="pname">Solvejr</div>
