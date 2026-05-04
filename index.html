@@ -365,7 +365,9 @@ function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','S
 
 // ── Skyggekort ────────────────────────────────────
 function updSh(){
-  if(!MAP||SLA===null)return;
+  if(!MAP)return;
+  // Brug kortets centrum hvis ingen søgning er lavet
+  if(SLA===null){var c=MAP.getCenter();SLA=c.lat;SLO=c.lng;}
   if(SHL){MAP.removeLayer(SHL);SHL=null;}
   var month=CUR_MONTH||pad(new Date(TOD).getMonth()+1);
   // Brug lokal time direkte til tiles - præcis som shady.dk
