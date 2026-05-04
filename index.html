@@ -233,6 +233,8 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 #mpill{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:602;display:flex;flex-direction:row;background:rgba(255,255,255,.9);border-radius:20px;padding:3px 4px;box-shadow:0 1px 8px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.08);white-space:nowrap}
 @media(max-width:700px){#mpill{left:8px;top:120px;transform:none;flex-direction:column;padding:3px;border-radius:14px;z-index:602}}
 @media(min-width:701px){#mpill{top:68px;left:auto;right:calc(var(--pw)+12px);transform:none}}
+.d-maps-btn{display:inline-flex;align-items:center;gap:5px;margin-bottom:12px;padding:7px 14px;border-radius:50px;border:1.5px solid var(--bdr);background:#fff;font-family:"Outfit",sans-serif;font-size:.75rem;font-weight:600;color:var(--txt);text-decoration:none;transition:.15s}
+.d-maps-btn:hover{border-color:var(--sun);background:var(--pale)}
 </style>
 </head>
 <body>
@@ -611,6 +613,24 @@ function loadDetail(p,mobile){
 }
 
 // ── Åbn detail ────────────────────────────────────
+function addMapsLink(p){
+  setTimeout(function(){
+    ['dpbody','dsbody'].forEach(function(id){
+      var body=document.getElementById(id);
+      if(!body||body.querySelector('.d-maps-btn'))return;
+      var addr=body.querySelector('.d-addr');
+      if(!addr)return;
+      var url='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.name+' '+p.addr)+'&query_place_id='+p.placeId;
+      var a=document.createElement('a');
+      a.className='d-maps-btn';
+      a.href=url;
+      a.target='_blank';
+      a.rel='noopener';
+      a.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Åbn i Google Maps';
+      addr.parentNode.insertBefore(a, addr.nextSibling);
+    });
+  },500);
+}
 function addFavHeart(p){
   setTimeout(function(){
     var panels=['dpbody','dsbody'];
@@ -643,13 +663,13 @@ function openDetail(p){
     var ds=document.getElementById('dsheet');
     ds.style.display='flex';
     requestAnimationFrame(function(){ds.classList.add('open');});
-    loadDetail(p,true);addFavHeart(p);
+    loadDetail(p,true);addFavHeart(p);addMapsLink(p);
   } else {
     document.getElementById('dpbody').innerHTML='<div class="d-load">Henter info...</div>';
     document.getElementById('dpanel').classList.add('open');
     
     updSh();
-    loadDetail(p,false);addFavHeart(p);
+    loadDetail(p,false);addFavHeart(p);addMapsLink(p);
   }
 }
 
