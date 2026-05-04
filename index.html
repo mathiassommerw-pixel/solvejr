@@ -169,6 +169,24 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .gal-btn:hover{background:#fff}
 .gal-btn.prev{left:8px}
 .gal-btn.next{right:8px}
+
+#rev-popup{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center}
+#rev-popup.open{display:flex}
+#rev-box{background:#fff;border-radius:16px;width:min(480px,90vw);max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+#rev-head{padding:16px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#rev-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700}
+#rev-close{background:var(--lt);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;color:var(--mut)}
+#rev-body{overflow-y:auto;padding:12px 16px 16px;-webkit-overflow-scrolling:touch}
+.rev-item{padding:12px 0;border-bottom:1px solid var(--bdr)}
+.rev-item:last-child{border-bottom:none}
+.rev-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.rev-av{width:36px;height:36px;border-radius:50%;background:var(--sun);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rev-info{flex:1;min-width:0}
+.rev-name{font-weight:600;font-size:.83rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rev-meta{font-size:.7rem;color:var(--mut);margin-top:1px}
+.rev-stars{color:var(--warm);font-size:.8rem}
+.rev-text{font-size:.78rem;line-height:1.6;color:var(--txt)}
+.rating-btn{cursor:pointer;background:none;border:none;padding:0;font-family:inherit;display:inline-flex;align-items:center;gap:4px;border-bottom:1px dashed var(--warm)}
 </style>
 </head>
 <body>
@@ -237,6 +255,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
   <button id="tplive">&#9728;&#65039;</button>
 </div>
 <div id="toast"></div>
+<div id="rev-popup"><div id="rev-box"><div id="rev-head"><div id="rev-title">Anmeldelser</div><button id="rev-close">×</button></div><div id="rev-body"></div></div></div>
 <script>
 function updNight(){if(!window.SunCalc||SLA===null)return;var d=new Date(TOD+'T00:00:00');d.setHours(Math.floor(CRH),Math.round((CRH%1)*60),0,0);var alt=SunCalc.getPosition(d,SLA,SLO).altitude*180/Math.PI;var dk=alt>6?0:alt>-6?(6-alt)/12*0.3:alt>-18?0.3+(-6-alt)/12*0.4:0.7;var ov=document.getElementById('nov');if(ov)ov.style.background='rgba(10,15,30,'+dk.toFixed(3)+')';}
 // ── State ─────────────────────────────────────────
@@ -469,7 +488,7 @@ function detailHTML(p,W){
     gal='<div style="height:100px;background:var(--lt);display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:12px">&#127869;</div>';
   }
   var chips='';
-  if(p.rating)chips+='<span class="d-chip"><span style="color:var(--warm);font-weight:700">&#9733; '+p.rating.toFixed(1)+'</span> ('+p.reviews+')</span>';
+  if(p.rating)chips+='<button class="rating-btn" onclick="showReviews(\''+p.name+'\',p.googleReviews)"><span style="color:var(--warm);font-weight:700">&#9733; '+p.rating.toFixed(1)+'</span> <span style="color:var(--mut)">('+(p.reviews||0)+' anm.)</span></button>';
   if(p.price!==null&&p.price!==undefined&&PRICE[p.price])chips+='<span class="d-chip">'+PRICE[p.price]+'</span>';
   chips+='<span class="d-chip">'+p.type+'</span>';
   var links='';
@@ -520,7 +539,7 @@ function loadDetail(p,mobile){
   svc.getDetails({
     placeId:p.placeId,
     fields:['name','rating','user_ratings_total','formatted_address',
-            'formatted_phone_number','opening_hours','photos','website','price_level']
+            'formatted_phone_number','opening_hours','photos','website','price_level','reviews']
   },function(d,st){
     if(st==='OK'&&d){
       if(d.photos&&d.photos.length){
@@ -529,6 +548,7 @@ function loadDetail(p,mobile){
         }).filter(Boolean);
       }
       p.openNow=d.opening_hours?d.opening_hours.open_now:null;
+      p.googleReviews=d.reviews||null;
       p.hours=d.opening_hours&&d.opening_hours.weekday_text?d.opening_hours.weekday_text:null;
       p.website=d.website||null;
       p.phone=d.formatted_phone_number||null;
@@ -815,6 +835,27 @@ var _galObs = new MutationObserver(function(muts){
   });
 });
 _galObs.observe(document.body, {childList:true, subtree:true});
+
+// Anmeldelses-popup
+document.getElementById('rev-close').addEventListener('click',function(){
+  document.getElementById('rev-popup').classList.remove('open');
+});
+document.getElementById('rev-popup').addEventListener('click',function(e){
+  if(e.target===this)this.classList.remove('open');
+});
+function showReviews(name,revs){
+  if(!revs||!revs.length)return;
+  var body=document.getElementById('rev-body');
+  var colors=['#F5A623','#E8863A','#6B7A8D','#4A90D9','#7B68EE'];
+  body.innerHTML=revs.map(function(rv){
+    var stars='';for(var i=0;i<5;i++)stars+=i<rv.rating?'&#9733;':'&#9734;';
+    var col=colors[(rv.author_name||'').charCodeAt(0)%colors.length];
+    var init=(rv.author_name||'?').slice(0,1).toUpperCase();
+    return '<div class="rev-item"><div class="rev-top"><div class="rev-av" style="background:'+col+'">'+init+'</div><div class="rev-info"><div class="rev-name">'+rv.author_name+'</div><div class="rev-meta"><span class="rev-stars">'+stars+'</span> · '+rv.relative_time_description+'</div></div></div><div class="rev-text">'+rv.text+'</div></div>';
+  }).join('');
+  document.getElementById('rev-title').textContent=name+' — Anmeldelser';
+  document.getElementById('rev-popup').classList.add('open');
+}
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
