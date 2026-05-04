@@ -218,6 +218,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .fav-heart{font-size:1.2rem;cursor:pointer;padding:4px;background:none;border:none;transition:.15s;line-height:1}
 .fav-heart:hover{transform:scale(1.2)}
 @media(max-width:700px){#fav-panel{top:auto;left:0;right:0;bottom:0;width:100%;border-radius:18px 18px 0 0;border-left:none;max-height:85vh}}
+#mssun{display:none!important}
 </style>
 </head>
 <body>
@@ -271,7 +272,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 </div>
 <div id="msheet">
   <div id="msh"><div class="hbar"></div></div>
-  <div id="mstop" style="display:flex;align-items:center;gap:8px"><div style="flex:1"><div id="mssun">Søg en adresse for at finde sol</div><div id="mscount"></div></div><button id="mob-fav-btn" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--mut);flex-shrink:0;padding:4px 8px;line-height:1">&#9825;</button></div>
+  <div id="mstop" style="display:flex;align-items:center;gap:8px"><div style="flex:1"><div id="mssun">Søg en adresse for at finde sol</div><div id="mscount"></div></div><button id="mob-fav-btn" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--mut);flex-shrink:0;padding:4px 8px;line-height:1" onclick="renderFavs();document.getElementById('fav-panel').classList.toggle('open')">&#9825;</button></div>
   <div id="msbody"></div>
 </div>
 <div id="dsheet">
@@ -1050,10 +1051,6 @@ function renderFavs(){
 document.getElementById('fav-btn').addEventListener('click',function(){renderFavs();document.getElementById('fav-panel').classList.toggle('open');});
 document.getElementById('fav-cl').addEventListener('click',function(){document.getElementById('fav-panel').classList.remove('open');});
 
-setTimeout(function(){
-  var b=document.getElementById('mob-fav-btn');
-  if(b)b.addEventListener('click',function(){if(typeof renderFavs==='function'){renderFavs();document.getElementById('fav-panel').classList.toggle('open');}});
-},600);
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
