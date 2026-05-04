@@ -302,6 +302,7 @@ function updNight(){if(!window.SunCalc||SLA===null)return;var d=new Date(TOD+'T0
 var MAP, MARKERS=[], LIV=true, SHL=null, SPIN=null;
 var CRH=new Date().getHours();
 var TOD=new Date().toISOString().slice(0,10);
+var CUR_MONTH=('0'+(new Date().getMonth()+1)).slice(-2);
 var SLA=null, SLO=null;
 var PRICE=['','€','€€','€€€','€€€€'];
 var GMKEY='AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ';
@@ -1111,7 +1112,7 @@ document.getElementById('gps-btn').addEventListener('click',function(){
     b.addEventListener("click",function(){
       document.querySelectorAll(".mb").forEach(function(x){x.classList.remove("on");});
       this.classList.add("on");
-      window.CUR_MONTH=("0"+parseInt(this.dataset.m)).slice(-2);
+      window.CUR_MONTH=("0"+parseInt(this.dataset.m)).slice(-2);CUR_MONTH=window.CUR_MONTH;
       localStorage.setItem(mkey,this.dataset.m);
       if(typeof updSh==="function")updSh();
     });
