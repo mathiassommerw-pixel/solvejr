@@ -237,7 +237,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .d-maps-btn:hover{border-color:var(--sun);background:var(--pale)}
 #weather{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:50px;background:var(--lt);font-size:.72rem;font-weight:500;color:var(--mut);flex-shrink:0;cursor:default}
 #weather .w-icon{font-size:.9rem;line-height:1}
-@media(max-width:700px){#weather{display:none}}
+@media(max-width:700px){#weather{display:flex;position:fixed;top:calc(var(--bh)+8px);right:8px;z-index:602;padding:3px 10px;font-size:.68rem;background:rgba(255,255,255,.9);border-radius:50px;box-shadow:0 1px 6px rgba(0,0,0,.1);border:1px solid rgba(0,0,0,.08);gap:4px}}
 </style>
 </head>
 <body>
