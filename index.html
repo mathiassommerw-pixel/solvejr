@@ -95,7 +95,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .gal-arrow:hover{background:#fff;transform:translateY(-50%) scale(1.1)}
 .gal-arrow.prev{left:10px}
 .gal-arrow.next{right:10px}
-.d-gal{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;scroll-behavior:smooth}
+.d-gal{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .d-gal::-webkit-scrollbar{display:none}
 .d-gal img{height:140px;width:auto;border-radius:10px;flex-shrink:0;object-fit:cover}
 .d-gal img:first-child{width:100%;height:175px;border-radius:0;object-fit:cover}
@@ -908,27 +908,8 @@ function addGalArrows(gal) {
     e.stopPropagation();
     var imgs = gal.querySelectorAll('img');
     if(!imgs.length) return;
-    var imgW = imgs[0].offsetWidth + 6;
-    var newPos = gal.scrollLeft - imgW;
-    gal.scrollLeft = newPos;
-    // Safari fallback
-    try { gal.scrollTo({left: newPos, behavior: 'smooth'}); } catch(err) { gal.scrollLeft = newPos; }
-  });
-  var next = document.createElement('button');
-  next.className = 'gal-arrow next';
-  next.innerHTML = '&#8250;';
-  next.addEventListener('click', function(e){
-    e.stopPropagation();
-    var imgs = gal.querySelectorAll('img');
-    if(!imgs.length) return;
-    var imgW = imgs[0].offsetWidth + 6;
-    var newPos = gal.scrollLeft + imgW;
-    gal.scrollLeft = newPos;
-    try { gal.scrollTo({left: newPos, behavior: 'smooth'}); } catch(err) { gal.scrollLeft = newPos; }
-  });
-  wrap.appendChild(prev);
-  wrap.appendChild(next);
-});
+    var imgW = imgs[0].offsetWidth + 6; // bredde + gap
+    gal.scrollBy({left: -imgW, behavior: 'smooth'});
   });
   var next = document.createElement('button');
   next.className = 'gal-arrow next';
