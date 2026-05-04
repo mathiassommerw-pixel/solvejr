@@ -2,11 +2,6 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#F5A623">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Solvejr">
 <meta property="og:title" content="Solvejr Copenhagen">
 <meta property="og:description" content="Find cafeer og restauranter med sol i København — bygningsskygger i realtid">
 <meta property="og:image" content="https://mathiassommerw-pixel.github.io/solvejr/og-image.svg">
@@ -238,10 +233,6 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 #mpill{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:602;display:flex;flex-direction:row;background:rgba(255,255,255,.9);border-radius:20px;padding:3px 4px;box-shadow:0 1px 8px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.08);white-space:nowrap}
 @media(max-width:700px){#mpill{left:8px;top:120px;transform:none;flex-direction:column;padding:3px;border-radius:14px;z-index:602}}
 @media(min-width:701px){#mpill{top:68px;left:auto;right:calc(var(--pw)+12px);transform:none}}
-.d-share{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.d-share-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:50px;border:1.5px solid var(--bdr);background:#fff;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:600;color:var(--txt);text-decoration:none;transition:.15s}
-.d-share-btn:hover{border-color:var(--sun);background:var(--pale);color:#8B5E00}
-.d-share-btn svg{width:14px;height:14px;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -573,19 +564,7 @@ function detailHTML(p,W){
       '<div class="d-name">'+p.name+'</div>'+
       '<div class="d-addr">'+(p.addr||'')+'</div>'+
       openH+
-      (links?'<div class="d-links">'+links+'</div>':'')+
-    '<div class="d-share">'+
-      '<a class="d-share-btn" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.name+' '+p.addr)+'&query_place_id='+p.placeId+'" target="_blank" rel="noopener">'+
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>'+
-        'Åbn i Maps'+
-      '</a>'+
-      (navigator.share?
-        '<button class="d-share-btn" onclick="navigator.share({title:''+p.name+'',text:''+p.name+' • '+p.addr+'',url:'https://www.google.com/maps/place/?q=place_id:'+p.placeId+''})">'+
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>'+
-          'Del'+
-        '</button>':'')+
-    '</div>'+
-    hoursH+
+      (links?'<div class="d-links">'+links+'</div>':'')+hoursH+
       '<div class="d-sind '+(isSun?'sun':'shade')+'">'+
         '<div class="d-sind-ico">'+(isSun?'☀️':'🌙')+'</div>'+
         '<div><div class="d-sind-ttl">'+'</div>'+
@@ -773,7 +752,7 @@ function renderAll(all){
   if(all.length){
     var nltl=document.getElementById('nltl');nltl.style.display='block';nltl.textContent=''+all.length+' steder inden for 600m · Find sol eller skygge i dit område (København)';
     
-    document.getElementById('mscount').innerHTML='Find sol eller skygge i dit område (København)<br><small style="font-weight:400;opacity:.7">'+all.length+' steder inden for 600m</small>';
+    document.getElementById('mscount').textContent='Find sol eller skygge i dit område (København) · '+all.length+' steder inden for 600m';
     
   }
 }
@@ -1147,6 +1126,5 @@ document.getElementById('gps-btn').addEventListener('click',function(){
   });
 })();
 </script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
 </body>
 </html>
