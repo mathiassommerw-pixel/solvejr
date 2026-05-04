@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-<meta charset="UTF-8"><!-- v1777926395427 -->
+<meta charset="UTF-8">
 <meta property="og:title" content="Solvejr Copenhagen">
 <meta property="og:description" content="Find cafeer og restauranter med sol i København — bygningsskygger i realtid">
 <meta property="og:image" content="https://mathiassommerw-pixel.github.io/solvejr/og-image.svg">
@@ -223,16 +223,6 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 #gps-btn{position:fixed;bottom:12px;right:12px;width:40px;height:40px;border-radius:50%;background:#fff;border:none;box-shadow:0 2px 10px rgba(0,0,0,.2);cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:500;transition:.2s}
 #gps-btn:hover{background:var(--lt);transform:scale(1.05)}
 @media(max-width:700px){#gps-btn{bottom:calc(47vh + 12px)}}
-
-
-
-
-
-@media(min-width:701px){}
-#mpill{position:fixed;top:calc(var(--bh)+52px);left:50%;transform:translateX(-50%);background:rgba(255,255,255,.95);border-radius:50px;padding:4px 5px;box-shadow:0 2px 12px rgba(0,0,0,.12);z-index:602;display:flex;gap:1px;border:1px solid var(--bdr);white-space:nowrap}
-.mb{background:none;border:none;cursor:pointer;font-size:.62rem;font-weight:600;padding:3px 6px;border-radius:50px;color:var(--mut);transition:.15s}
-.mb:hover,.mb.on{background:var(--sun);color:#fff}
-@media(min-width:701px){#mpill{top:calc(var(--bh)+10px);left:auto;right:calc(var(--pw)+16px);transform:none}}
 </style>
 </head>
 <body>
@@ -307,7 +297,6 @@ function updNight(){if(!window.SunCalc||SLA===null)return;var d=new Date(TOD+'T0
 var MAP, MARKERS=[], LIV=true, SHL=null, SPIN=null;
 var CRH=new Date().getHours();
 var TOD=new Date().toISOString().slice(0,10);
-var CUR_MONTH=pad(new Date().getMonth()+1);
 var SLA=null, SLO=null;
 var PRICE=['','€','€€','€€€','€€€€'];
 var GMKEY='AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ';
@@ -372,7 +361,7 @@ function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','S
 function updSh(){
   if(!MAP||SLA===null)return;
   if(SHL){MAP.removeLayer(SHL);SHL=null;}
-  var month=CUR_MONTH||pad(new Date(TOD).getMonth()+1);
+  var month=pad(new Date(TOD).getMonth()+1);
   // Brug lokal time direkte til tiles - præcis som shady.dk
   var h=Math.min(21,Math.max(6,Math.round(CRH)));
   // Beregn faktisk solhøjde med SunCalc for opacity
@@ -751,7 +740,7 @@ function renderAll(all){
     document.getElementById('nltl').style.display='block';
     document.getElementById('mssun').textContent=sunny+' i sol · '+(all.length-sunny)+' i skygge';
     document.getElementById('mscount').textContent=all.length+' steder inden for 600m';
-    
+    toast('☀️ '+sunny+' i sol · 🌙 '+(all.length-sunny)+' i skygge');
   }
 }
 
@@ -1104,30 +1093,8 @@ document.getElementById('gps-btn').addEventListener('click',function(){
     {timeout:10000,enableHighAccuracy:true}
   );
 });
-
-document.querySelectorAll(');
-    this.classList.add('active');
-    CUR_MONTH=pad(parseInt(this.dataset.m));
-    updSh();
-  });
-});
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
-<div id="fav-panel"><div id="fav-head"><div id="fav-title">&#9825; Favoritter</div><button id="fav-cl">&#215;</button></div><div id="fav-body"></div></div>
-
-
-
-<div id="mpill"><button class="mb" data-m="1">Jan</button><button class="mb" data-m="2">Feb</button><button class="mb" data-m="3">Mar</button><button class="mb" data-m="4">Apr</button><button class="mb on" data-m="5">Maj</button><button class="mb" data-m="6">Jun</button><button class="mb" data-m="7">Jul</button><button class="mb" data-m="8">Aug</button><button class="mb" data-m="9">Sep</button><button class="mb" data-m="10">Okt</button><button class="mb" data-m="11">Nov</button><button class="mb" data-m="12">Dec</button></div>
-<script>
-document.querySelectorAll('.mb').forEach(function(b){
-  b.addEventListener('click',function(){
-    document.querySelectorAll('.mb').forEach(function(x){x.classList.remove('on');});
-    this.classList.add('on');
-    CUR_MONTH=('0'+this.dataset.m).slice(-2);
-    updSh();
-  });
-});
-</script>
-</body>
+<div id="fav-panel"><div id="fav-head"><div id="fav-title">&#9825; Favoritter</div><button id="fav-cl">&#215;</button></div><div id="fav-body"></div></div></body>
 </html>
