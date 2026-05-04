@@ -743,7 +743,7 @@ if(navigator.geolocation){
 setT(CRH);
 setTimeout(updNight,500);setTimeout(function(){document.getElementById('loading').classList.add('gone');},700);
 </script>
-
+<script>
 (function(){
   var ds=document.getElementById("dsheet");
   var startY=0,startT=0,dragging=false;
@@ -771,6 +771,7 @@ setTimeout(updNight,500);setTimeout(function(){document.getElementById('loading'
     }
   },{passive:true});
 })();
+</script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
 </body>
 </html>
