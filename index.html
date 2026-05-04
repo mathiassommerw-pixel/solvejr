@@ -295,7 +295,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 function updNight(){if(!window.SunCalc||SLA===null)return;var d=new Date(TOD+'T00:00:00');d.setHours(Math.floor(CRH),Math.round((CRH%1)*60),0,0);var alt=SunCalc.getPosition(d,SLA,SLO).altitude*180/Math.PI;var dk=alt>6?0:alt>-6?(6-alt)/12*0.3:alt>-18?0.3+(-6-alt)/12*0.4:0.7;var ov=document.getElementById('nov');if(ov)ov.style.background='rgba(10,15,30,'+dk.toFixed(3)+')';}
 // ── State ─────────────────────────────────────────
 var MAP, MARKERS=[], LIV=true, SHL=null, SPIN=null;
-var CRH=new Date().getHours()+new Date().getMinutes()/60;
+var CRH=new Date().getHours();
 var TOD=new Date().toISOString().slice(0,10);
 var SLA=null, SLO=null;
 var PRICE=['','€','€€','€€€','€€€€'];
@@ -401,7 +401,8 @@ function showPin(lat,lon,nm){
 
 // ── Tid ───────────────────────────────────────────
 function syncUI(h){
-  var t=ts(h),pct=(Math.round(h*60)/1439*100).toFixed(1)+'%';
+  h=Math.round(h); // Rund til hele time
+  var t=ts(h),pct=(h*60/1380*100).toFixed(1)+'%';
   var dsl=document.getElementById('tsl');
   if(dsl){dsl.value=Math.round(h*60);dsl.style.setProperty('--p',pct);}
   document.getElementById('tdis').textContent=t;
@@ -411,7 +412,7 @@ function syncUI(h){
   ms.style.background='linear-gradient(to right,#F5A623 '+pct+',#C8D1DC '+pct+')';
 }
 function setT(h){
-  CRH=h;syncUI(h);updSh();updMk();updNight();
+  h=Math.round(h);CRH=h;syncUI(h);updSh();updMk();updNight();
   if(SLA!==null)upPanel(SLA,SLO,document.getElementById('pname').textContent);
 }
 document.getElementById('tsl').addEventListener('input',function(){
@@ -423,11 +424,11 @@ document.getElementById('tpsl').addEventListener('input',function(){
 });
 function toggleLive(){
   LIV=!LIV;document.getElementById('lbtn').classList.toggle('on',LIV);
-  if(LIV){var n=new Date();setT(n.getHours()+n.getMinutes()/60);}
+  if(LIV){var n=new Date();setT(n.getHours());}
 }
 document.getElementById('lbtn').addEventListener('click',toggleLive);
 document.getElementById('tplive').addEventListener('click',toggleLive);
-setInterval(function(){if(LIV){var n=new Date();setT(n.getHours()+n.getMinutes()/60);}},60000);
+setInterval(function(){if(LIV){var n=new Date();setT(n.getHours());}},60000);
 
 // ── Sol-bue ───────────────────────────────────────
 function drawArc(lat,lon,id){
