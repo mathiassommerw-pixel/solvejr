@@ -592,6 +592,30 @@ function loadDetail(p,mobile){
 }
 
 // ── Åbn detail ────────────────────────────────────
+function addFavHeart(p){
+  setTimeout(function(){
+    var panels=['dpbody','dsbody'];
+    panels.forEach(function(id){
+      var body=document.getElementById(id);
+      if(!body)return;
+      var dname=body.querySelector('.d-name');
+      if(!dname||dname.parentNode.querySelector('.fav-heart'))return;
+      var wrap=document.createElement('div');
+      wrap.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:3px';
+      dname.parentNode.insertBefore(wrap,dname);
+      wrap.appendChild(dname);
+      var btn=document.createElement('button');
+      btn.className='fav-heart';
+      btn.innerHTML=isFav(p.placeId)?'&#9829;':'&#9825;';
+      btn.style.color=isFav(p.placeId)?'#E53E3E':'var(--mut)';
+      btn.style.cssText+='font-size:1.4rem;cursor:pointer;background:none;border:none;padding:4px;line-height:1;transition:.15s';
+      btn.addEventListener('click',function(){
+        toggleFav(p,btn);
+      });
+      wrap.appendChild(btn);
+    });
+  },400);
+}
 function openDetail(p){
   showPin(p.lat,p.lon,p.name);
   upPanel(p.lat,p.lon,p.name);
@@ -600,13 +624,13 @@ function openDetail(p){
     var ds=document.getElementById('dsheet');
     ds.style.display='flex';
     requestAnimationFrame(function(){ds.classList.add('open');});
-    loadDetail(p,true);
+    loadDetail(p,true);addFavHeart(p);
   } else {
     document.getElementById('dpbody').innerHTML='<div class="d-load">Henter info...</div>';
     document.getElementById('dpanel').classList.add('open');
     
     updSh();
-    loadDetail(p,false);
+    loadDetail(p,false);addFavHeart(p);
   }
 }
 
