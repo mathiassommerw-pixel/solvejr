@@ -154,7 +154,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 }
 #nov{position:fixed;top:var(--bh);left:0;right:var(--pw);bottom:0;pointer-events:none;z-index:1;background:rgba(10,15,30,0);transition:background 2s ease}
 @media(max-width:700px){#nov{right:0}}
-.arcbox,.d-arc{display:none!important}#dsh{min-height:48px!important;padding:16px 0 12px!important}.hbar{width:44px!important;height:5px!important;border-radius:3px!important;background:#B0B8C4!important}</style>
+.arcbox,.d-arc{display:none!important}#dsh{min-height:48px!important;padding:16px 0 12px!important}.hbar{width:44px!important;height:5px!important;background:#B0B8C4!important}</style>
 </head>
 <body>
 <div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
@@ -210,7 +210,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
   <div id="mstop"><div id="mssun">Søg en adresse for at finde sol</div><div id="mscount"></div></div>
   <div id="msbody"></div>
 </div>
-<div id="dsheet">
+<div id="dsheet" ontouchstart="this._y=event.touches[0].clientY;this.style.transition='none'" ontouchmove="var dy=event.touches[0].clientY-this._y;if(dy>0)this.style.transform='translateY('+dy+'px')" ontouchend="this.style.transition='transform .35s';var dy=event.changedTouches[0].clientY-this._y;if(dy>80)document.getElementById('dscl').click();else this.style.transform=''">
   <div id="dshandle"><div class="hbar"></div></div>
   <button id="dscl">&#x2715;</button>
   <div id="dsbody"></div>
@@ -743,33 +743,6 @@ setT(CRH);
 setTimeout(updNight,500);setTimeout(function(){document.getElementById('loading').classList.add('gone');},700);
 </script>
 
-(function(){
-  var ds=document.getElementById("dsheet");
-  var startY=0,startT=0,dragging=false;
-  ds.addEventListener("touchstart",function(e){
-    startY=e.touches[0].clientY;
-    startT=Date.now();
-    dragging=true;
-    ds.style.transition="none";
-  },{passive:true});
-  ds.addEventListener("touchmove",function(e){
-    if(!dragging)return;
-    var dy=e.touches[0].clientY-startY;
-    if(dy>0)ds.style.transform="translateY("+dy+"px)";
-  },{passive:true});
-  ds.addEventListener("touchend",function(e){
-    if(!dragging)return;
-    dragging=false;
-    ds.style.transition="transform .35s cubic-bezier(.4,0,.2,1)";
-    var dy=e.changedTouches[0].clientY-startY;
-    var dt=Date.now()-startT;
-    if(dy>80||(dy>30&&dt<300)){
-      document.getElementById("dscl").click();
-    } else {
-      ds.style.transform="";
-    }
-  },{passive:true});
-})();
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
-<script>document.getElementById("dsheet").addEventListener("touchstart",function(e){this._y=e.touches[0].clientY;this.style.transition="none";},{passive:true});document.getElementById("dsheet").addEventListener("touchmove",function(e){var dy=e.touches[0].clientY-this._y;if(dy>0)this.style.transform="translateY("+dy+"px)";},{passive:true});document.getElementById("dsheet").addEventListener("touchend",function(e){this.style.transition="transform .35s cubic-bezier(.4,0,.2,1)";var dy=e.changedTouches[0].clientY-this._y;if(dy>80)document.getElementById("dscl").click();else this.style.transform="";},{passive:true});</script></body>
+</body>
 </html>
