@@ -868,7 +868,20 @@ function start(lat,lon,nm){
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(
     function(pos){start(pos.coords.latitude,pos.coords.longitude,'Din placering');},
-    function(){start(55.676,12.568,'København');}
+    function(err){
+      // GPS fejlede - prøv IP-baseret lokation
+      fetch('https://ipapi.co/json/')
+        .then(function(r){return r.json();})
+        .then(function(d){
+          if(d.latitude&&d.longitude){
+            start(d.latitude,d.longitude,'Din omtrentlige placering');
+          } else {
+            start(55.676,12.568,'København');
+          }
+        })
+        .catch(function(){start(55.676,12.568,'København');});
+    },
+    {timeout:8000, enableHighAccuracy:false}
   );
 }else{start(55.676,12.568,'København');}
 setT(CRH);
