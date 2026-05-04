@@ -2,6 +2,11 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#F5A623">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Solvejr">
 <meta property="og:title" content="Solvejr Copenhagen">
 <meta property="og:description" content="Find cafeer og restauranter med sol i København — bygningsskygger i realtid">
 <meta property="og:image" content="https://mathiassommerw-pixel.github.io/solvejr/og-image.svg">
@@ -1126,5 +1131,6 @@ document.getElementById('gps-btn').addEventListener('click',function(){
   });
 })();
 </script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
 </body>
 </html>
