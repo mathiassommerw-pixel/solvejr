@@ -465,6 +465,19 @@ function detailHTML(p,W){
   var openH='';
   if(p.openNow===true)openH='<div class="d-open">&#9679; Åben nu</div>';
   else if(p.openNow===false)openH='<div class="d-closed">&#9679; Lukket nu</div>';
+  var hoursH='';
+  if(p.hours&&p.hours.length){
+    var todayIdx=new Date().getDay();
+    hoursH='<div class="d-hours">';
+    p.hours.forEach(function(line,i){
+      var colon=line.indexOf(': ');
+      var day=colon>-1?line.slice(0,colon):line;
+      var time=colon>-1?line.slice(colon+2):'';
+      var isToday=(i===(todayIdx===0?6:todayIdx-1));
+      hoursH+='<div class="d-hours-row'+(isToday?' today':'')+'"><span class="d-hours-day">'+day+'</span><span>'+time+'</span></div>';
+    });
+    hoursH+='</div>';
+  }
   return gal+
     '<div class="d-pad">'+
       '<div class="d-name">'+p.name+'</div>'+
