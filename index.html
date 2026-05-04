@@ -74,8 +74,8 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .hx{font-size:.76rem;color:var(--mut);line-height:1.6;opacity:.7}
 /* Detail panel */
 #dpanel{position:fixed;top:var(--bh);right:0;bottom:0;width:320px;background:#fff;border-left:1px solid var(--bdr);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:3;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
-#dpanel.open{right:var(--pw)}
-#map.dp{right:calc(var(--pw) + 320px);transition:right .3s cubic-bezier(.4,0,.2,1)}
+#dpanel.open{display:flex}
+
 #dpcl{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--lt);border:none;cursor:pointer;font-size:.9rem;color:var(--mut);z-index:4;display:flex;align-items:center;justify-content:center}
 #dpbody{overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
 .d-gal{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
@@ -99,13 +99,13 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .d-load{padding:40px 16px;text-align:center;color:var(--mut);font-size:.85rem}
 /* Search pin */
 .spin{width:24px;height:36px;display:flex;flex-direction:column;align-items:center}
-.spin-c{width:22px;height:22px;border-radius:50%;background:var(--sun);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
-.spin-t{width:3px;flex:1;background:var(--sun);border-radius:0 0 2px 2px}
+.spin-c{width:22px;height:22px;border-radius:50%;background:#E53E3E;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.spin-t{width:3px;flex:1;background:#E53E3E;border-radius:0 0 2px 2px}
 /* Mobil bottom sheet */
 #msheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.13);z-index:600;display:flex;flex-direction:column;height:45vh;transition:height .3s ease}
 #msheet.tall{height:75vh}
 #msh{padding:10px 0 6px;display:flex;justify-content:center;cursor:pointer;flex-shrink:0}
-.hbar{width:34px;height:4px;border-radius:2px;background:#D0D8E4}
+.hbar{width:48px;height:6px;border-radius:3px;background:#B0B8C4}
 #mstop{padding:0 16px 10px;flex-shrink:0;border-bottom:1px solid var(--bdr)}
 #mssun{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700}
 #mscount{font-size:.71rem;color:var(--mut);margin-top:2px}
@@ -154,7 +154,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 }
 #nov{position:fixed;top:var(--bh);left:0;right:var(--pw);bottom:0;pointer-events:none;z-index:1;background:rgba(10,15,30,0);transition:background 2s ease}
 @media(max-width:700px){#nov{right:0}}
-</style>
+.arcbox,.d-arc,.sectit{display:none!important}</style>
 </head>
 <body>
 <div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr…</div></div>
@@ -526,7 +526,7 @@ function openDetail(p){
   } else {
     document.getElementById('dpbody').innerHTML='<div class="d-load">Henter info...</div>';
     document.getElementById('dpanel').classList.add('open');
-    document.getElementById('map').classList.add('dp');
+    
     updSh();
     loadDetail(p,false);
   }
@@ -535,7 +535,7 @@ function openDetail(p){
 // Luk knapper
 document.getElementById('dpcl').addEventListener('click',function(){
   document.getElementById('dpanel').classList.remove('open');
-  document.getElementById('map').classList.remove('dp');
+  
 });
 document.getElementById('dscl').addEventListener('click',function(){
   var ds=document.getElementById('dsheet');ds.classList.remove('open');
