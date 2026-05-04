@@ -192,6 +192,32 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .si-recent-del:hover{opacity:1}
 .si-recent-head{padding:6px 15px 4px;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);border-bottom:1px solid var(--bdr)}
 .si-recent{padding:8px 15px;cursor:pointer;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px}.si-recent:hover{background:var(--lt)}.si-recent:last-child{border-bottom:none}.si-recent-icon{color:var(--mut);font-size:.85rem;flex-shrink:0}.si-recent-text{font-size:.83rem;flex:1}.si-recent-del{background:none;border:none;color:var(--mut);cursor:pointer;font-size:.8rem;padding:2px 6px;opacity:.6;flex-shrink:0}.si-recent-del:hover{opacity:1;color:var(--txt)}.si-recent-head{padding:6px 15px 4px;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);border-bottom:1px solid var(--bdr)}
+
+/* Favoritter */
+#fav-btn{background:none;border:none;cursor:pointer;font-size:1.4rem;padding:4px;line-height:1;flex-shrink:0;transition:transform .2s}
+#fav-btn:hover{transform:scale(1.2)}
+#fav-panel{position:fixed;top:var(--bh);right:0;bottom:0;width:var(--pw);background:#fff;border-left:1px solid var(--bdr);display:none;flex-direction:column;z-index:20;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
+#fav-panel.open{display:flex}
+#fav-head{padding:16px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#fav-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700}
+#fav-close{background:var(--lt);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.9rem;color:var(--mut)}
+#fav-body{overflow-y:auto;flex:1;padding:12px 16px}
+.fav-empty{text-align:center;padding:40px 20px;color:var(--mut);font-size:.85rem}
+.fav-empty-ico{font-size:2.5rem;margin-bottom:10px;opacity:.4}
+.fav-item{background:var(--lt);border-radius:12px;padding:12px;margin-bottom:10px;position:relative}
+.fav-item-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.fav-item-img{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#ddd}
+.fav-item-name{font-weight:600;font-size:.88rem;flex:1;min-width:0}
+.fav-item-type{font-size:.7rem;color:var(--mut);margin-top:1px}
+.fav-item-sun{font-size:.72rem;color:var(--warm);font-weight:600;margin-top:3px}
+.fav-item-del{position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;color:var(--mut);font-size:.8rem;opacity:.6}
+.fav-item-del:hover{opacity:1}
+.fav-note{width:100%;border:1px solid var(--bdr);border-radius:8px;padding:7px 10px;font-family:'Outfit',sans-serif;font-size:.76rem;color:var(--txt);resize:none;background:#fff;margin-top:6px;outline:none;transition:border-color .2s}
+.fav-note:focus{border-color:var(--sun)}
+.fav-note::placeholder{color:var(--mut)}
+.fav-heart-btn{background:none;border:none;cursor:pointer;font-size:1.3rem;padding:0;line-height:1;flex-shrink:0;transition:transform .2s}
+.fav-heart-btn:hover{transform:scale(1.2)}
+@media(max-width:700px){#fav-panel{top:auto;bottom:0;left:0;right:0;width:100%;border-radius:18px 18px 0 0;border-left:none;max-height:85vh}#fav-btn{display:flex}}
 </style>
 </head>
 <body>
@@ -211,7 +237,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
     <div id="tdis">--:--</div>
     <input id="tsl" type="range" min="0" max="1439" value="720" step="5">
   </div>
-  <button id="lbtn" class="on"><span class="dot"></span>Live</button>
+  <button id="fav-btn" title="Favoritter">&#9825;</button><button id="lbtn" class="on"><span class="dot"></span>Live</button>
 </div>
 <div id="map"></div><div id="nov"></div>
 <div id="dpanel">
@@ -516,7 +542,7 @@ function detailHTML(p,W){
   }
   return gal+
     '<div class="d-pad">'+
-      '<div class="d-name">'+p.name+'</div>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px"><div class="d-name">'+p.name+'</div>'+(typeof makeFavBtn==\'function\'?makeFavBtn(p):\'\')+'</div>'+
       '<div class="d-addr">'+(p.addr||'')+'</div>'+
       openH+
       (links?'<div class="d-links">'+links+'</div>':'')+hoursH+
@@ -958,8 +984,95 @@ document.getElementById('sinp').addEventListener('focus',function(){
   if(!this.value)showRecent();
 });
 
+
+// ── Favoritter ────────────────────────────────
+var FAV_KEY='sv_favs';
+function getFavs(){try{return JSON.parse(localStorage.getItem(FAV_KEY)||'[]');}catch(e){return[];}}
+function saveFavs(l){localStorage.setItem(FAV_KEY,JSON.stringify(l));}
+function isFav(pid){return getFavs().some(function(f){return f.placeId===pid;});}
+function toggleFav(p){
+  var l=getFavs();
+  var idx=l.findIndex(function(f){return f.placeId===p.placeId;});
+  if(idx>-1){l.splice(idx,1);}
+  else{
+    var sp=shAt(p.lat,p.lon,CRH);
+    var rs=rS(p.lat,p.lon);
+    l.unshift({
+      placeId:p.placeId,name:p.name,type:p.type,
+      addr:p.addr,photo:p.photo,lat:p.lat,lon:p.lon,
+      rating:p.rating,
+      sunInfo:sp.alt.toFixed(1)+'° mod '+azN(sp.az),
+      sunrise:fH(rs.ri),sunset:fH(rs.se),
+      note:'',saved:new Date().toLocaleDateString('da-DK')
+    });
+  }
+  saveFavs(l);
+  renderFavPanel();
+  return idx===-1;
+}
+function renderFavPanel(){
+  var l=getFavs();
+  var body=document.getElementById('fav-body');
+  if(!l.length){
+    body.innerHTML='<div class="fav-empty"><div class="fav-empty-ico">&#9825;</div>Ingen favoritter endnu<br><small>Tryk ♥ på et sted for at gemme det</small></div>';
+    return;
+  }
+  body.innerHTML=l.map(function(f,i){
+    return '<div class="fav-item" data-idx="'+i+'">'+
+      '<div class="fav-item-top">'+
+        (f.photo?'<img class="fav-item-img" src="'+f.photo+'" alt="">':'<div class="fav-item-img" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem">🍽️</div>')+
+        '<div style="flex:1;min-width:0">'+
+          '<div class="fav-item-name">'+f.name+'</div>'+
+          '<div class="fav-item-type">'+f.type+' · gemt '+f.saved+'</div>'+
+          '<div class="fav-item-sun">☀️ Solopgang '+f.sunrise+' · Solnedgang '+f.sunset+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<textarea class="fav-note" rows="2" placeholder="Tilføj en note om stedet..." data-idx="'+i+'">'+f.note+'</textarea>'+
+      '<button class="fav-item-del" data-del="'+i+'">✕ Fjern</button>'+
+    '</div>';
+  }).join('');
+  body.querySelectorAll('.fav-note').forEach(function(ta){
+    ta.addEventListener('input',function(){
+      var l=getFavs();l[parseInt(this.dataset.idx)].note=this.value;saveFavs(l);
+    });
+  });
+  body.querySelectorAll('.fav-item-del').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var l=getFavs();l.splice(parseInt(this.dataset.del),1);saveFavs(l);renderFavPanel();
+    });
+  });
+  body.querySelectorAll('.fav-item').forEach(function(el){
+    el.addEventListener('click',function(e){
+      if(e.target.classList.contains('fav-note')||e.target.classList.contains('fav-item-del'))return;
+      var f=getFavs()[parseInt(el.dataset.idx)];
+      if(f){MAP.flyTo([f.lat,f.lon],17,{animate:true,duration:0.8});document.getElementById('fav-panel').classList.remove('open');}
+    });
+  });
+}
+// Tilføj ♥ knap i detail panels
+function makeFavBtn(p){
+  var isSaved=isFav(p.placeId);
+  return '<button class="fav-heart-btn" onclick="var saved=toggleFav('+JSON.stringify(p).replace(/"/g,\'&quot;\')+'!saved?this.textContent=\'&#x2665;\':this.textContent=\'&#x2661;\';" style="color:'+(isSaved?'#E53E3E':'var(--mut)')+'">'+
+    (isSaved?'&#x2665;':'&#x2661;')+
+  '</button>';
+}
+// Panel åbn/luk
+document.getElementById('fav-btn').addEventListener('click',function(){
+  renderFavPanel();
+  document.getElementById('fav-panel').classList.toggle('open');
+});
+document.getElementById('fav-close').addEventListener('click',function(){
+  document.getElementById('fav-panel').classList.remove('open');
+});
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
+<div id="fav-panel">
+  <div id="fav-head">
+    <div id="fav-title">&#9825; Mine favoritter</div>
+    <button id="fav-close">&#x2715;</button>
+  </div>
+  <div id="fav-body"><div class="fav-empty"><div class="fav-empty-ico">&#9825;</div>Ingen favoritter endnu<br><small>Tryk &#9825; på et sted for at gemme det</small></div></div>
+</div>
 </body>
 </html>
