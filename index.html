@@ -181,6 +181,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .gal-btn.prev{left:8px}
 .gal-btn.next{right:8px}
 .logo-city{font-size:.55rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-top:-2px;line-height:1}
+#scl{display:none;background:none;border:none;cursor:pointer;color:var(--mut);font-size:1rem;padding:4px;line-height:1;flex-shrink:0}#scl:hover{color:var(--txt)}
 </style>
 </head>
 <body>
@@ -191,7 +192,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
     <div id="srch">
       <svg style="width:13px;height:13px;fill:var(--mut);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
       <input id="sinp" type="text" placeholder="Søg adresse eller sted..." autocomplete="off">
-      <button id="sbtn"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
+      <button id="scl" title="Slet">&#x2715;</button><button id="sbtn"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
     </div>
     <div id="sug"></div>
   </div>
@@ -827,6 +828,18 @@ var _galObs = new MutationObserver(function(muts){
   });
 });
 _galObs.observe(document.body, {childList:true, subtree:true});
+
+var scl=document.getElementById('scl');
+var sinp=document.getElementById('sinp');
+sinp.addEventListener('input',function(){
+  scl.style.display=this.value?'block':'none';
+});
+scl.addEventListener('click',function(){
+  sinp.value='';
+  scl.style.display='none';
+  document.getElementById('sug').style.display='none';
+  sinp.focus();
+});
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
