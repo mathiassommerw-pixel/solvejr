@@ -908,7 +908,7 @@ function start(lat,lon,nm){
 }
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(
-    function(pos){start(pos.coords.latitude,pos.coords.longitude,'Din placering');},
+    function(pos){start(pos.coords.latitude,pos.coords.longitude,'Din placering');loadWeather(pos.coords.latitude,pos.coords.longitude);},
     function(err){
       // GPS fejlede - prøv IP-baseret lokation
       fetch('https://ipapi.co/json/')
@@ -917,7 +917,7 @@ if(navigator.geolocation){
           if(d.latitude&&d.longitude){
             start(d.latitude,d.longitude,'Din omtrentlige placering');
           } else {
-            start(55.676,12.568,'København');
+            start(55.676,12.568,'København');loadWeather(55.676,12.568);
           }
         })
         .catch(function(){start(55.676,12.568,'København');});
@@ -1149,14 +1149,10 @@ function loadWeather(lat,lon){
     });
 }
 // Kald vejr når GPS er klar
-var _origStart=start;
-start=function(lat,lon,nm){
-  _origStart(lat,lon,nm);
-  loadWeather(lat,lon);
-};
-// Opdater vejr hvert 10. minut
+// Kald vejr ved GPS load og opdater hvert 10 min
 setInterval(function(){
-  if(SLA!==null)loadWeather(SLA,SLO);
+  var lat=SLA||55.676,lon=SLO||12.568;
+  loadWeather(lat,lon);
 },600000);
 </script>
 
