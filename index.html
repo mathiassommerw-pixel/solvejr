@@ -120,8 +120,8 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .spin-c{width:22px;height:22px;border-radius:50%;background:#E53E3E;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .spin-t{width:3px;flex:1;background:#E53E3E;border-radius:0 0 2px 2px}
 /* Mobil bottom sheet */
-#msheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.13);z-index:600;display:flex;flex-direction:column;height:45vh;transition:height .3s ease}#msheet.mini{height:44px}#msheet.mini #mstop,#msheet.mini #msbody{opacity:0;pointer-events:none}
-#msheet.tall{height:75vh}
+#msheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.13);z-index:600;display:flex;flex-direction:column;height:35vh;transition:height .3s ease}#msheet.mini{height:48px}#msheet.mini #mstop,#msheet.mini #msbody{opacity:0;pointer-events:none}
+#msheet.tall{height:72vh}
 #msh{padding:22px 0 16px;display:flex;justify-content:center;cursor:pointer;flex-shrink:0}
 .hbar{width:60px;height:6px;border-radius:3px;background:#9AB8C4}
 #mstop{padding:0 16px 10px;flex-shrink:0;border-bottom:1px solid var(--bdr)}
@@ -241,10 +241,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 @media(max-width:700px){#weather{display:flex;position:fixed;bottom:calc(47vh + 10px);right:10px;top:auto;z-index:602;padding:4px 10px;font-size:.68rem;background:rgba(255,255,255,.92);border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.08);gap:4px}}
 @media(max-width:700px){#bar{padding:0 10px;gap:8px}#sw{flex:1;min-width:0;max-width:none}#srch{padding:0 4px 0 10px}#sinp{font-size:.82rem}}
 
-/* Detail panel animationer */
-#dsheet{transition:transform .35s cubic-bezier(.4,0,.2,1) !important}
-.d-fade{animation:dfade .28s ease forwards}
-@keyframes dfade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
 </style>
 </head>
 <body>
