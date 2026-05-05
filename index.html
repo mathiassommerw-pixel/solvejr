@@ -711,13 +711,13 @@ function openDetail(p){
     var ds=document.getElementById('dsheet');
     ds.style.display='flex';
     requestAnimationFrame(function(){ds.classList.add('open');});
-    loadDetail(p,true);addFavHeart(p);addMapsLink(p);addTerrasseBadge(p);addNextSun(p);
+    loadDetail(p,true);addFavHeart(p);addMapsLink(p);addTerrasseBadge(p);
   } else {
     document.getElementById('dpbody').innerHTML='<div class="d-load">Henter info...</div>';
     document.getElementById('dpanel').classList.add('open');
     
     updSh();
-    loadDetail(p,false);addFavHeart(p);addMapsLink(p);addTerrasseBadge(p);addNextSun(p);
+    loadDetail(p,false);addFavHeart(p);addMapsLink(p);addTerrasseBadge(p);
   }
 }
 
