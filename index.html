@@ -758,6 +758,7 @@ function renderAll(all){
   var dpl=document.getElementById('pl');
   var mpl=document.getElementById('msbody');
   dpl.innerHTML='';mpl.innerHTML='';
+  all=all.filter(function(p){return isRelevant(p.name);});
   all.forEach(function(p){
     var isSun=shAt(p.lat,p.lon,CRH).alt>4;
     if(isSun)sunny++;
@@ -1171,6 +1172,12 @@ setInterval(function(){
   var lat=SLA||55.676,lon=SLO||12.568;
   loadWeather(lat,lon);
 },600000);
+
+var SKIP_WORDS=['bilvask','tankstation','kiosk','supermarked','apotek','frisør','pizza (take','takeaway','hotel','fastfood','7-eleven','netto','rema','aldi','lidl','fakta'];
+function isRelevant(name){
+  var n=name.toLowerCase();
+  return !SKIP_WORDS.some(function(w){return n.includes(w);});
+}
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
