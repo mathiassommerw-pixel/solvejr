@@ -651,6 +651,34 @@ function addMapsLink(p){
     });
   },500);
 }
+function addNextSun(p){
+  setTimeout(function(){
+    ['dpbody','dsbody'].forEach(function(id){
+      var body=document.getElementById(id);
+      if(!body||body.querySelector('.next-sun'))return;
+      var sind=body.querySelector('.d-sind');
+      if(!sind)return;
+      var next=nextSunHour(p.lat,p.lon);
+      if(!next)return;
+      var isSunNow=shAt(p.lat,p.lon,CRH).alt>4;
+      var label,color,bg,border;
+      if(isSunNow){
+        // Sol nu - find hvornår skygge
+        label='🌙 Skygge fra kl. '+pad(next.hour)+':00';
+        color='#4A5568';bg='#EDF0F5';border='rgba(0,0,0,.08)';
+      } else {
+        // Skygge nu - find hvornår sol
+        label='☀️ Sol fra kl. '+pad(next.hour)+':00';
+        color='#7A5100';bg='var(--pale)';border='rgba(245,166,35,.35)';
+      }
+      var el=document.createElement('div');
+      el.className='next-sun';
+      el.style.cssText='font-size:.75rem;font-weight:600;padding:6px 10px;border-radius:8px;margin-bottom:8px;border:1px solid '+border+';background:'+bg+';color:'+color;
+      el.textContent=label;
+      sind.parentNode.insertBefore(el,sind.nextSibling);
+    });
+  },700);
+}
 function addFavHeart(p){
   setTimeout(function(){
     var panels=['dpbody','dsbody'];
@@ -683,13 +711,13 @@ function openDetail(p){
     var ds=document.getElementById('dsheet');
     ds.style.display='flex';
     requestAnimationFrame(function(){ds.classList.add('open');});
-    loadDetail(p,true);addFavHeart(p);addMapsLink(p);addTerrasseBadge(p);
+    loadDetail(p,true);addFavHeart(p);addMapsLink(p);addTerrasseBadge(p);addNextSun(p);
   } else {
     document.getElementById('dpbody').innerHTML='<div class="d-load">Henter info...</div>';
     document.getElementById('dpanel').classList.add('open');
     
     updSh();
-    loadDetail(p,false);addFavHeart(p);addMapsLink(p);addTerrasseBadge(p);
+    loadDetail(p,false);addFavHeart(p);addMapsLink(p);addTerrasseBadge(p);addNextSun(p);
   }
 }
 
@@ -1171,6 +1199,25 @@ setInterval(function(){
   var lat=SLA||55.676,lon=SLO||12.568;
   loadWeather(lat,lon);
 },600000);
+
+function nextSunHour(lat,lon){
+  // Find næste time med sol fra nu
+  var h=Math.round(CRH);
+  for(var i=1;i<=12;i++){
+    var nh=(h+i)%24;
+    if(nh>21||nh<6)continue;
+    var alt=shAt(lat,lon,nh).alt;
+    if(alt>4)return{hour:nh,sun:true};
+  }
+  // Find næste time med skygge fra nu
+  for(var j=1;j<=12;j++){
+    var sh2=(h+j)%24;
+    if(sh2>21||sh2<6)continue;
+    var alt2=shAt(lat,lon,sh2).alt;
+    if(alt2<=4)return{hour:sh2,sun:false};
+  }
+  return null;
+}
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
