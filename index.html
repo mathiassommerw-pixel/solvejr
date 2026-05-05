@@ -237,14 +237,12 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .d-maps-btn:hover{border-color:var(--sun);background:var(--pale)}
 #weather{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:50px;background:var(--lt);font-size:.72rem;font-weight:500;color:var(--mut);flex-shrink:0;cursor:default}
 #weather .w-icon{font-size:.9rem;line-height:1}
-@media(max-width:700px){#weather{display:flex;position:fixed;bottom:calc(47vh + 12px);right:8px;top:auto;z-index:602;padding:3px 10px;font-size:.68rem;background:rgba(255,255,255,.9);border-radius:50px;box-shadow:0 1px 6px rgba(0,0,0,.1);border:1px solid rgba(0,0,0,.08);gap:4px}}
-#type-filter{display:flex;gap:6px;padding:10px 16px 6px;flex-shrink:0;border-bottom:1px solid var(--bdr);background:#fff}
-.tf-btn{background:none;border:1.5px solid var(--bdr);border-radius:50px;padding:5px 14px;font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:600;color:var(--mut);cursor:pointer;transition:.15s;white-space:nowrap}
+@media(max-width:700px){#weather{display:flex;position:fixed;top:calc(var(--bh)+8px);right:8px;z-index:602;padding:3px 10px;font-size:.68rem;background:rgba(255,255,255,.9);border-radius:50px;box-shadow:0 1px 6px rgba(0,0,0,.1);border:1px solid rgba(0,0,0,.08);gap:4px}}
+#type-filter,#mob-type-filter{display:flex;gap:6px;padding:8px 16px 6px;flex-shrink:0;border-bottom:1px solid var(--bdr);background:#fff;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#type-filter::-webkit-scrollbar,#mob-type-filter::-webkit-scrollbar{display:none}
+.tf-btn{background:none;border:1.5px solid var(--bdr);border-radius:50px;padding:5px 14px;font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:600;color:var(--mut);cursor:pointer;transition:.15s;white-space:nowrap;flex-shrink:0}
 .tf-btn:hover{border-color:var(--sun);color:var(--txt)}
 .tf-btn.on{background:var(--sun);border-color:var(--sun);color:#fff}
-@media(max-width:700px){#mob-type-filter{display:flex;gap:6px;padding:8px 12px 6px;flex-shrink:0;border-bottom:1px solid var(--bdr);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-#mob-type-filter::-webkit-scrollbar{display:none}
-#mob-type-filter .tf-btn{flex-shrink:0}}
 </style>
 </head>
 <body>
@@ -737,6 +735,7 @@ function near(lat,lon){
 }
 
 function renderAll(all){
+  ACTIVE_TYPE=ACTIVE_TYPE||'all';
   window.ALLE=all;
   all.sort(function(a,b){
     var as=shAt(a.lat,a.lon,CRH).alt>4?1:0;
@@ -778,9 +777,9 @@ function renderAll(all){
     mrow.innerHTML=mimg+'<div class="mrow-info"><div class="mrow-name">'+p.name+'</div><div class="mrow-typ">'+p.type+'</div>'+(mmeta.length?'<div class="mrow-meta">'+mmeta.join(' · ')+'</div>':'')+'</div>';
     mrow.addEventListener('click',function(){openDetail(p);});
     mpl.appendChild(mrow);
+  
   });
   if(all.length){
-  setTimeout(applyTypeFilter,100);
     var nltl=document.getElementById('nltl');nltl.style.display='block';nltl.textContent=''+all.length+' steder inden for 600m · Find sol eller skygge i dit område (København)';
     
     document.getElementById('mscount').textContent='Find sol eller skygge i dit område (København) · '+all.length+' steder inden for 600m';
@@ -1163,30 +1162,24 @@ setInterval(function(){
   loadWeather(lat,lon);
 },600000);
 
-// Type-filter
 var ACTIVE_TYPE='all';
 function applyTypeFilter(){
-  // Desktop
   document.querySelectorAll('#pl .pitem').forEach(function(el){
-    var typ=el.querySelector('.ptyp');
-    if(!typ)return;
-    el.style.display=(ACTIVE_TYPE==='all'||typ.textContent===ACTIVE_TYPE)?'':'none';
+    var t=el.querySelector('.ptyp');
+    el.style.display=(!t||ACTIVE_TYPE==='all'||t.textContent===ACTIVE_TYPE)?'':'none';
   });
-  // Mobil
   document.querySelectorAll('#msbody .mrow').forEach(function(el){
-    var typ=el.querySelector('.mrow-typ');
-    if(!typ)return;
-    el.style.display=(ACTIVE_TYPE==='all'||typ.textContent===ACTIVE_TYPE)?'':'none';
+    var t=el.querySelector('.mrow-typ');
+    el.style.display=(!t||ACTIVE_TYPE==='all'||t.textContent===ACTIVE_TYPE)?'':'none';
   });
 }
 document.addEventListener('click',function(e){
-  var btn=e.target.closest('.tf-btn');
+  var btn=e.target.closest ? e.target.closest('.tf-btn') : null;
   if(!btn)return;
-  var parent=btn.parentNode;
-  parent.querySelectorAll('.tf-btn').forEach(function(b){b.classList.remove('on');});
-  // Synkroniser begge filter-bars
   var t=btn.dataset.t;
-  document.querySelectorAll('.tf-btn[data-t="'+t+'"]').forEach(function(b){b.classList.add('on');});
+  document.querySelectorAll('.tf-btn').forEach(function(b){
+    b.classList.toggle('on', b.dataset.t===t);
+  });
   ACTIVE_TYPE=t;
   applyTypeFilter();
 });
