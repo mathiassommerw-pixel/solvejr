@@ -242,12 +242,9 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 @media(max-width:700px){#bar{padding:0 10px;gap:8px}#sw{flex:1;min-width:0;max-width:none}#srch{padding:0 4px 0 10px}#sinp{font-size:.82rem}}
 
 /* Detail panel animationer */
-#dpanel{transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s ease;transform:translateX(20px);opacity:0}
-#dpanel.open{transform:translateX(0);opacity:1}
-#dsheet{transition:transform .35s cubic-bezier(.4,0,.2,1);transform:translateY(100%)}
-#dsheet.open{transform:translateY(0)}
-.d-fade{animation:dfade .3s ease forwards}
-@keyframes dfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+#dsheet{transition:transform .35s cubic-bezier(.4,0,.2,1) !important}
+.d-fade{animation:dfade .28s ease forwards}
+@keyframes dfade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
