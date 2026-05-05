@@ -719,8 +719,15 @@ document.getElementById('dshandle').addEventListener('click',function(){
   document.getElementById('dscl').click();
 });
 document.getElementById('msh').addEventListener('click',function(){
-  document.getElementById('msheet').classList.toggle('tall');
-  document.getElementById('tpill').classList.toggle('tall');
+  var ms=document.getElementById('msheet');
+  if(ms.classList.contains('mini')){
+    ms.classList.remove('mini');
+  } else if(ms.classList.contains('tall')){
+    ms.classList.remove('tall');
+    ms.classList.add('mini');
+  } else {
+    ms.classList.add('tall');
+  }
 });
 
 // ── Google Places ─────────────────────────────────
