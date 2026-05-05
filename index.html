@@ -238,6 +238,13 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 #weather{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:50px;background:var(--lt);font-size:.72rem;font-weight:500;color:var(--mut);flex-shrink:0;cursor:default}
 #weather .w-icon{font-size:.9rem;line-height:1}
 @media(max-width:700px){#weather{display:flex;position:fixed;bottom:calc(47vh + 12px);right:8px;top:auto;z-index:602;padding:3px 10px;font-size:.68rem;background:rgba(255,255,255,.9);border-radius:50px;box-shadow:0 1px 6px rgba(0,0,0,.1);border:1px solid rgba(0,0,0,.08);gap:4px}}
+#type-filter{display:flex;gap:6px;padding:10px 16px 6px;flex-shrink:0;border-bottom:1px solid var(--bdr);background:#fff}
+.tf-btn{background:none;border:1.5px solid var(--bdr);border-radius:50px;padding:5px 14px;font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:600;color:var(--mut);cursor:pointer;transition:.15s;white-space:nowrap}
+.tf-btn:hover{border-color:var(--sun);color:var(--txt)}
+.tf-btn.on{background:var(--sun);border-color:var(--sun);color:#fff}
+@media(max-width:700px){#mob-type-filter{display:flex;gap:6px;padding:8px 12px 6px;flex-shrink:0;border-bottom:1px solid var(--bdr);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#mob-type-filter::-webkit-scrollbar{display:none}
+#mob-type-filter .tf-btn{flex-shrink:0}}
 </style>
 </head>
 <body>
@@ -285,14 +292,14 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
       <div class="sectit">Solbane i dag</div>
       <div class="arcbox"><canvas id="arc" width="300" height="100"></canvas></div>
       <div class="sectit" id="nltl" style="display:none">Steder i nærheden</div>
-      <div class="plist" id="pl"></div>
+      <div id="type-filter"><button class="tf-btn on" data-t="all">Alle</button><button class="tf-btn" data-t="Café">Cafeer</button><button class="tf-btn" data-t="Restaurant">Restauranter</button><button class="tf-btn" data-t="Bar">Barer</button></div><div class="plist" id="pl"></div>
     </div>
   </div>
 </div>
 <div id="msheet">
   <div id="msh"><div class="hbar"></div></div>
   <div id="mstop" style="display:flex;align-items:center;gap:8px"><div style="flex:1"><div id="mssun">Søg en adresse for at finde sol</div><div id="mscount">Find sol eller skygge i dit område (København)</div></div><button id="mob-fav-btn" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--mut);flex-shrink:0;padding:4px 8px;line-height:1" onclick="renderFavs();document.getElementById('fav-panel').classList.toggle('open')">&#9825;</button></div>
-  <div id="msbody"></div>
+  <div id="mob-type-filter"><button class="tf-btn on" data-t="all">Alle</button><button class="tf-btn" data-t="Café">Cafeer</button><button class="tf-btn" data-t="Restaurant">Restauranter</button><button class="tf-btn" data-t="Bar">Barer</button></div><div id="msbody"></div>
 </div>
 <div id="dsheet">
   <div id="dshandle"><div class="hbar"></div></div>
@@ -773,6 +780,7 @@ function renderAll(all){
     mpl.appendChild(mrow);
   });
   if(all.length){
+  setTimeout(applyTypeFilter,100);
     var nltl=document.getElementById('nltl');nltl.style.display='block';nltl.textContent=''+all.length+' steder inden for 600m · Find sol eller skygge i dit område (København)';
     
     document.getElementById('mscount').textContent='Find sol eller skygge i dit område (København) · '+all.length+' steder inden for 600m';
@@ -1154,6 +1162,34 @@ setInterval(function(){
   var lat=SLA||55.676,lon=SLO||12.568;
   loadWeather(lat,lon);
 },600000);
+
+// Type-filter
+var ACTIVE_TYPE='all';
+function applyTypeFilter(){
+  // Desktop
+  document.querySelectorAll('#pl .pitem').forEach(function(el){
+    var typ=el.querySelector('.ptyp');
+    if(!typ)return;
+    el.style.display=(ACTIVE_TYPE==='all'||typ.textContent===ACTIVE_TYPE)?'':'none';
+  });
+  // Mobil
+  document.querySelectorAll('#msbody .mrow').forEach(function(el){
+    var typ=el.querySelector('.mrow-typ');
+    if(!typ)return;
+    el.style.display=(ACTIVE_TYPE==='all'||typ.textContent===ACTIVE_TYPE)?'':'none';
+  });
+}
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('.tf-btn');
+  if(!btn)return;
+  var parent=btn.parentNode;
+  parent.querySelectorAll('.tf-btn').forEach(function(b){b.classList.remove('on');});
+  // Synkroniser begge filter-bars
+  var t=btn.dataset.t;
+  document.querySelectorAll('.tf-btn[data-t="'+t+'"]').forEach(function(b){b.classList.add('on');});
+  ACTIVE_TYPE=t;
+  applyTypeFilter();
+});
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ&libraries=places"></script>
