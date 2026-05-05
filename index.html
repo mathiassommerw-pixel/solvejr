@@ -1163,15 +1163,15 @@ setInterval(function(){
   loadWeather(lat,lon);
 },600000);
 
-var ACTIVE_TYPE='all';
+window.ACTIVE_TYPE='all';
 function applyTypeFilter(){
   document.querySelectorAll('#pl .pitem').forEach(function(el){
     var t=el.querySelector('.ptyp');
-    el.style.display=(!t||ACTIVE_TYPE==='all'||t.textContent===ACTIVE_TYPE)?'':'none';
+    el.style.display=(!t||window.ACTIVE_TYPE==='all'||t.textContent===window.ACTIVE_TYPE)?'':'none';
   });
   document.querySelectorAll('#msbody .mrow').forEach(function(el){
     var t=el.querySelector('.mrow-typ');
-    el.style.display=(!t||ACTIVE_TYPE==='all'||t.textContent===ACTIVE_TYPE)?'':'none';
+    el.style.display=(!t||window.ACTIVE_TYPE==='all'||t.textContent===window.ACTIVE_TYPE)?'':'none';
   });
 }
 document.addEventListener('click',function(e){
@@ -1181,7 +1181,7 @@ document.addEventListener('click',function(e){
   document.querySelectorAll('.tf-btn').forEach(function(b){
     b.classList.toggle('on', b.dataset.t===t);
   });
-  ACTIVE_TYPE=t;
+  window.ACTIVE_TYPE=t;
   applyTypeFilter();
 });
 </script>
