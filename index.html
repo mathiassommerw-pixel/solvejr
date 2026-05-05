@@ -650,6 +650,15 @@ function addMapsLink(p){
       a.rel='noopener';
       a.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Åbn i Google Maps';
       addr.parentNode.insertBefore(a, addr.nextSibling);
+      // Street View knap
+      if(body.querySelector('.d-sv-btn'))return;
+      var sv=document.createElement('a');
+      sv.className='d-maps-btn d-sv-btn';
+      sv.href='https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='+p.lat+','+p.lon+'&heading=0';
+      sv.target='_blank';
+      sv.rel='noopener';
+      sv.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/><circle cx="12" cy="7" r="1" fill="currentColor"/></svg> Street View';
+      a.parentNode.insertBefore(sv, a.nextSibling);
     });
   },500);
 }
