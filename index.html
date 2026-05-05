@@ -240,6 +240,14 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 #weather .w-icon{font-size:.9rem;line-height:1}
 @media(max-width:700px){#weather{display:flex;position:fixed;bottom:calc(47vh + 10px);right:10px;top:auto;z-index:602;padding:4px 10px;font-size:.68rem;background:rgba(255,255,255,.92);border-radius:50px;box-shadow:0 2px 8px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.08);gap:4px}}
 @media(max-width:700px){#bar{padding:0 10px;gap:8px}#sw{flex:1;min-width:0;max-width:none}#srch{padding:0 4px 0 10px}#sinp{font-size:.82rem}}
+
+/* Detail panel animationer */
+#dpanel{transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s ease;transform:translateX(20px);opacity:0}
+#dpanel.open{transform:translateX(0);opacity:1}
+#dsheet{transition:transform .35s cubic-bezier(.4,0,.2,1);transform:translateY(100%)}
+#dsheet.open{transform:translateY(0)}
+.d-fade{animation:dfade .3s ease forwards}
+@keyframes dfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
