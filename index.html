@@ -602,6 +602,7 @@ function loadDetail(p,mobile){
         }).filter(Boolean);
       }
       p.openNow=d.opening_hours?d.opening_hours.open_now:null;
+      p.outdoor=d.outdoor_seating||false;
       p.hours=d.opening_hours&&d.opening_hours.weekday_text?d.opening_hours.weekday_text:null;
       p.website=d.website||null;
       p.phone=d.formatted_phone_number||null;
@@ -616,6 +617,22 @@ function loadDetail(p,mobile){
 }
 
 // ── Åbn detail ────────────────────────────────────
+function addTerrasseBadge(p){
+  if(!p.outdoor)return;
+  setTimeout(function(){
+    ['dpbody','dsbody'].forEach(function(id){
+      var body=document.getElementById(id);
+      if(!body||body.querySelector('.terrasse-badge'))return;
+      var chips=body.querySelector('.d-chips');
+      if(!chips)return;
+      var badge=document.createElement('span');
+      badge.className='d-chip terrasse-badge';
+      badge.innerHTML='☀️ Terrasse';
+      badge.style.cssText='background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7';
+      chips.insertBefore(badge,chips.firstChild);
+    });
+  },600);
+}
 function addMapsLink(p){
   setTimeout(function(){
     ['dpbody','dsbody'].forEach(function(id){
@@ -666,13 +683,13 @@ function openDetail(p){
     var ds=document.getElementById('dsheet');
     ds.style.display='flex';
     requestAnimationFrame(function(){ds.classList.add('open');});
-    loadDetail(p,true);addFavHeart(p);addMapsLink(p);
+    loadDetail(p,true);addFavHeart(p);addMapsLink(p);addTerrasseBadge(p);
   } else {
     document.getElementById('dpbody').innerHTML='<div class="d-load">Henter info...</div>';
     document.getElementById('dpanel').classList.add('open');
     
     updSh();
-    loadDetail(p,false);addFavHeart(p);addMapsLink(p);
+    loadDetail(p,false);addFavHeart(p);addMapsLink(p);addTerrasseBadge(p);
   }
 }
 
