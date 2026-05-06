@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta property="og:title" content="Solvejr Copenhagen">
-<meta property="og:description" content="Find cafeer og restauranter med sol i KÃ¸benhavn â bygningsskygger i realtid">
+<meta property="og:description" content="Find cafeer og restauranter med sol i K&#248;benhavn â bygningsskygger i realtid">
 <meta property="og:image" content="https://mathiassommerw-pixel.github.io/solvejr/og-image.svg">
 <meta property="og:url" content="https://solvejr.dk">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Solvejr Copenhagen">
-<meta name="twitter:description" content="Find cafeer og restauranter med sol i KÃ¸benhavn">
+<meta name="twitter:description" content="Find cafeer og restauranter med sol i K&#248;benhavn">
 <meta name="twitter:image" content="https://mathiassommerw-pixel.github.io/solvejr/og-image.svg">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2238%25%22%20cy%3D%2235%25%22%20r%3D%2265%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FFE08A%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23F5A623%22%2F%3E%0A%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%3C%2Fdefs%3E%0A%20%20%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2232%22%20fill%3D%22url(%23g)%22%2F%3E%0A%20%20%3Ctext%20x%3D%2232%22%20y%3D%2246%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%2230%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20opacity%3D%220.95%22%3ES%3C%2Ftext%3E%0A%3C%2Fsvg%3E">
 
@@ -246,13 +246,13 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 </style>
 </head>
 <body>
-<div id="loading"><div class="lsun"></div><div class="ltxt">IndlÃ¦ser Solvejrâ¦</div></div>
+<div id="loading"><div class="lsun"></div><div class="ltxt">Indl&#230;ser Solvejr...</div></div>
 <div id="bar">
   <a class="logo" href="#"><div class="logo-sun"></div><div><div class="logo-name">Sol<em>vejr</em></div><div class="logo-city">Copenhagen</div></div></a>
   <div id="sw">
     <div id="srch">
       <svg style="width:13px;height:13px;fill:var(--mut);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
-      <input id="sinp" type="text" placeholder="SÃ¸g adresse eller sted og find sol eller skygge" autocomplete="off">
+      <input id="sinp" type="text" placeholder="S&#248;g adresse eller sted og find sol eller skygge" autocomplete="off">
       <button id="scl" title="Slet">&#x2715;</button><button id="sbtn"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
     </div>
     <div id="sug"></div>
@@ -262,7 +262,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
     <div id="tdis">--:--</div>
     <input id="tsl" type="range" min="0" max="1380" value="720" step="60">
   </div>
-  <div id="weather"><span class="w-icon">â</span><span id="w-txt">Henter vejr...</span></div><button id="fav-btn" title="Mine favoritter">&#9825;</button><button id="lbtn" class="on"><span class="dot"></span>Live</button>
+  <div id="weather"><span class="w-icon">&#x26C5;</span><span id="w-txt">Henter vejr...</span></div><button id="fav-btn" title="Mine favoritter">&#9825;</button><button id="lbtn" class="on"><span class="dot"></span>Live</button>
 </div>
 <div id="map"></div><div id="nov"></div>
 <div id="dpanel">
@@ -272,31 +272,31 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 <div id="panel">
   <div id="ptop">
     <div class="pname" id="pname">Solvejr</div>
-    <div class="psub">Find sol eller skygge i dit omrÃ¥de (KÃ¸benhavn)</div>
+    <div class="psub">Find sol eller skygge i dit omr&#229;de (K&#248;benhavn)</div>
     <div id="sind" class="sind shade" style="display:none">
       <div class="sind-ico" id="sico">&#127769;</div>
       <div><div class="sind-ttl" id="sttl">&#8212;</div><div class="sind-sub" id="ssub">&#8212;</div></div>
     </div>
   </div>
   <div id="pbody">
-    <div class="hint" id="hint"><div class="hi">&#9728;&#65039;</div><div class="ht">SÃ¸g en adresse</div><div class="hx">Find cafeer, restauranter og barer med sol</div></div>
+    <div class="hint" id="hint"><div class="hi">&#9728;&#65039;</div><div class="ht">S&#248;g en adresse</div><div class="hx">Find cafeer, restauranter og barer med sol</div></div>
     <div id="ds" style="display:none">
       <div class="sgrid">
         <div class="scard"><div class="slbl">Solopgang</div><div class="sval" id="dsr">&#8212;</div></div>
         <div class="scard"><div class="slbl">Solnedgang</div><div class="sval" id="dss">&#8212;</div></div>
-        <div class="scard"><div class="slbl">SolhÃ¸jde</div><div class="sval" id="dsa">&#8212;<span class="sunit">Â°</span></div></div>
+        <div class="scard"><div class="slbl">Solh&#248;jde</div><div class="sval" id="dsa">&#8212;<span class="sunit">&#176;</span></div></div>
         <div class="scard"><div class="slbl">Retning</div><div class="sval" id="dsaz">&#8212;</div></div>
       </div>
       <div class="sectit">Solbane i dag</div>
       <div class="arcbox"><canvas id="arc" width="300" height="100"></canvas></div>
-      <div class="sectit" id="nltl" style="display:none">Steder i nÃ¦rheden</div>
+      <div class="sectit" id="nltl" style="display:none">Steder i n&#230;rheden</div>
       <div class="plist" id="pl"></div>
     </div>
   </div>
 </div>
 <div id="msheet">
   <div id="msh"><div class="hbar"></div></div>
-  <div id="mstop" style="display:flex;align-items:center;gap:8px"><div style="flex:1"><div id="mssun">SÃ¸g en adresse for at finde sol</div><div id="mscount">Find sol eller skygge i dit omrÃ¥de (KÃ¸benhavn)</div></div><button id="mob-fav-btn" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--mut);flex-shrink:0;padding:4px 8px;line-height:1" onclick="renderFavs();document.getElementById('fav-panel').classList.toggle('open')">&#9825;</button></div>
+  <div id="mstop" style="display:flex;align-items:center;gap:8px"><div style="flex:1"><div id="mssun">S&#248;g en adresse for at finde sol</div><div id="mscount">Find sol eller skygge i dit omr&#229;de (K&#248;benhavn)</div></div><button id="mob-fav-btn" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--mut);flex-shrink:0;padding:4px 8px;line-height:1" onclick="renderFavs();document.getElementById('fav-panel').classList.toggle('open')">&#9825;</button></div>
   <div id="msbody"></div>
 </div>
 <div id="dsheet">
