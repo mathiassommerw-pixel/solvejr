@@ -1119,7 +1119,7 @@ document.addEventListener('click',function(e){
   }
 });
 
-document.getElementById('gps-btn').addEventListener('click',function(){
+var gpsbtn=document.getElementById('gps-btn');if(gpsbtn)gpsbtn.addEventListener('click',function(){
   var btn=this;
   btn.innerHTML='â³';
   btn.style.opacity='0.6';
