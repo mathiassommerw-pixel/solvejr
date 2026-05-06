@@ -1254,21 +1254,20 @@ document.getElementById('gps-btn').addEventListener('click',function(){
 
 // Vejr-integration via Open-Meteo
 function loadWeather(lat,lon){
-  var codes={0:'☀ï¸ Klar',1:'ð¤ï¸ Mest klar',2:'â Delvist skyet',3:'âï¸ Overskyet',45:'ð«ï¸ Tåge',48:'ð«ï¸ Tåge',51:'ð§ï¸ Let regn',61:'ð§ï¸ Regn',71:'âï¸ Sne',80:'ð§ï¸ Byger',95:'âï¸ Tordenvejr'};
-  fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=weathercode,cloudcover,temperature_2m&timezone=Europe/Copenhagen')
-    .then(function(r){return r.json();})
-    .then(function(d){
-      var code=d.current.weathercode;
-      var temp=Math.round(d.current.temperature_2m);
-      var cloud=d.current.cloudcover;
-      var label=codes[code]||('â '+cloud+'% skyer');
-      var el=document.getElementById('w-txt');
-      if(el)el.textContent=label+' · '+temp+'°';
-    })
-    .catch(function(){
-      var el=document.getElementById('w-txt');
-      if(el)el.parentNode.style.display='none';
-    });
+var codes={0:'Klar',1:'Mest klar',2:'Delvist skyet',3:'Overskyet',45:'Tage',48:'Taage',51:'Let regn',61:'Regn',71:'Sne',80:'Byger',95:'Tordenvejr'};
+var icons={0:'sunny',1:'sunny',2:'partly_cloudy_day',3:'cloud',45:'foggy',48:'foggy',51:'rainy',61:'rainy',71:'ac_unit',80:'rainy',95:'thunderstorm'};
+fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=weathercode,temperature_2m&timezone=Europe/Copenhagen')
+.then(function(r){return r.json();})
+.then(function(d){
+  var code=d.current.weathercode;
+  var temp=Math.round(d.current.temperature_2m);
+  var label=codes[code]||'Skyet';
+  var el=document.getElementById('w-txt');
+  if(el){el.textContent=label+' '+temp+'°';}
+  var mEl=document.getElementById('mw-txt');
+  if(mEl){mEl.textContent=label+' '+temp+'°';}
+})
+.catch(function(){});
 }
 // Kald vejr når GPS er klar
 // Kald vejr ved GPS load og opdater hvert 10 min
