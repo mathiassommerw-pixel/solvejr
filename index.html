@@ -269,10 +269,33 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 .dl-sol-item{background:var(--lt);border-radius:10px;padding:10px 12px;border:1px solid var(--bdr)}
 .dl-sol-label{font-size:.62rem;font-weight:700;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
 .dl-sol-val{font-size:1.1rem;font-weight:700;color:var(--txt)}
+
+.dl-top{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.dl-type{font-size:.72rem;font-weight:600;color:var(--mut);background:var(--lt);border:1px solid var(--bdr);border-radius:20px;padding:3px 10px}
+.dl-badge{font-size:.72rem;font-weight:700;border-radius:20px;padding:3px 10px}
+.dl-open{background:#E8F5E9;color:#2E7D32}
+.dl-closed{background:#FFEBEE;color:#B71C1C}
+.dl-terrace{background:#FFF8E1;color:#F57F17}
+.dl-addr{font-size:.8rem;color:var(--mut);margin-bottom:12px}
+.dl-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.dl-btn{display:inline-flex;align-items:center;gap:5px;padding:9px 16px;border-radius:50px;font-size:.78rem;font-weight:600;text-decoration:none;font-family:inherit}
+.dl-btn-primary{background:var(--sun);color:#fff}
+.dl-btn-sec{background:var(--lt);color:var(--txt);border:1px solid var(--bdr)}
+.dl-section{margin-bottom:12px}
+.dl-section-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--bdr)}
+.dl-hours{border-radius:10px;overflow:hidden;border:1px solid var(--bdr)}
+.dl-hour-row{display:flex;justify-content:space-between;padding:7px 12px;font-size:.78rem;background:#fff}
+.dl-hour-row.is-today{background:#FFF8E1;font-weight:700;color:var(--sun)}
+.dl-hour-days{color:var(--mut)}
+.dl-hour-row.is-today .dl-hour-days{color:var(--sun)}
+.dl-sol-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dl-sol-item{background:var(--lt);border-radius:10px;padding:10px 12px;border:1px solid var(--bdr)}
+.dl-sol-label{font-size:.62rem;font-weight:700;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.dl-sol-val{font-size:1.1rem;font-weight:700}
 </style>
 </head>
 <body>
-<div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejrâ¦</div></div>
+<div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejr...</div></div>
 <div id="bar">
   <a class="logo" href="#"><div class="logo-sun"></div><div><div class="logo-name">Sol<em>vejr</em></div><div class="logo-city">Copenhagen</div></div></a>
   <div id="sw">
@@ -288,7 +311,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
     <div id="tdis">--:--</div>
     <input id="tsl" type="range" min="0" max="1380" value="720" step="60">
   </div>
-  <div id="weather"><span class="w-icon">â</span><span id="w-txt">Henter vejr...</span></div><button id="fav-btn" title="Mine favoritter">&#9825;</button><button id="lbtn" class="on"><span class="dot"></span>Live</button>
+  <div id="weather"><span class="w-icon">&#x26C5;</span><span id="w-txt">Henter vejr...</span></div><button id="fav-btn" title="Mine favoritter">&#9825;</button><button id="lbtn" class="on"><span class="dot"></span>Live</button>
 </div>
 <div id="map"></div><div id="nov"></div>
 <div id="dpanel">
@@ -629,7 +652,7 @@ if(p.openNow===true)sb='<span class="dl-badge dl-open">&#9679; &#197;ben nu</spa
 else if(p.openNow===false)sb='<span class="dl-badge dl-closed">&#9679; Lukket</span>';
 var tc='<span class="dl-type">'+p.type+'</span>';
 var tr=p.outdoor?'<span class="dl-badge dl-terrace">&#9728; Terrasse</span>':"";
-var al=p.addr?'<div class="dl-addr">&#128205; '+p.addr+'</div>':"";
+var al=p.addr?'<div class="dl-addr">&#128205; '+p.addr+'</div>':"" ;
 var mu="https://www.google.com/maps?q="+p.lat+","+p.lon;
 var sv="https://www.google.com/maps?q=&layer=c&cbll="+p.lat+","+p.lon;
 var lh='<div class="dl-btns">';
@@ -644,17 +667,20 @@ var dm={Mo:"Man",Tu:"Tir",We:"Ons",Th:"Tor",Fr:"Fre",Sa:"L&#248;r",Su:"S&#248;n"
 var ti=new Date().getDay();
 var ta=[["Su"],["Mo"],["Tu"],["We"],["Th"],["Fr"],["Sa"]][ti];
 hh='<div class="dl-section"><div class="dl-section-title">&#197;bningstider</div><div class="dl-hours">';
-(p.hours||[p.ohRaw]).forEach(function(line){
+var hrs=p.hours||[p.ohRaw];
+hrs.forEach(function(line){
 var isT=ta.some(function(a){return line.indexOf(a)>-1;})||line.indexOf("Mo-Su")>-1;
-var pl=line;Object.keys(dm).forEach(function(k){pl=pl.split(k).join(dm[k]);});
+var pl=line;
+Object.keys(dm).forEach(function(k){pl=pl.split(k).join(dm[k]);});
 var pts=pl.split(" ");
 hh+='<div class="dl-hour-row'+(isT?" is-today":"")+'"><span class="dl-hour-days">'+pts[0]+'</span><span class="dl-hour-time">'+pts.slice(1).join(" ")+'</span></div>';
-});hh+="</div></div>";
+});
+hh+="</div></div>";
 }
 var sg='<div class="dl-section"><div class="dl-section-title">Sol i dag</div><div class="dl-sol-grid">'+
 '<div class="dl-sol-item"><div class="dl-sol-label">Solopgang</div><div class="dl-sol-val">'+fH(rs.ri)+'</div></div>'+
 '<div class="dl-sol-item"><div class="dl-sol-label">Solnedgang</div><div class="dl-sol-val">'+fH(rs.se)+'</div></div>'+
-'<div class="dl-sol-item"><div class="dl-sol-label">Solh&#248;jde</div><div class="dl-sol-val">'+sunP.alt.toFixed(1)+'&#176;</div></div>'+
+'<div class="dl-sol-item"><div class="dl-sol-label">Solh&#248;jde nu</div><div class="dl-sol-val">'+sunP.alt.toFixed(1)+'&#176;</div></div>'+
 '<div class="dl-sol-item"><div class="dl-sol-label">Retning</div><div class="dl-sol-val">'+azN(sunP.az)+'</div></div>'+
 "</div></div>";
 el.innerHTML='<div class="dl-top">'+tc+sb+tr+"</div>"+al+lh+hh+sg;
@@ -1191,47 +1217,22 @@ document.getElementById('gps-btn').addEventListener('click',function(){
 
 // Vejr-integration via Open-Meteo
 function loadWeather(lat,lon){
-  var codes={0:'\u00e2\u0098\u0080\u00ef\u00b8\u008f Klar',1:'\u00f0\u009f\u008c\u00a4\u00ef\u00b8\u008f Mest klar',2:'\u00e2\u009b\u0085 Delvist skyet',3:'\u00e2\u0098\u0081\u00ef\u00b8\u008f Overskyet',45:'\u00f0\u009f\u008c\u00ab\u00ef\u00b8\u008f T\u00c3\u00a5ge',48:'\u00f0\u009f\u008c\u00ab\u00ef\u00b8\u008f T\u00c3\u00a5ge',51:'\u00f0\u009f\u008c\u00a7\u00ef\u00b8\u008f Let regn',61:'\u00f0\u009f\u008c\u00a7\u00ef\u00b8\u008f Regn',71:'\u00e2\u009d\u0084\u00ef\u00b8\u008f Sne',80:'\u00f0\u009f\u008c\u00a7\u00ef\u00b8\u008f Byger',95:'\u00e2\u009b\u0088\u00ef\u00b8\u008f Tordenvejr'};
-  fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=weathercode,cloudcover,temperature_2m&timezone=Europe/Copenhagen')
-    .then(function(r){return r.json();})
-    .then(function(d){
-      var code=d.current.weathercode;
-      var temp=Math.round(d.current.temperature_2m);
-      var cloud=d.current.cloudcover;
-      var label=codes[code]||('\u00e2\u009b\u0085 '+cloud+'% skyer');
-      var el=document.getElementById('w-txt');
-      if(el)el.textContent=label+' \u00c2\u00b7 '+temp+'\u00c2\u00b0';
-    })
-    .catch(function(){
-      var el=document.getElementById('w-txt');
-      if(el)el.parentNode.style.display='none';
-    });
+var codes={0:"Klar",1:"Mest klar",2:"Delvist skyet",3:"Overskyet",45:"Tage",48:"Taage",51:"Let regn",61:"Regn",71:"Sne",80:"Byger",95:"Tordenvejr"};
+var icons={0:"&#9728;",1:"&#9728;",2:"&#x26C5;",3:"&#9729;",45:"&#127787;",48:"&#127787;",51:"&#127783;",61:"&#127783;",71:"&#10052;",80:"&#127783;",95:"&#9928;"};
+fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=weathercode,temperature_2m&timezone=Europe/Copenhagen")
+.then(function(r){return r.json();})
+.then(function(d){
+  var code=d.current.weathercode;
+  var temp=Math.round(d.current.temperature_2m);
+  var label=codes[code]||"Skyet";
+  var icon=icons[code]||"&#x26C5;";
+  var wIcon=document.querySelector(".w-icon");
+  if(wIcon)wIcon.innerHTML=icon;
+  var wTxt=document.getElementById("w-txt");
+  if(wTxt)wTxt.textContent=label+" "+temp+"\u00b0";
+  var mTxt=document.getElementById("mw-txt");
+  if(mTxt)mTxt.textContent=label+" "+temp+"\u00b0";
+})
+.catch(function(){});
 }
-// Kald vejr n\u00c3\u00a5r GPS er klar
-// Kald vejr ved GPS load og opdater hvert 10 min
-setInterval(function(){
-  var lat=SLA||55.676,lon=SLO||12.568;
-  loadWeather(lat,lon);
-},600000);
-</script>
 
-
-<div id="fav-panel"><div id="fav-head"><div id="fav-title">&#9825; Favoritter</div><button id="fav-cl">&#215;</button></div><div id="fav-body"></div></div><div id="mpill"><button class="mb" data-m="1">Jan</button><button class="mb" data-m="2">Feb</button><button class="mb" data-m="3">Mar</button><button class="mb" data-m="4">Apr</button><button class="mb on" data-m="5">Maj</button><button class="mb" data-m="6">Jun</button><button class="mb" data-m="7">Jul</button><button class="mb" data-m="8">Aug</button><button class="mb" data-m="9">Sep</button><button class="mb" data-m="10">Okt</button><button class="mb" data-m="11">Nov</button><button class="mb" data-m="12">Dec</button></div>
-<script>
-(function(){
-  var mkey="sv_month";
-  var saved=localStorage.getItem(mkey);
-  if(saved){document.querySelectorAll(".mb").forEach(function(b){b.classList.toggle("on",b.dataset.m===saved);});window.CUR_MONTH=("0"+saved).slice(-2);}
-  document.querySelectorAll(".mb").forEach(function(b){
-    b.addEventListener("click",function(){
-      document.querySelectorAll(".mb").forEach(function(x){x.classList.remove("on");});
-      this.classList.add("on");
-      window.CUR_MONTH=("0"+parseInt(this.dataset.m)).slice(-2);CUR_MONTH=window.CUR_MONTH;
-      localStorage.setItem(mkey,this.dataset.m);
-      if(typeof updSh==="function")updSh();
-    });
-  });
-})();
-</script>
-</body>
-</html>
