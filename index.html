@@ -313,9 +313,9 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
   <div id="weather"><span class="w-icon">&#x26C5;</span><span id="w-txt">Henter vejr...</span></div><button id="fav-btn" title="Mine favoritter">&#9825;</button><button id="lbtn" class="on"><span class="dot"></span>Live</button>
 </div>
 <div id="map"></div><div id="nov"></div>
-<div id="dpanel">
-  <button id="dpcl">&#x2715;</button>
-  <div id="dpbody"><div class="d-load">Vaelg et sted</div></div>
+<div id="dpanel" style="display:none;flex-direction:column;overflow-y:auto;background:var(--bg);border-left:1px solid var(--bdr)">
+  <div id="dpbody"></div>
+</div>
 </div>
 <div id="panel">
   <div id="ptop">
@@ -644,43 +644,50 @@ function detailHTML(p,W){
 function loadDetail(p,isMob){
 var cont=document.getElementById(isMob?'dsbody':'dpbody');
 if(!cont)return;
+
+// Vis dpanel på desktop
+if(!isMob){
+  var dp=document.getElementById('dpanel');
+  if(dp){dp.style.display='flex';document.getElementById('map').classList.add('dp');}
+}
+
 var sunP=shAt(p.lat,p.lon,CRH);
 var rs=rS(p.lat,p.lon);
 var todayAbbrs=['Su','Mo','Tu','We','Th','Fr','Sa'];
 var todayAbbr=todayAbbrs[new Date().getDay()];
-var dayLabels={'Mo':'Mandag','Tu':'Tirsdag','We':'Onsdag','Th':'Torsdag','Fr':'Fredag','Sa':'Lørdag','Su':'Søndag','Mo-Fr':'Hverdage','Mo-Su':'Alle dage','Sa-Su':'Weekend'};
+var dayLabels={'Mo':'Mandag','Tu':'Tirsdag','We':'Onsdag','Th':'Torsdag','Fr':'Fredag','Sa':'Lørdag','Su':'Søndag','Mo-Fr':'Hverdage','Mo-Su':'Alle dage','Sa-Su':'Weekend','PH':'Helligdag'};
 
 // Open badge
 var openBadge='';
 if(p.openNow===true)openBadge='<span class="d-open-badge open">&#9679; Åben nu</span>';
 else if(p.openNow===false)openBadge='<span class="d-open-badge closed">&#9679; Lukket</span>';
 
-// Type badge
-var typeBadge='<span class="d-type-badge">'+p.type+'</span>';
-
 // Terrasse
-var terrasse=p.outdoor?'<span class="d-type-badge" style="background:#E8F5E9;color:#2E7D32">Terrasse</span>':'';
+var terrasse=p.outdoor?'<span class="d-type-badge" style="background:#E8F5E9;color:#2E7D32">&#127795; Terrasse</span>':'';
 
-// Åbningstider sektion
+// Solbadge
+var sunAlt=sunP.alt.toFixed(0);
+var sunBadge='<span class="d-type-badge">&#9728;&#65039; '+sunAlt+'° '+azN(sunP.az)+'</span>';
+
+// Åbningstider
 var hoursH='';
 if(p.hours&&p.hours.length){
   hoursH='<div class="d-section"><div class="d-section-title">Åbningstider</div><div class="d-hours-grid">';
   p.hours.forEach(function(line){
     var isToday=line.indexOf(todayAbbr)>-1||line.indexOf('Mo-Su')>-1||(line.indexOf('Mo-Fr')>-1&&todayAbbr!=='Sa'&&todayAbbr!=='Su');
-    // Prøv at parse dag og tid
     var m=line.match(/^([A-Za-z,-]+)s+(.+)$/);
     var dayPart=m?m[1]:line;
     var timePart=m?m[2]:'';
     var dayLabel=dayLabels[dayPart]||dayPart;
     if(timePart){
-      hoursH+='<div class="d-hour-row'+(isToday?' today':'')+'"><span class="d-hour-day">'+dayLabel+'</span><span class="d-hour-time">'+timePart+'</span></div>';
+      hoursH+='<div class="d-hour-row'+(isToday?' today':'')+'"><span class="d-hour-day">'+dayLabel+'</span><span class="d-hour-time">'+timePart.replace('off','Lukket')+'</span></div>';
     }else{
-      hoursH+='<div class="d-hour-row'+(isToday?' today':'')+'"><span style="color:inherit">'+line+'</span></div>';
+      hoursH+='<div class="d-hour-row'+(isToday?' today':'')+'"><span>'+line+'</span></div>';
     }
   });
   hoursH+='</div></div>';
 }else if(p.ohRaw){
-  hoursH='<div class="d-section"><div class="d-section-title">Åbningstider</div><div class="d-hour-row"><span>'+p.ohRaw+'</span></div></div>';
+  hoursH='<div class="d-section"><div class="d-section-title">Åbningstider</div><div class="d-hour-row" style="padding:8px"><span style="font-size:.78rem">'+p.ohRaw+'</span></div></div>';
 }
 
 // Links
@@ -701,18 +708,26 @@ var sunH='<div class="d-section"><div class="d-section-title">Solforhold</div><d
   '<div class="d-sun-card"><div class="d-sun-label">Retning</div><div class="d-sun-val">'+azN(sunP.az)+'</div></div>'+
 '</div></div>';
 
-// Adresse
-var addrH=p.addr?'<div class="d-addr">&#128205; '+p.addr+'</div>':'';
+// Luk-knap (kun desktop)
+var closeBtn=!isMob?'<button onclick="var dp=document.getElementById('dpanel');dp.style.display='none';document.getElementById('map').classList.remove('dp')" style="position:absolute;top:12px;right:12px;background:var(--lt);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:1rem;color:var(--mut);display:flex;align-items:center;justify-content:center">&#10005;</button>':'';
 
-// Saml det hele
+// Saml alt
 cont.innerHTML=
-  '<div class="d-hero-ph">&#9728;&#65039;</div>'+
+  '<div style="position:relative">'+
+    '<div class="d-hero-ph">&#9728;&#65039;</div>'+
+    closeBtn+
+  '</div>'+
   '<div style="padding:14px 0 0">'+
     '<div class="d-header">'+
       '<div class="d-name">'+p.name+'</div>'+
-      '<div class="d-meta">'+typeBadge+openBadge+terrasse+'</div>'+
+      (p.addr?'<div style="font-size:.75rem;color:var(--mut);margin-top:3px">&#128205; '+p.addr+'</div>':'')+
+      '<div class="d-meta" style="margin-top:8px">'+
+        '<span class="d-type-badge">'+p.type+'</span>'+
+        openBadge+
+        terrasse+
+        sunBadge+
+      '</div>'+
     '</div>'+
-    addrH+
     linksH+
     hoursH+
     sunH+
