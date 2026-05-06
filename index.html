@@ -1229,9 +1229,9 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"
   var wIcon=document.querySelector(".w-icon");
   if(wIcon)wIcon.innerHTML=icon;
   var wTxt=document.getElementById("w-txt");
-  if(wTxt)wTxt.innerHTML=label+" "+temp+"&#176;";
+  if(wTxt)wTxt.textContent=label+" "+temp+"°";
   var mTxt=document.getElementById("mw-txt");
-  if(mTxt)mTxt.innerHTML=label+" "+temp+"&#176;";
+  if(mTxt)mTxt.textContent=label+" "+temp+"\u00b0";
 })
 .catch(function(){});
 }
