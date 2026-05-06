@@ -243,6 +243,28 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 
 
 .pitem-img-ph,.mrow-img-ph{border-radius:10px;background:linear-gradient(135deg,#FDF3E3,#F5C842);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}.pitem-img-ph{width:56px;height:56px}.mrow-img-ph{width:48px;height:48px}.d-hero-ph{width:100%;height:180px;background:linear-gradient(135deg,#FDF3E3,#F5C842);display:flex;align-items:center;justify-content:center;font-size:3rem}
+
+.dl-top{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.dl-type{font-size:.72rem;font-weight:600;color:var(--mut);background:var(--lt);border:1px solid var(--bdr);border-radius:20px;padding:3px 10px}
+.dl-badge{font-size:.72rem;font-weight:700;border-radius:20px;padding:3px 10px}
+.dl-open{background:#E8F5E9;color:#2E7D32}
+.dl-closed{background:#FFEBEE;color:#B71C1C}
+.dl-terrace{background:#FFF8E1;color:#E65100}
+.dl-addr{font-size:.8rem;color:var(--mut);margin-bottom:10px}
+.dl-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.dl-btn{display:inline-flex;align-items:center;gap:4px;padding:8px 14px;border-radius:50px;font-size:.76rem;font-weight:600;text-decoration:none;font-family:inherit}
+.dl-btn-primary{background:var(--sun);color:#fff}
+.dl-btn-sec{background:var(--lt);color:var(--txt);border:1px solid var(--bdr)}
+.dl-section{margin-bottom:12px}
+.dl-stit{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--bdr)}
+.dl-hours{border-radius:8px;overflow:hidden;border:1px solid var(--bdr)}
+.dl-hr{display:flex;justify-content:space-between;padding:6px 12px;font-size:.78rem;background:#fff;border-bottom:1px solid var(--bdr)}
+.dl-hr:last-child{border-bottom:none}
+.dl-hr.today{background:#FFF8E1;font-weight:700;color:var(--sun)}
+.dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dl-gi{background:var(--lt);border-radius:10px;padding:10px 12px;border:1px solid var(--bdr)}
+.dl-gl{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-bottom:4px}
+.dl-gv{font-size:1.05rem;font-weight:700}
 </style>
 </head>
 <body>
@@ -594,18 +616,45 @@ function detailHTML(p,W){
 
 // ââ Hent Google detaljer ââââââââââââââââââââââââââ
 function loadDetail(p,isMob){
-var el=document.getElementById(isMob?'dsbody':'dpbody');
+var el=document.getElementById(isMob?"dsbody":"dpbody");
 if(!el)return;
 var sunP=shAt(p.lat,p.lon,CRH);
 var rs=rS(p.lat,p.lon);
-var chips='';
-if(p.outdoor)chips+='<span class="d-chip" style="background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7">☀️ Terrasse</span>';
-chips+='<span class="d-chip"><span style="color:var(--warm);font-weight:700">&#9733;</span> '+sunP.alt.toFixed(1)+'° · '+azN(sunP.az)+'</span>';
-var links='';
-if(p.website)links+='<a class="d-link" href="'+p.website+'" target="_blank">&#127760; Website</a>';
-if(p.phone)links+='<a class="d-link" href="tel:'+p.phone+'">&#128222; '+p.phone+'</a>';
-var content='<div class="d-chips">'+chips+'</div>'+(p.addr?'<div class="d-addr">'+p.addr+'</div>':'')+( links?'<div class="d-links">'+links+'</div>':'')+'<div style="margin-top:8px;padding:10px 14px;background:var(--lt);border-radius:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--mut)">SOLOPGANG</span><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--mut)">SOLNEDGANG</span></div><div style="display:flex;justify-content:space-between"><span style="font-size:1.1rem;font-weight:700">'+fH(rs.ri)+'</span><span style="font-size:1.1rem;font-weight:700">'+fH(rs.se)+'</span></div></div>';
-el.innerHTML=content;
+var sb="";
+if(p.openNow===true)sb='<span class="dl-badge dl-open">&#9679; &#197;ben nu</span>';
+else if(p.openNow===false)sb='<span class="dl-badge dl-closed">&#9679; Lukket</span>';
+var tc='<span class="dl-type">'+p.type+'</span>';
+var tr=p.outdoor?'<span class="dl-badge dl-terrace">&#9728; Terrasse</span>':"";
+var al=p.addr?'<div class="dl-addr">&#128205; '+p.addr+'</div>':"" ;
+var mu="https://www.google.com/maps?q="+p.lat+","+p.lon;
+var sv="https://www.google.com/maps?q=&layer=c&cbll="+p.lat+","+p.lon;
+var lh='<div class="dl-btns">';
+lh+='<a class="dl-btn dl-btn-primary" href="'+mu+'" target="_blank">&#128205; Google Maps</a>';
+lh+='<a class="dl-btn dl-btn-sec" href="'+sv+'" target="_blank">&#128247; Street View</a>';
+if(p.website)lh+='<a class="dl-btn dl-btn-sec" href="'+p.website+'" target="_blank">&#127760; Website</a>';
+if(p.phone)lh+='<a class="dl-btn dl-btn-sec" href="tel:'+p.phone+'">&#128222; '+p.phone+'</a>';
+lh+="</div>";
+var hh="";
+if(p.ohRaw||(p.hours&&p.hours.length)){
+var dm={Mo:"Man",Tu:"Tir",We:"Ons",Th:"Tor",Fr:"Fre",Sa:"L&#248;r",Su:"S&#248;n"};
+var ti=new Date().getDay();
+var ta=[["Su"],["Mo"],["Tu"],["We"],["Th"],["Fr"],["Sa"]][ti];
+hh='<div class="dl-section"><div class="dl-stit">&#197;bningstider</div><div class="dl-hours">';
+(p.hours||[p.ohRaw]).forEach(function(line){
+var isT=ta.some(function(a){return line.indexOf(a)>-1;})||line.indexOf("Mo-Su")>-1;
+var pl=line;Object.keys(dm).forEach(function(k){pl=pl.split(k).join(dm[k]);});
+var pts=pl.split(" ");
+hh+='<div class="dl-hr'+(isT?" today":"")+'"><span>'+pts[0]+'</span><span>'+pts.slice(1).join(" ")+'</span></div>';
+});
+hh+="</div></div>";
+}
+var sg='<div class="dl-section"><div class="dl-stit">Sol i dag</div><div class="dl-grid">';
+sg+='<div class="dl-gi"><div class="dl-gl">Solopgang</div><div class="dl-gv">'+fH(rs.ri)+'</div></div>';
+sg+='<div class="dl-gi"><div class="dl-gl">Solnedgang</div><div class="dl-gv">'+fH(rs.se)+'</div></div>';
+sg+='<div class="dl-gi"><div class="dl-gl">Solh&#248;jde nu</div><div class="dl-gv">'+sunP.alt.toFixed(1)+'&#176;</div></div>';
+sg+='<div class="dl-gi"><div class="dl-gl">Retning</div><div class="dl-gv">'+azN(sunP.az)+'</div></div>';
+sg+="</div></div>";
+el.innerHTML='<div class="dl-top">'+tc+sb+tr+"</div>"+al+lh+hh+sg;
 }
 
 function addTerrasseBadge(p){
