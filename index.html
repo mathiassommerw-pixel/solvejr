@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta property="og:title" content="Solvejr Copenhagen">
-<meta property="og:description" content="Find cafeer og restauranter med sol i KÃ¸benhavn â bygningsskygger i realtid">
+<meta property="og:description" content="Find cafeer og restauranter med sol i København — bygningsskygger i realtid">
 <meta property="og:image" content="https://mathiassommerw-pixel.github.io/solvejr/og-image.svg">
 <meta property="og:url" content="https://solvejr.dk">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Solvejr Copenhagen">
-<meta name="twitter:description" content="Find cafeer og restauranter med sol i KÃ¸benhavn">
+<meta name="twitter:description" content="Find cafeer og restauranter med sol i København">
 <meta name="twitter:image" content="https://mathiassommerw-pixel.github.io/solvejr/og-image.svg">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2238%25%22%20cy%3D%2235%25%22%20r%3D%2265%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FFE08A%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23F5A623%22%2F%3E%0A%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%3C%2Fdefs%3E%0A%20%20%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2232%22%20fill%3D%22url(%23g)%22%2F%3E%0A%20%20%3Ctext%20x%3D%2232%22%20y%3D%2246%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%2230%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20opacity%3D%220.95%22%3ES%3C%2Ftext%3E%0A%3C%2Fsvg%3E">
 
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Solvejr â Find sol i Danmark</title>
+<title>Solvejr — Find sol i Danmark</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -242,17 +242,41 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 @media(max-width:700px){#bar{padding:0 10px;gap:8px}#sw{flex:1;min-width:0;max-width:none}#srch{padding:0 4px 0 10px}#sinp{font-size:.82rem}}
 
 
-.pitem-img-ph,.mrow-img-ph{border-radius:10px;background:linear-gradient(135deg,#FDF3E3,#F5C842);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}.pitem-img-ph{width:56px;height:56px}.mrow-img-ph{width:48px;height:48px}.d-hero-ph{width:100%;height:180px;background:linear-gradient(135deg,#FDF3E3,#F5C842);display:flex;align-items:center;justify-content:center;font-size:3rem}
+
+
+/* Detail buttons */
+.d-btns{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+.d-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:50px;font-size:.78rem;font-weight:600;text-decoration:none;transition:.15s;white-space:nowrap;font-family:'Outfit',sans-serif}
+.d-btn{background:var(--sun);color:#fff}
+.d-btn:hover{opacity:.85}
+.d-btn-sec{background:var(--lt);color:var(--txt);border:1px solid var(--bdr)}
+.d-btn-sec:hover{background:#e8e8e8}
+/* Åbningstider */
+.d-hours{background:var(--lt);border-radius:10px;padding:10px 14px;margin-bottom:10px}
+.d-hours-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:6px}
+.d-hour-row{font-size:.78rem;color:var(--txt);padding:2px 0;border-bottom:1px solid var(--bdr)}
+.d-hour-row:last-child{border-bottom:none}
+.d-hour-row.today{font-weight:700;color:var(--sun)}
+/* Soltider */
+.d-sunbox{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.d-sunbox-item{background:var(--lt);border-radius:10px;padding:10px 12px}
+.d-sunbox-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:3px}
+.d-sunbox-val{font-size:1.05rem;font-weight:700;color:var(--txt)}
+/* Placeholder */
+.pitem-img-ph{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#FDF3E3,#F5C842);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.mrow-img-ph{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,#FDF3E3,#F5C842);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.d-hero-ph{width:100%;height:160px;background:linear-gradient(135deg,#FDF3E3,#F5C842);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0}
+
 </style>
 </head>
 <body>
-<div id="loading"><div class="lsun"></div><div class="ltxt">IndlÃ¦ser Solvejrâ¦</div></div>
+<div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejrâ¦</div></div>
 <div id="bar">
   <a class="logo" href="#"><div class="logo-sun"></div><div><div class="logo-name">Sol<em>vejr</em></div><div class="logo-city">Copenhagen</div></div></a>
   <div id="sw">
     <div id="srch">
       <svg style="width:13px;height:13px;fill:var(--mut);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
-      <input id="sinp" type="text" placeholder="SÃ¸g adresse eller sted og find sol eller skygge" autocomplete="off">
+      <input id="sinp" type="text" placeholder="Søg adresse eller sted og find sol eller skygge" autocomplete="off">
       <button id="scl" title="Slet">&#x2715;</button><button id="sbtn"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
     </div>
     <div id="sug"></div>
@@ -272,31 +296,31 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 <div id="panel">
   <div id="ptop">
     <div class="pname" id="pname">Solvejr</div>
-    <div class="psub">Find sol eller skygge i dit omrÃ¥de (KÃ¸benhavn)</div>
+    <div class="psub">Find sol eller skygge i dit omrÃ¥de (København)</div>
     <div id="sind" class="sind shade" style="display:none">
       <div class="sind-ico" id="sico">&#127769;</div>
       <div><div class="sind-ttl" id="sttl">&#8212;</div><div class="sind-sub" id="ssub">&#8212;</div></div>
     </div>
   </div>
   <div id="pbody">
-    <div class="hint" id="hint"><div class="hi">&#9728;&#65039;</div><div class="ht">SÃ¸g en adresse</div><div class="hx">Find cafeer, restauranter og barer med sol</div></div>
+    <div class="hint" id="hint"><div class="hi">&#9728;&#65039;</div><div class="ht">Søg en adresse</div><div class="hx">Find cafeer, restauranter og barer med sol</div></div>
     <div id="ds" style="display:none">
       <div class="sgrid">
         <div class="scard"><div class="slbl">Solopgang</div><div class="sval" id="dsr">&#8212;</div></div>
         <div class="scard"><div class="slbl">Solnedgang</div><div class="sval" id="dss">&#8212;</div></div>
-        <div class="scard"><div class="slbl">SolhÃ¸jde</div><div class="sval" id="dsa">&#8212;<span class="sunit">Â°</span></div></div>
+        <div class="scard"><div class="slbl">Solhøjde</div><div class="sval" id="dsa">&#8212;<span class="sunit">Â°</span></div></div>
         <div class="scard"><div class="slbl">Retning</div><div class="sval" id="dsaz">&#8212;</div></div>
       </div>
       <div class="sectit">Solbane i dag</div>
       <div class="arcbox"><canvas id="arc" width="300" height="100"></canvas></div>
-      <div class="sectit" id="nltl" style="display:none">Steder i nÃ¦rheden</div>
+      <div class="sectit" id="nltl" style="display:none">Steder i nærheden</div>
       <div class="plist" id="pl"></div>
     </div>
   </div>
 </div>
 <div id="msheet">
   <div id="msh"><div class="hbar"></div></div>
-  <div id="mstop" style="display:flex;align-items:center;gap:8px"><div style="flex:1"><div id="mssun">SÃ¸g en adresse for at finde sol</div><div id="mscount">Find sol eller skygge i dit omrÃ¥de (KÃ¸benhavn)</div></div><button id="mob-fav-btn" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--mut);flex-shrink:0;padding:4px 8px;line-height:1" onclick="renderFavs();document.getElementById('fav-panel').classList.toggle('open')">&#9825;</button></div>
+  <div id="mstop" style="display:flex;align-items:center;gap:8px"><div style="flex:1"><div id="mssun">Søg en adresse for at finde sol</div><div id="mscount">Find sol eller skygge i dit omrÃ¥de (København)</div></div><button id="mob-fav-btn" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--mut);flex-shrink:0;padding:4px 8px;line-height:1" onclick="renderFavs();document.getElementById('fav-panel').classList.toggle('open')">&#9825;</button></div>
   <div id="msbody"></div>
 </div>
 <div id="dsheet">
@@ -376,18 +400,18 @@ function rS(lat,lon){
   return{ri:isNaN(ri)?null:ri, se:isNaN(se)?null:se};
 }
 function fH(h){if(h===null)return'&#8212;';return pad(Math.floor(h))+':'+pad(Math.round(h%1*60)%60)}
-function azN(a){return['N','NNÃ','NÃ','ÃNÃ','Ã','ÃSÃ','SÃ','SSÃ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(a/22.5)%16]}
+function azN(a){return['N','NNØ','NØ','ØNØ','Ø','ØSØ','SØ','SSØ','S','SSV','SV','VSV','V','VNV','NV','NNV'][Math.round(a/22.5)%16]}
 
 // ââ Skyggekort ââââââââââââââââââââââââââââââââââââ
 function updSh(){
   if(!MAP)return;
-  // Brug kortets centrum hvis ingen sÃ¸gning er lavet
+  // Brug kortets centrum hvis ingen søgning er lavet
   if(SLA===null){var c=MAP.getCenter();SLA=c.lat;SLO=c.lng;}
   if(SHL){MAP.removeLayer(SHL);SHL=null;}
   var month=CUR_MONTH||pad(new Date(TOD).getMonth()+1);
-  // Brug lokal time direkte til tiles - prÃ¦cis som shady.dk
+  // Brug lokal time direkte til tiles - præcis som shady.dk
   var h=Math.min(21,Math.max(6,Math.round(CRH)));
-  // Beregn faktisk solhÃ¸jde med SunCalc for opacity
+  // Beregn faktisk solhøjde med SunCalc for opacity
   var now=new Date(TOD+'T00:00:00');
   now.setHours(Math.floor(CRH), Math.round((CRH%1)*60), 0, 0);
   var sunAlt = SunCalc ? SunCalc.getPosition(now, SLA, SLO).altitude * 180/Math.PI : 10;
@@ -409,7 +433,7 @@ function updSh(){
   MAP.on('zoomend',MAP._shz);
 }
 
-// ââ SÃ¸ge-pin ââââââââââââââââââââââââââââââââââââââ
+// ââ Søge-pin ââââââââââââââââââââââââââââââââââââââ
 function showPin(lat,lon,nm){
   if(SPIN){MAP.removeLayer(SPIN);SPIN=null;}
   var icon=L.divIcon({
@@ -505,7 +529,7 @@ function upPanel(lat,lon,nm){
   document.getElementById('ds').style.display='block';
 }
 
-// ââ MarkÃ¸rer ââââââââââââââââââââââââââââââââââââââ
+// ââ Markører ââââââââââââââââââââââââââââââââââââââ
 function updMk(){
   MARKERS.forEach(function(m){
     var isSun=shAt(m.la,m.lo,CRH).alt>4;
@@ -554,7 +578,7 @@ function detailHTML(p,W){
   if(p.website)links+='<a href="'+p.website+'" target="_blank">&#127760; Website</a>';
   if(p.phone)links+='<a href="tel:'+p.phone+'">&#128222; '+p.phone+'</a>';
   var openH='';
-  if(p.openNow===true)openH='<div class="d-open">&#9679; Ãben nu</div>';
+  if(p.openNow===true)openH='<div class="d-open">&#9679; Åben nu</div>';
   else if(p.openNow===false)openH='<div class="d-closed">&#9679; Lukket nu</div>';
   var hoursH='';
   if(p.hours&&p.hours.length){
@@ -584,7 +608,7 @@ function detailHTML(p,W){
       '<div class="sgrid" style="margin-bottom:12px">'+
         '<div class="scard"><div class="slbl">Solopgang</div><div class="sval">'+fH(rs.ri)+'</div></div>'+
         '<div class="scard"><div class="slbl">Solnedgang</div><div class="sval">'+fH(rs.se)+'</div></div>'+
-        '<div class="scard"><div class="slbl">SolhÃ¸jde</div><div class="sval">'+sp.alt.toFixed(1)+'<span class="sunit">Â°</span></div></div>'+
+        '<div class="scard"><div class="slbl">Solhøjde</div><div class="sval">'+sp.alt.toFixed(1)+'<span class="sunit">Â°</span></div></div>'+
         '<div class="scard"><div class="slbl">Retning</div><div class="sval">'+azN(sp.az)+'</div></div>'+
       '</div>'+
       '<div class="sectit" style="margin-bottom:6px">Solbane i dag</div>'+
@@ -598,13 +622,56 @@ var el=document.getElementById(isMob?'dsbody':'dpbody');
 if(!el)return;
 var sunP=shAt(p.lat,p.lon,CRH);
 var rs=rS(p.lat,p.lon);
+
+// Chips
 var chips='';
 if(p.outdoor)chips+='<span class="d-chip" style="background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7">☀️ Terrasse</span>';
 chips+='<span class="d-chip"><span style="color:var(--warm);font-weight:700">&#9733;</span> '+sunP.alt.toFixed(1)+'° · '+azN(sunP.az)+'</span>';
-var links='';
-if(p.website)links+='<a class="d-link" href="'+p.website+'" target="_blank">&#127760; Website</a>';
-if(p.phone)links+='<a class="d-link" href="tel:'+p.phone+'">&#128222; '+p.phone+'</a>';
-var content='<div class="d-chips">'+chips+'</div>'+(p.addr?'<div class="d-addr">'+p.addr+'</div>':'')+( links?'<div class="d-links">'+links+'</div>':'')+'<div style="margin-top:8px;padding:10px 14px;background:var(--lt);border-radius:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--mut)">SOLOPGANG</span><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--mut)">SOLNEDGANG</span></div><div style="display:flex;justify-content:space-between"><span style="font-size:1.1rem;font-weight:700">'+fH(rs.ri)+'</span><span style="font-size:1.1rem;font-weight:700">'+fH(rs.se)+'</span></div></div>';
+
+// Open now badge
+if(p.openNow===true)chips='<span class="d-chip" style="background:#E8F5E9;color:#1B5E20;font-weight:700">● Åben nu</span>'+chips;
+else if(p.openNow===false)chips='<span class="d-chip" style="background:#FFEBEE;color:#B71C1C;font-weight:700">● Lukket</span>'+chips;
+
+// Åbningstider
+var hoursH='';
+if(p.hours&&p.hours.length){
+  var dayNames=['søndag','mandag','tirsdag','onsdag','torsdag','fredag','lørdag'];
+  var todayName=dayNames[new Date().getDay()];
+  hoursH='<div class="d-hours"><div class="d-hours-title">Åbningstider</div>';
+  p.hours.forEach(function(line){
+    var isToday=line.toLowerCase().indexOf(todayName.slice(0,2))>-1||line.indexOf('Mo-Su')>-1;
+    hoursH+='<div class="d-hour-row'+(isToday?' today':'')+'">'+line+'</div>';
+  });
+  hoursH+='</div>';
+}else if(p.ohRaw){
+  hoursH='<div class="d-hours"><div class="d-hours-title">Åbningstider</div><div class="d-hour-row">'+p.ohRaw+'</div></div>';
+}
+
+// Links — Maps + Street View er gratis at linke til
+var mapsUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.name)+'&query_place_id='+encodeURIComponent(p.lat+','+p.lon);
+var mapsUrlSimple='https://www.google.com/maps?q='+p.lat+','+p.lon;
+var streetViewUrl='https://www.google.com/maps?q=&layer=c&cbll='+p.lat+','+p.lon;
+
+var links='<a class="d-btn" href="'+mapsUrlSimple+'" target="_blank">📍 Google Maps</a>';
+links+='<a class="d-btn d-btn-sec" href="'+streetViewUrl+'" target="_blank">🚶 Street View</a>';
+if(p.website)links+='<a class="d-btn d-btn-sec" href="'+p.website+'" target="_blank">🌐 Website</a>';
+if(p.phone)links+='<a class="d-btn d-btn-sec" href="tel:'+p.phone+'">📞 '+p.phone+'</a>';
+
+// Soltider
+var sunBox='<div class="d-sunbox">'+
+  '<div class="d-sunbox-item"><div class="d-sunbox-label">SOLOPGANG</div><div class="d-sunbox-val">'+fH(rs.ri)+'</div></div>'+
+  '<div class="d-sunbox-item"><div class="d-sunbox-label">SOLNEDGANG</div><div class="d-sunbox-val">'+fH(rs.se)+'</div></div>'+
+  '<div class="d-sunbox-item"><div class="d-sunbox-label">SOLHØJDE</div><div class="d-sunbox-val">'+sunP.alt.toFixed(1)+'°</div></div>'+
+  '<div class="d-sunbox-item"><div class="d-sunbox-label">RETNING</div><div class="d-sunbox-val">'+azN(sunP.az)+'</div></div>'+
+'</div>';
+
+var content=
+  '<div class="d-chips">'+chips+'</div>'+
+  (p.addr?'<div class="d-addr">📍 '+p.addr+'</div>':'')+
+  '<div class="d-btns">'+links+'</div>'+
+  hoursH+
+  sunBox;
+
 el.innerHTML=content;
 }
 
@@ -637,7 +704,7 @@ function addMapsLink(p){
       a.href=url;
       a.target='_blank';
       a.rel='noopener';
-      a.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Ãbn i Google Maps';
+      a.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Åbn i Google Maps';
       addr.parentNode.insertBefore(a, addr.nextSibling);
       // Street View knap
       if(body.querySelector('.d-sv-btn'))return;
@@ -720,20 +787,68 @@ document.getElementById('msh').addEventListener('click',function(){
 // ââ Google Places âââââââââââââââââââââââââââââââââ
 function near(lat,lon){
 var r=1000;
-var q='[out:json][timeout:25];(node["amenity"~"cafe|restaurant|bar"](around:'+r+','+lat+','+lon+');way["amenity"~"cafe|restaurant|bar"](around:'+r+','+lat+','+lon+'););out center 60;';
+var q='[out:json][timeout:25];(node["amenity"~"cafe|restaurant|bar"](around:'+r+','+lat+','+lon+');way["amenity"~"cafe|restaurant|bar"](around:'+r+','+lat+','+lon+'););out center tags 60;';
 fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)})
 .then(function(r){return r.json();})
 .then(function(d){
+var days=['Su','Mo','Tu','We','Th','Fr','Sa'];
+var daDays=['Søn','Man','Tir','Ons','Tor','Fre','Lør'];
 var places=d.elements.map(function(el){
 var t=el.tags||{};
-var lat2=el.lat!=null?el.lat:el.center.lat;
-var lon2=el.lon!=null?el.lon:el.center.lon;
+var lat2=el.lat!=null?el.lat:(el.center?el.center.lat:null);
+var lon2=el.lon!=null?el.lon:(el.center?el.center.lon:null);
+if(!lat2||!lon2)return null;
 var type=t.amenity==='cafe'?'Café':t.amenity==='restaurant'?'Restaurant':'Bar';
-return {placeId:el.type+el.id,name:t.name||type,type:type,lat:lat2,lon:lon2,addr:(t['addr:street']||'')+(t['addr:housenumber']?' '+t['addr:housenumber']:''),rating:null,reviews:null,phone:t.phone||t['contact:phone']||null,website:t.website||t['contact:website']||null,outdoor:t.outdoor_seating==='yes'||false,photo:null,photos:[],hours:null,openNow:null};
-}).filter(function(p){return p.name;});
+var name=t.name||type;
+// Åbningstider fra opening_hours tag
+var ohRaw=t.opening_hours||null;
+var hoursArr=null;
+if(ohRaw){
+  try{
+    var parsed=parseOpeningHours(ohRaw);
+    hoursArr=parsed;
+  }catch(e){hoursArr=[ohRaw];}
+}
+// Open now check
+var openNow=null;
+if(hoursArr){
+  var now=new Date();
+  var dayAbbr=days[now.getDay()];
+  var curMins=now.getHours()*60+now.getMinutes();
+  hoursArr.forEach(function(line){
+    if(line.indexOf(dayAbbr)>-1||line.indexOf('Mo-Su')>-1||line.indexOf('Mo-Fr')>-1){
+      var m=line.match(/(d{1,2}):(d{2})-(d{1,2}):(d{2})/);
+      if(m){var open=parseInt(m[1])*60+parseInt(m[2]);var close=parseInt(m[3])*60+parseInt(m[4]);openNow=curMins>=open&&curMins<close;}
+    }
+  });
+}
+return {
+  placeId:el.type+el.id,name:name,type:type,
+  lat:lat2,lon:lon2,
+  addr:(t['addr:street']||'')+(t['addr:housenumber']?' '+t['addr:housenumber']:''),
+  rating:null,reviews:null,
+  phone:t.phone||t['contact:phone']||t['phone']||null,
+  website:t.website||t['contact:website']||t['url']||null,
+  outdoor:t.outdoor_seating==='yes'||t.outdoor_seating==='1'||false,
+  photo:null,photos:[],
+  hours:hoursArr,openNow:openNow,
+  ohRaw:ohRaw
+};
+}).filter(function(p){return p&&p.name;});
 ALL=places;renderAll(places);
 })
 .catch(function(e){console.warn('Overpass fejl',e);});
+}
+
+function parseOpeningHours(oh){
+// Simpel parser til "Mo-Fr 08:00-17:00; Sa 10:00-15:00"
+var results=[];
+var parts=oh.split(';');
+parts.forEach(function(part){
+  part=part.trim();
+  if(part)results.push(part);
+});
+return results.length?results:[oh];
 }
 
 function renderAll(all){
@@ -751,7 +866,7 @@ function renderAll(all){
   all.forEach(function(p){
     var isSun=shAt(p.lat,p.lon,CRH).alt>4;
     if(isSun)sunny++;
-    // MarkÃ¸r
+    // Markør
     var mkEl=document.createElement('div');
     mkEl.style.cssText='width:18px;height:18px;border-radius:50%;background:'+(isSun?'#F5A623':'#8A9BB0')+';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.25)';
     var icon=L.divIcon({html:mkEl.outerHTML,className:'',iconSize:[18,18],iconAnchor:[9,9]});
@@ -780,14 +895,14 @@ function renderAll(all){
     mpl.appendChild(mrow);
   });
   if(all.length){
-    var nltl=document.getElementById('nltl');nltl.style.display='block';nltl.textContent=''+all.length+' steder inden for 600m Â· Find sol eller skygge i dit omrÃ¥de (KÃ¸benhavn)';
+    var nltl=document.getElementById('nltl');nltl.style.display='block';nltl.textContent=''+all.length+' steder inden for 600m Â· Find sol eller skygge i dit omrÃ¥de (København)';
     
-    document.getElementById('mscount').textContent='Find sol eller skygge i dit omrÃ¥de (KÃ¸benhavn) Â· '+all.length+' steder inden for 600m';
+    document.getElementById('mscount').textContent='Find sol eller skygge i dit omrÃ¥de (København) Â· '+all.length+' steder inden for 600m';
     
   }
 }
 
-// ââ SÃ¸gning âââââââââââââââââââââââââââââââââââââââ
+// ââ Søgning âââââââââââââââââââââââââââââââââââââââ
 var sugT=null;
 document.getElementById('sinp').addEventListener('input',function(){
   var q=this.value.trim(),box=document.getElementById('sug');
@@ -840,10 +955,10 @@ function doSearch(){
       near(loc.lat,loc.lng);
       updSh();
     }else toast('Adresse ikke fundet');
-  }).catch(function(){toast('SÃ¸gning fejlede');});
+  }).catch(function(){toast('Søgning fejlede');});
 }
 
-// Seneste sÃ¸gninger
+// Seneste søgninger
 var RKEY='sv_recent';
 function getRecent(){try{return JSON.parse(localStorage.getItem(RKEY)||'[]');}catch(e){return[];}}
 function saveRecent(nm){if(!nm)return;var l=getRecent().filter(function(x){return x!==nm;});l.unshift(nm);localStorage.setItem(RKEY,JSON.stringify(l.slice(0,5)));}
@@ -851,7 +966,7 @@ function delRecent(nm){localStorage.setItem(RKEY,JSON.stringify(getRecent().filt
 function showRecent(){
   var list=getRecent();var box=document.getElementById('sug');
   if(!list.length){box.style.display='none';return;}
-  box.innerHTML='<div class="si-recent-head">Seneste sÃ¸gninger</div>'+list.map(function(nm){
+  box.innerHTML='<div class="si-recent-head">Seneste søgninger</div>'+list.map(function(nm){
     return '<div class="si-recent" data-nm="'+encodeURIComponent(nm)+'"><span class="si-recent-icon">â±</span><span class="si-recent-text">'+nm+'</span><button class="si-recent-del" data-del="'+encodeURIComponent(nm)+'">Ã</button></div>';
   }).join('');
   box.style.display='block';
@@ -910,34 +1025,34 @@ function start(lat,lon,nm){
   SLA=lat;SLO=lon;
   MAP.flyTo([lat,lon],16,{animate:true,duration:1});
   upPanel(lat,lon,nm);updSh();
-  // SÃ¸g fra GPS-positionen direkte efter flyTo er fÃ¦rdigt
+  // Søg fra GPS-positionen direkte efter flyTo er færdigt
   setTimeout(function(){near(lat,lon);},1200);
 }
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(
     function(pos){start(pos.coords.latitude,pos.coords.longitude,'Din placering');loadWeather(pos.coords.latitude,pos.coords.longitude);},
     function(err){
-      // GPS fejlede - prÃ¸v IP-baseret lokation
+      // GPS fejlede - prøv IP-baseret lokation
       fetch('https://ipapi.co/json/')
         .then(function(r){return r.json();})
         .then(function(d){
           if(d.latitude&&d.longitude){
             start(d.latitude,d.longitude,'Din omtrentlige placering');
           } else {
-            start(55.676,12.568,'KÃ¸benhavn');loadWeather(55.676,12.568);
+            start(55.676,12.568,'København');loadWeather(55.676,12.568);
           }
         })
-        .catch(function(){start(55.676,12.568,'KÃ¸benhavn');});
+        .catch(function(){start(55.676,12.568,'København');});
     },
     {timeout:8000, enableHighAccuracy:false}
   );
-}else{start(55.676,12.568,'KÃ¸benhavn');}
+}else{start(55.676,12.568,'København');}
 setT(CRH);
 setTimeout(updNight,500);setTimeout(function(){document.getElementById('loading').classList.add('gone');},700);
 
 (function(){var ds=document.getElementById('dsheet');if(!ds)return;var sy=0;ds.addEventListener('touchstart',function(e){sy=e.touches[0].clientY;ds.style.transition='none';},{passive:true});ds.addEventListener('touchmove',function(e){var dy=e.touches[0].clientY-sy;if(dy>0)ds.style.transform='translateY('+dy+'px)';},{passive:true});ds.addEventListener('touchend',function(e){ds.style.transition='transform .35s cubic-bezier(.4,0,.2,1)';var dy=e.changedTouches[0].clientY-sy;if(dy>80)document.getElementById('dscl').click();else ds.style.transform='';},{passive:true});})();
 
-// TilfÃ¸j pile til billede-galleri
+// Tilføj pile til billede-galleri
 function addGalArrows(gal) {
   if(gal.parentNode && gal.parentNode.classList.contains('d-gal-wrap')) return;
   var wrap = document.createElement('div');
@@ -992,7 +1107,7 @@ scl.addEventListener('click',function(){
   sinp.focus();
 });
 
-// Seneste sÃ¸gninger
+// Seneste søgninger
 var RECENT_KEY='solvejr_recent';
 var MAX_RECENT=5;
 function getRecent(){try{return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');}catch(e){return [];}}
@@ -1009,7 +1124,7 @@ function showRecent(){
   var list=getRecent();
   var box=document.getElementById('sug');
   if(!list.length){box.style.display='none';return;}
-  box.innerHTML='<div class="si-recent-head">Seneste sÃ¸gninger</div>'+
+  box.innerHTML='<div class="si-recent-head">Seneste søgninger</div>'+
     list.map(function(nm){
       return '<div class="si-recent" data-nm="'+nm+'">'+
         '<span class="si-recent-icon">â±</span>'+
@@ -1033,7 +1148,7 @@ function showRecent(){
   var list=getRecent();
   var box=document.getElementById('sug');
   if(!list.length){box.style.display='none';return;}
-  box.innerHTML='<div class="si-recent-head">Seneste sÃ¸gninger</div>'+
+  box.innerHTML='<div class="si-recent-head">Seneste søgninger</div>'+
     list.map(function(nm){return '<div class="si-recent" data-nm="'+nm+'"><span class="si-recent-icon">â±</span><span class="si-recent-text">'+nm+'</span><button class="si-recent-del" data-del="'+nm+'">â</button></div>';}).join('');
   box.style.display='block';
   box.querySelectorAll('.si-recent').forEach(function(el){
@@ -1091,7 +1206,7 @@ function renderFavs(){
     return '<div class="fav-item" data-idx="'+i+'">'+
       '<button class="fav-del" data-del="'+i+'">&#215; Fjern</button>'+
       '<div class="fav-item-top">'+img+'<div><div class="fav-item-name">'+f.name+'</div><div class="fav-item-type">'+f.type+'</div></div></div>'+
-      '<textarea class="fav-note" rows="2" placeholder="TilfÃ¸j en note..." data-idx="'+i+'">'+f.note+'</textarea>'+
+      '<textarea class="fav-note" rows="2" placeholder="Tilføj en note..." data-idx="'+i+'">'+f.note+'</textarea>'+
     '</div>';
   }).join('');
   body.querySelectorAll('.fav-note').forEach(function(ta){
@@ -1131,7 +1246,7 @@ document.getElementById('gps-btn').addEventListener('click',function(){
     },
     function(){
       btn.innerHTML='ð¯';btn.style.opacity='1';
-      toast('GPS ikke tilgÃ¦ngeligt â prÃ¸v at sÃ¸g din adresse');
+      toast('GPS ikke tilgængeligt — prøv at søg din adresse');
     },
     {timeout:10000,enableHighAccuracy:true}
   );
