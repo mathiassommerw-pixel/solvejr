@@ -270,7 +270,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 </style>
 </head>
 <body>
-<div id="loading"><div class="lsun"></div><div class="ltxt">Indlæser Solvejrâ¦</div></div>
+<div id="loading"><div class="lsun"></div><div class="ltxt">Indl&#230;ser Solvejr...</div></div>
 <div id="bar">
   <a class="logo" href="#"><div class="logo-sun"></div><div><div class="logo-name">Sol<em>vejr</em></div><div class="logo-city">Copenhagen</div></div></a>
   <div id="sw">
@@ -286,7 +286,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
     <div id="tdis">--:--</div>
     <input id="tsl" type="range" min="0" max="1380" value="720" step="60">
   </div>
-  <div id="weather"><span class="w-icon">â</span><span id="w-txt">Henter vejr...</span></div><button id="fav-btn" title="Mine favoritter">&#9825;</button><button id="lbtn" class="on"><span class="dot"></span>Live</button>
+  <div id="weather"><span class="w-icon">&#x26C5;</span><span id="w-txt">Henter vejr...</span></div><button id="fav-btn" title="Mine favoritter">&#9825;</button><button id="lbtn" class="on"><span class="dot"></span>Live</button>
 </div>
 <div id="map"></div><div id="nov"></div>
 <div id="dpanel">
@@ -1255,17 +1255,20 @@ document.getElementById('gps-btn').addEventListener('click',function(){
 // Vejr-integration via Open-Meteo
 function loadWeather(lat,lon){
 var codes={0:'Klar',1:'Mest klar',2:'Delvist skyet',3:'Overskyet',45:'Tage',48:'Taage',51:'Let regn',61:'Regn',71:'Sne',80:'Byger',95:'Tordenvejr'};
-var icons={0:'sunny',1:'sunny',2:'partly_cloudy_day',3:'cloud',45:'foggy',48:'foggy',51:'rainy',61:'rainy',71:'ac_unit',80:'rainy',95:'thunderstorm'};
+var icons={0:'&#9728;',1:'&#9728;',2:'&#9925;',3:'&#9729;',45:'&#127787;',48:'&#127787;',51:'&#127783;',61:'&#127783;',71:'&#10052;',80:'&#127783;',95:'&#9928;'};
 fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=weathercode,temperature_2m&timezone=Europe/Copenhagen')
 .then(function(r){return r.json();})
 .then(function(d){
   var code=d.current.weathercode;
   var temp=Math.round(d.current.temperature_2m);
   var label=codes[code]||'Skyet';
+  var icon=icons[code]||'&#9925;';
+  var wIcon=document.querySelector('.w-icon');
+  if(wIcon)wIcon.innerHTML=icon;
   var el=document.getElementById('w-txt');
-  if(el){el.textContent=label+' '+temp+'°';}
+  if(el)el.textContent=label+' '+temp+'°';
   var mEl=document.getElementById('mw-txt');
-  if(mEl){mEl.textContent=label+' '+temp+'°';}
+  if(mEl)mEl.textContent=label+' '+temp+'°';
 })
 .catch(function(){});
 }
