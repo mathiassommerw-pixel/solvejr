@@ -869,7 +869,7 @@ document.getElementById('sinp').addEventListener('input',function(){
           });
         }
         el.addEventListener('mousedown',function(e){e.preventDefault();go();});
-        el.addEventListener('touchend',function(e){e.preventDefault();go();});
+        if(el)el.addEventListener('touchend',function(e){e.preventDefault();go();});
       });
     });
   },240);
@@ -919,7 +919,7 @@ function showRecent(){
       doSearch();
     }
     el.addEventListener('mousedown',function(e){go(e);});
-    el.addEventListener('touchend',function(e){go(e);});
+    if(el)el.addEventListener('touchend',function(e){go(e);});
   });
 }
 document.getElementById('sinp').addEventListener('focus',function(){if(!this.value)showRecent();});
@@ -987,7 +987,7 @@ if(navigator.geolocation){
 setT(CRH);
 setTimeout(updNight,500);setTimeout(function(){document.getElementById('loading').classList.add('gone');},700);
 
-(function(){var ds=document.getElementById('dsheet');if(!ds)return;var sy=0;ds.addEventListener('touchstart',function(e){sy=e.touches[0].clientY;ds.style.transition='none';},{passive:true});ds.addEventListener('touchmove',function(e){var dy=e.touches[0].clientY-sy;if(dy>0)ds.style.transform='translateY('+dy+'px)';},{passive:true});ds.addEventListener('touchend',function(e){ds.style.transition='transform .35s cubic-bezier(.4,0,.2,1)';var dy=e.changedTouches[0].clientY-sy;if(dy>80)document.getElementById('dscl').click();else ds.style.transform='';},{passive:true});})();
+(function(){var ds=document.getElementById('dsheet');if(!ds)return;var sy=0;ds.addEventListener('touchstart',function(e){sy=e.touches[0].clientY;ds.style.transition='none';},{passive:true});ds.addEventListener('touchmove',function(e){var dy=e.touches[0].clientY-sy;if(dy>0)ds.style.transform='translateY('+dy+'px)';},{passive:true});if(ds)ds.addEventListener('touchend',function(e){ds.style.transition='transform .35s cubic-bezier(.4,0,.2,1)';var dy=e.changedTouches[0].clientY-sy;if(dy>80)document.getElementById('dscl').click();else ds.style.transform='';},{passive:true});})();
 
 // Tilf\u00c3\u00b8j pile til billede-galleri
 function addGalArrows(gal) {
@@ -1098,7 +1098,7 @@ function showRecent(){
       doSearch();
     }
     el.addEventListener('mousedown',function(e){e.preventDefault();go(e);});
-    el.addEventListener('touchend',function(e){e.preventDefault();go(e);});
+    if(el)el.addEventListener('touchend',function(e){e.preventDefault();go(e);});
   });
 }
 document.getElementById('sinp').addEventListener('focus',function(){if(!this.value)showRecent();});
@@ -1106,7 +1106,7 @@ document.getElementById('sinp').addEventListener('focus',function(){if(!this.val
       document.getElementById('scl').style.display='block';
       doSearch();
     });
-    el.addEventListener('touchend',function(e){
+    if(el)el.addEventListener('touchend',function(e){
       if(e.target.dataset.del){e.preventDefault();delRecent(e.target.dataset.del);showRecent();return;}
       e.preventDefault();
       var nm=el.dataset.nm;
