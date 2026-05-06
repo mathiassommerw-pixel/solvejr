@@ -962,7 +962,7 @@ document.getElementById('sinp').addEventListener('input',function(){
       box.style.display='block';
       box.querySelectorAll('.si').forEach(function(el){
         function go(){
-          MAP.setView([parseFloat(el.dataset.lat), parseFloat(el.dataset.lon)], 16); addPin(parseFloat(el.dataset.lat), parseFloat(el.dataset.lon), el.dataset.name||"Søgeresultat");
+          MAP.setView([parseFloat(el.dataset.lat), parseFloat(el.dataset.lon)], 16); addPin(parseFloat(el.dataset.lat), parseFloat(el.dataset.lon), el.dataset.name||"Søgeresultat");}
         el.addEventListener('touchend',function(e){e.preventDefault();go();});
       });
     });
