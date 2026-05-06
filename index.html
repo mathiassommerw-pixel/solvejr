@@ -244,28 +244,52 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
 
 
 
-/* Detail buttons */
-.d-btns{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
-.d-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:50px;font-size:.78rem;font-weight:600;text-decoration:none;transition:.15s;white-space:nowrap;font-family:'Outfit',sans-serif}
-.d-btn{background:var(--sun);color:#fff}
-.d-btn:hover{opacity:.85}
-.d-btn-sec{background:var(--lt);color:var(--txt);border:1px solid var(--bdr)}
-.d-btn-sec:hover{background:#e8e8e8}
-/* Åbningstider */
-.d-hours{background:var(--lt);border-radius:10px;padding:10px 14px;margin-bottom:10px}
-.d-hours-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:6px}
-.d-hour-row{font-size:.78rem;color:var(--txt);padding:2px 0;border-bottom:1px solid var(--bdr)}
-.d-hour-row:last-child{border-bottom:none}
-.d-hour-row.today{font-weight:700;color:var(--sun)}
-/* Soltider */
-.d-sunbox{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.d-sunbox-item{background:var(--lt);border-radius:10px;padding:10px 12px}
-.d-sunbox-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:3px}
-.d-sunbox-val{font-size:1.05rem;font-weight:700;color:var(--txt)}
-/* Placeholder */
-.pitem-img-ph{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#FDF3E3,#F5C842);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
-.mrow-img-ph{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,#FDF3E3,#F5C842);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+
 .d-hero-ph{width:100%;height:160px;background:linear-gradient(135deg,#FDF3E3,#F5C842);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0}
+
+
+/* === PROFESSIONELT DETAIL PANEL === */
+.d-header{padding:0 16px 12px;border-bottom:1px solid var(--bdr);margin-bottom:12px}
+.d-name{font-size:1.15rem;font-weight:800;color:var(--txt);margin:0 0 2px;line-height:1.2}
+.d-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}
+.d-type-badge{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:20px;background:var(--warm-lt,#FDF3E3);color:var(--sun)}
+.d-open-badge{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px}
+.d-open-badge.open{background:#E8F5E9;color:#1B5E20}
+.d-open-badge.closed{background:#FFEBEE;color:#B71C1C}
+.d-addr{font-size:.78rem;color:var(--mut);margin:6px 16px 0;display:flex;align-items:center;gap:5px}
+
+/* Knapper */
+.d-btns{display:flex;flex-wrap:wrap;gap:7px;padding:12px 16px;border-bottom:1px solid var(--bdr)}
+.d-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:50px;font-size:.76rem;font-weight:700;text-decoration:none;transition:.15s;white-space:nowrap;font-family:inherit;border:none;cursor:pointer}
+.d-btn-primary{background:var(--sun);color:#fff}
+.d-btn-primary:hover{filter:brightness(1.1)}
+.d-btn-ghost{background:transparent;color:var(--txt);border:1.5px solid var(--bdr)}
+.d-btn-ghost:hover{background:var(--lt)}
+
+/* Info sektioner */
+.d-section{padding:12px 16px;border-bottom:1px solid var(--bdr)}
+.d-section:last-child{border-bottom:none}
+.d-section-title{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);margin-bottom:8px}
+
+/* Åbningstider */
+.d-hours-grid{display:flex;flex-direction:column;gap:2px}
+.d-hour-row{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-radius:6px;font-size:.78rem}
+.d-hour-row.today{background:var(--warm-lt,#FDF3E3);font-weight:700;color:var(--sun)}
+.d-hour-day{color:var(--mut);min-width:80px}
+.d-hour-row.today .d-hour-day{color:var(--sun)}
+.d-hour-time{font-weight:600;color:var(--txt)}
+.d-hour-row.today .d-hour-time{color:var(--sun)}
+
+/* Sol-grid */
+.d-sun-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.d-sun-card{background:var(--lt);border-radius:10px;padding:10px 12px}
+.d-sun-label{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);margin-bottom:3px}
+.d-sun-val{font-size:1.1rem;font-weight:800;color:var(--txt)}
+
+/* Placeholder billede */
+.d-hero-ph{width:100%;height:140px;background:linear-gradient(135deg,#FFF8EC 0%,#FDE68A 100%);display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0;border-radius:0 0 16px 16px}
+.pitem-img-ph{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,#FFF8EC,#FDE68A);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.mrow-img-ph{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#FFF8EC,#FDE68A);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
 
 </style>
 </head>
@@ -344,7 +368,7 @@ var TOD=new Date().toISOString().slice(0,10);
 var CUR_MONTH=('0'+(new Date().getMonth()+1)).slice(-2);
 var SLA=null, SLO=null;
 var PRICE=['','â¬','â¬â¬','â¬â¬â¬','â¬â¬â¬â¬'];
-var GMKEY='AIzaSyCvSv6DGsQRuugas8Njt-3uXZPKvI2GdjQ';
+var GMKEY="";
 function isMob(){return window.innerWidth<=700}
 function pad(n){return String(n).padStart(2,'0')}
 function ts(h){return pad(Math.floor(h))+':'+pad(Math.round(h%1*60)%60)}
@@ -618,61 +642,81 @@ function detailHTML(p,W){
 
 // ââ Hent Google detaljer ââââââââââââââââââââââââââ
 function loadDetail(p,isMob){
-var el=document.getElementById(isMob?'dsbody':'dpbody');
-if(!el)return;
+var cont=document.getElementById(isMob?'dsbody':'dpbody');
+if(!cont)return;
 var sunP=shAt(p.lat,p.lon,CRH);
 var rs=rS(p.lat,p.lon);
+var todayAbbrs=['Su','Mo','Tu','We','Th','Fr','Sa'];
+var todayAbbr=todayAbbrs[new Date().getDay()];
+var dayLabels={'Mo':'Mandag','Tu':'Tirsdag','We':'Onsdag','Th':'Torsdag','Fr':'Fredag','Sa':'Lørdag','Su':'Søndag','Mo-Fr':'Hverdage','Mo-Su':'Alle dage','Sa-Su':'Weekend'};
 
-// Chips
-var chips='';
-if(p.outdoor)chips+='<span class="d-chip" style="background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7">☀️ Terrasse</span>';
-chips+='<span class="d-chip"><span style="color:var(--warm);font-weight:700">&#9733;</span> '+sunP.alt.toFixed(1)+'° · '+azN(sunP.az)+'</span>';
+// Open badge
+var openBadge='';
+if(p.openNow===true)openBadge='<span class="d-open-badge open">&#9679; Åben nu</span>';
+else if(p.openNow===false)openBadge='<span class="d-open-badge closed">&#9679; Lukket</span>';
 
-// Open now badge
-if(p.openNow===true)chips='<span class="d-chip" style="background:#E8F5E9;color:#1B5E20;font-weight:700">● Åben nu</span>'+chips;
-else if(p.openNow===false)chips='<span class="d-chip" style="background:#FFEBEE;color:#B71C1C;font-weight:700">● Lukket</span>'+chips;
+// Type badge
+var typeBadge='<span class="d-type-badge">'+p.type+'</span>';
 
-// Åbningstider
+// Terrasse
+var terrasse=p.outdoor?'<span class="d-type-badge" style="background:#E8F5E9;color:#2E7D32">Terrasse</span>':'';
+
+// Åbningstider sektion
 var hoursH='';
 if(p.hours&&p.hours.length){
-  var dayNames=['søndag','mandag','tirsdag','onsdag','torsdag','fredag','lørdag'];
-  var todayName=dayNames[new Date().getDay()];
-  hoursH='<div class="d-hours"><div class="d-hours-title">Åbningstider</div>';
+  hoursH='<div class="d-section"><div class="d-section-title">Åbningstider</div><div class="d-hours-grid">';
   p.hours.forEach(function(line){
-    var isToday=line.toLowerCase().indexOf(todayName.slice(0,2))>-1||line.indexOf('Mo-Su')>-1;
-    hoursH+='<div class="d-hour-row'+(isToday?' today':'')+'">'+line+'</div>';
+    var isToday=line.indexOf(todayAbbr)>-1||line.indexOf('Mo-Su')>-1||(line.indexOf('Mo-Fr')>-1&&todayAbbr!=='Sa'&&todayAbbr!=='Su');
+    // Prøv at parse dag og tid
+    var m=line.match(/^([A-Za-z,-]+)s+(.+)$/);
+    var dayPart=m?m[1]:line;
+    var timePart=m?m[2]:'';
+    var dayLabel=dayLabels[dayPart]||dayPart;
+    if(timePart){
+      hoursH+='<div class="d-hour-row'+(isToday?' today':'')+'"><span class="d-hour-day">'+dayLabel+'</span><span class="d-hour-time">'+timePart+'</span></div>';
+    }else{
+      hoursH+='<div class="d-hour-row'+(isToday?' today':'')+'"><span style="color:inherit">'+line+'</span></div>';
+    }
   });
-  hoursH+='</div>';
+  hoursH+='</div></div>';
 }else if(p.ohRaw){
-  hoursH='<div class="d-hours"><div class="d-hours-title">Åbningstider</div><div class="d-hour-row">'+p.ohRaw+'</div></div>';
+  hoursH='<div class="d-section"><div class="d-section-title">Åbningstider</div><div class="d-hour-row"><span>'+p.ohRaw+'</span></div></div>';
 }
 
-// Links — Maps + Street View er gratis at linke til
-var mapsUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.name)+'&query_place_id='+encodeURIComponent(p.lat+','+p.lon);
-var mapsUrlSimple='https://www.google.com/maps?q='+p.lat+','+p.lon;
-var streetViewUrl='https://www.google.com/maps?q=&layer=c&cbll='+p.lat+','+p.lon;
+// Links
+var mapsUrl='https://www.google.com/maps?q='+p.lat+','+p.lon;
+var svUrl='https://www.google.com/maps?q=&layer=c&cbll='+p.lat+','+p.lon;
+var linksH='<div class="d-btns">';
+linksH+='<a class="d-btn d-btn-primary" href="'+mapsUrl+'" target="_blank">&#128205; Google Maps</a>';
+linksH+='<a class="d-btn d-btn-ghost" href="'+svUrl+'" target="_blank">&#128694; Street View</a>';
+if(p.website)linksH+='<a class="d-btn d-btn-ghost" href="'+p.website+'" target="_blank">&#127760; Website</a>';
+if(p.phone)linksH+='<a class="d-btn d-btn-ghost" href="tel:'+p.phone+'">&#128222; '+p.phone+'</a>';
+linksH+='</div>';
 
-var links='<a class="d-btn" href="'+mapsUrlSimple+'" target="_blank">📍 Google Maps</a>';
-links+='<a class="d-btn d-btn-sec" href="'+streetViewUrl+'" target="_blank">🚶 Street View</a>';
-if(p.website)links+='<a class="d-btn d-btn-sec" href="'+p.website+'" target="_blank">🌐 Website</a>';
-if(p.phone)links+='<a class="d-btn d-btn-sec" href="tel:'+p.phone+'">📞 '+p.phone+'</a>';
+// Sol-info
+var sunH='<div class="d-section"><div class="d-section-title">Solforhold</div><div class="d-sun-grid">'+
+  '<div class="d-sun-card"><div class="d-sun-label">Solopgang</div><div class="d-sun-val">'+fH(rs.ri)+'</div></div>'+
+  '<div class="d-sun-card"><div class="d-sun-label">Solnedgang</div><div class="d-sun-val">'+fH(rs.se)+'</div></div>'+
+  '<div class="d-sun-card"><div class="d-sun-label">Solhøjde</div><div class="d-sun-val">'+sunP.alt.toFixed(1)+'°</div></div>'+
+  '<div class="d-sun-card"><div class="d-sun-label">Retning</div><div class="d-sun-val">'+azN(sunP.az)+'</div></div>'+
+'</div></div>';
 
-// Soltider
-var sunBox='<div class="d-sunbox">'+
-  '<div class="d-sunbox-item"><div class="d-sunbox-label">SOLOPGANG</div><div class="d-sunbox-val">'+fH(rs.ri)+'</div></div>'+
-  '<div class="d-sunbox-item"><div class="d-sunbox-label">SOLNEDGANG</div><div class="d-sunbox-val">'+fH(rs.se)+'</div></div>'+
-  '<div class="d-sunbox-item"><div class="d-sunbox-label">SOLHØJDE</div><div class="d-sunbox-val">'+sunP.alt.toFixed(1)+'°</div></div>'+
-  '<div class="d-sunbox-item"><div class="d-sunbox-label">RETNING</div><div class="d-sunbox-val">'+azN(sunP.az)+'</div></div>'+
-'</div>';
+// Adresse
+var addrH=p.addr?'<div class="d-addr">&#128205; '+p.addr+'</div>':'';
 
-var content=
-  '<div class="d-chips">'+chips+'</div>'+
-  (p.addr?'<div class="d-addr">📍 '+p.addr+'</div>':'')+
-  '<div class="d-btns">'+links+'</div>'+
-  hoursH+
-  sunBox;
-
-el.innerHTML=content;
+// Saml det hele
+cont.innerHTML=
+  '<div class="d-hero-ph">&#9728;&#65039;</div>'+
+  '<div style="padding:14px 0 0">'+
+    '<div class="d-header">'+
+      '<div class="d-name">'+p.name+'</div>'+
+      '<div class="d-meta">'+typeBadge+openBadge+terrasse+'</div>'+
+    '</div>'+
+    addrH+
+    linksH+
+    hoursH+
+    sunH+
+  '</div>';
 }
 
 function addTerrasseBadge(p){
@@ -943,7 +987,7 @@ document.getElementById('sinp').addEventListener('blur',function(){
 function doSearch(){
   var q=document.getElementById('sinp').value.trim();if(!q)return;
   document.getElementById('sug').style.display='none';
-  fetch('https://maps.googleapis.com/maps/api/geocode/json?address='+encodeURIComponent(q+', Danmark')+'&key='+GMKEY)
+  fetch('https://nominatim.openstreetmap.org/search'+encodeURIComponent(q+', Danmark')+'&key='+GMKEY)
   .then(function(r){return r.json();})
   .then(function(d){
     if(d.results&&d.results[0]){
