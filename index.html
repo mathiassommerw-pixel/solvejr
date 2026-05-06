@@ -252,7 +252,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background
   <div id="sw">
     <div id="srch">
       <svg style="width:13px;height:13px;fill:var(--mut);flex-shrink:0" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg>
-      <input id="sinp" type="text" placeholder="S&#248;g adresse eller sted og find sol eller skygge" autocomplete="off">
+      <input id="sinp" type="text" placeholder="SÃ¸g adresse eller sted og find sol eller skygge" autocomplete="off">
       <button id="scl" title="Slet">&#x2715;</button><button id="sbtn"><svg viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 1 0 3.516 9.723l3.63 3.63a.75.75 0 1 0 1.061-1.06l-3.63-3.631A5.5 5.5 0 0 0 8.5 3zM4.5 8.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/></svg></button>
     </div>
     <div id="sug"></div>
@@ -1139,22 +1139,47 @@ var gpsbtn=document.getElementById('gps-btn');if(gpsbtn)gpsbtn.addEventListener(
 
 // Vejr-integration via Open-Meteo
 function loadWeather(lat,lon){
-var codes={0:"Klar",1:"Mest klar",2:"Delvist skyet",3:"Overskyet",45:"Tage",48:"Taage",51:"Let regn",61:"Regn",71:"Sne",80:"Byger",95:"Tordenvejr"};
-var icons={0:"&#9728;",1:"&#9728;",2:"&#x26C5;",3:"&#9729;",45:"&#127787;",48:"&#127787;",51:"&#127783;",61:"&#127783;",71:"&#10052;",80:"&#127783;",95:"&#9928;"};
-fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=weathercode,temperature_2m&timezone=Europe/Copenhagen")
-.then(function(r){return r.json();})
-.then(function(d){
-var code=d.current.weathercode;
-var temp=Math.round(d.current.temperature_2m);
-var label=codes[code]||"Skyet";
-var icon=icons[code]||"&#x26C5;";
-var wi=document.querySelector(".w-icon");
-if(wi)wi.innerHTML=icon;
-var wt=document.getElementById("w-txt");
-if(wt)wt.innerHTML=label+" "+temp+"&#176;";
-var mt=document.getElementById("mw-txt");
-if(mt)mt.innerHTML=label+" "+temp+"&#176;";
-})
-.catch(function(){});
+  var codes={0:'âï¸ Klar',1:'ð¤ï¸ Mest klar',2:'â Delvist skyet',3:'âï¸ Overskyet',45:'ð«ï¸ TÃ¥ge',48:'ð«ï¸ TÃ¥ge',51:'ð§ï¸ Let regn',61:'ð§ï¸ Regn',71:'âï¸ Sne',80:'ð§ï¸ Byger',95:'âï¸ Tordenvejr'};
+  fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=weathercode,cloudcover,temperature_2m&timezone=Europe/Copenhagen')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var code=d.current.weathercode;
+      var temp=Math.round(d.current.temperature_2m);
+      var cloud=d.current.cloudcover;
+      var label=codes[code]||('â '+cloud+'% skyer');
+      var el=document.getElementById('w-txt');
+      if(el)el.textContent=label+' Â· '+temp+'Â°';
+    })
+    .catch(function(){
+      var el=document.getElementById('w-txt');
+      if(el)el.parentNode.style.display='none';
+    });
 }
+// Kald vejr nÃ¥r GPS er klar
+// Kald vejr ved GPS load og opdater hvert 10 min
+setInterval(function(){
+  var lat=SLA||55.676,lon=SLO||12.568;
+  loadWeather(lat,lon);
+},600000);
+</script>
 
+
+<div id="fav-panel"><div id="fav-head"><div id="fav-title">&#9825; Favoritter</div><button id="fav-cl">&#215;</button></div><div id="fav-body"></div></div><div id="mpill"><button class="mb" data-m="1">Jan</button><button class="mb" data-m="2">Feb</button><button class="mb" data-m="3">Mar</button><button class="mb" data-m="4">Apr</button><button class="mb on" data-m="5">Maj</button><button class="mb" data-m="6">Jun</button><button class="mb" data-m="7">Jul</button><button class="mb" data-m="8">Aug</button><button class="mb" data-m="9">Sep</button><button class="mb" data-m="10">Okt</button><button class="mb" data-m="11">Nov</button><button class="mb" data-m="12">Dec</button></div>
+<script>
+(function(){
+  var mkey="sv_month";
+  var saved=localStorage.getItem(mkey);
+  if(saved){document.querySelectorAll(".mb").forEach(function(b){b.classList.toggle("on",b.dataset.m===saved);});window.CUR_MONTH=("0"+saved).slice(-2);}
+  document.querySelectorAll(".mb").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll(".mb").forEach(function(x){x.classList.remove("on");});
+      this.classList.add("on");
+      window.CUR_MONTH=("0"+parseInt(this.dataset.m)).slice(-2);CUR_MONTH=window.CUR_MONTH;
+      localStorage.setItem(mkey,this.dataset.m);
+      if(typeof updSh==="function")updSh();
+    });
+  });
+})();
+</script>
+</body>
+</html>
