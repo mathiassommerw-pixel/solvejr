@@ -681,43 +681,43 @@ var el=document.getElementById(isMob?"dsbody":"dpbody");
 if(!el)return;
 var sunP=shAt(p.lat,p.lon,CRH);
 var rs=rS(p.lat,p.lon);
-var statusBadge="";
-if(p.openNow===true)statusBadge='<span class="dl-badge dl-open">&#9679; Åben nu</span>';
-else if(p.openNow===false)statusBadge='<span class="dl-badge dl-closed">&#9679; Lukket</span>';
-var typeChip='<span class="dl-type">'+p.type+'</span>';
-var terrace=p.outdoor?'<span class="dl-badge dl-terrace">&#9728; Terrasse</span>':"";
-var addrLine=p.addr?'<div class="dl-addr">&#128205; '+p.addr+'</div>':"" ;
-var mapsUrl="https://www.google.com/maps?q="+p.lat+","+p.lon;
-var svUrl="https://www.google.com/maps?q=&layer=c&cbll="+p.lat+","+p.lon;
-var linksHTML='<div class="dl-btns">';
-linksHTML+='<a class="dl-btn dl-btn-primary" href="'+mapsUrl+'" target="_blank">&#128205; Google Maps</a>';
-linksHTML+='<a class="dl-btn dl-btn-sec" href="'+svUrl+'" target="_blank">&#128247; Street View</a>';
-if(p.website)linksHTML+='<a class="dl-btn dl-btn-sec" href="'+p.website+'" target="_blank">&#127760; Website</a>';
-if(p.phone)linksHTML+='<a class="dl-btn dl-btn-sec" href="tel:'+p.phone+'">&#128222; '+p.phone+'</a>';
-linksHTML+="</div>";
-var hoursHTML="";
+var sb="";
+if(p.openNow===true)sb='<span class="dl-badge dl-open">&#9679; &#197;ben nu</span>';
+else if(p.openNow===false)sb='<span class="dl-badge dl-closed">&#9679; Lukket</span>';
+var tc='<span class="dl-type">'+p.type+'</span>';
+var tr=p.outdoor?'<span class="dl-badge dl-terrace">&#9728; Terrasse</span>':"";
+var al=p.addr?'<div class="dl-addr">&#128205; '+p.addr+'</div>':"" ;
+var mu="https://www.google.com/maps?q="+p.lat+","+p.lon;
+var sv="https://www.google.com/maps?q=&layer=c&cbll="+p.lat+","+p.lon;
+var lh='<div class="dl-btns">';
+lh+='<a class="dl-btn dl-btn-primary" href="'+mu+'" target="_blank">&#128205; Google Maps</a>';
+lh+='<a class="dl-btn dl-btn-sec" href="'+sv+'" target="_blank">&#128247; Street View</a>';
+if(p.website)lh+='<a class="dl-btn dl-btn-sec" href="'+p.website+'" target="_blank">&#127760; Website</a>';
+if(p.phone)lh+='<a class="dl-btn dl-btn-sec" href="tel:'+p.phone+'">&#128222; '+p.phone+'</a>';
+lh+="</div>";
+var hh="";
 if(p.ohRaw||(p.hours&&p.hours.length)){
-  var dayMap={Mo:"Man",Tu:"Tir",We:"Ons",Th:"Tor",Fr:"Fre",Sa:"L\u00f8r",Su:"S\u00f8n"};
-  var todayIdx=new Date().getDay();
-  var todayAbbrs=[["Su"],["Mo"],["Tu"],["We"],["Th"],["Fr"],["Sa"]][todayIdx];
-  hoursHTML='<div class="dl-section"><div class="dl-section-title">\u00c5bningstider</div><div class="dl-hours">';
-  var hours=p.hours||[p.ohRaw];
-  hours.forEach(function(line){
-    var isToday=todayAbbrs.some(function(a){return line.indexOf(a)>-1;})||line.indexOf("Mo-Su")>-1||line.indexOf("24/7")>-1;
-    var prettyLine=line;
-    Object.keys(dayMap).forEach(function(k){prettyLine=prettyLine.split(k).join(dayMap[k]);});
-    var parts=prettyLine.split(" ");
-    hoursHTML+='<div class="dl-hour-row'+(isToday?" is-today":"")+'"><span class="dl-hour-days">'+parts[0]+'</span><span class="dl-hour-time">'+parts.slice(1).join(" ")+'</span></div>';
-  });
-  hoursHTML+="</div></div>";
+var dm={Mo:"Man",Tu:"Tir",We:"Ons",Th:"Tor",Fr:"Fre",Sa:"L&#248;r",Su:"S&#248;n"};
+var ti=new Date().getDay();
+var ta=[["Su"],["Mo"],["Tu"],["We"],["Th"],["Fr"],["Sa"]][ti];
+hh='<div class="dl-section"><div class="dl-section-title">&#197;bningstider</div><div class="dl-hours">';
+var hrs=p.hours||[p.ohRaw];
+hrs.forEach(function(line){
+var isT=ta.some(function(a){return line.indexOf(a)>-1;})||line.indexOf("Mo-Su")>-1;
+var pl=line;
+Object.keys(dm).forEach(function(k){pl=pl.split(k).join(dm[k]);});
+var pts=pl.split(" ");
+hh+='<div class="dl-hour-row'+(isT?" is-today":"")+'"><span class="dl-hour-days">'+pts[0]+'</span><span class="dl-hour-time">'+pts.slice(1).join(" ")+'</span></div>';
+});
+hh+="</div></div>";
 }
-var solGrid='<div class="dl-section"><div class="dl-section-title">Sol i dag</div><div class="dl-sol-grid">'+
-  '<div class="dl-sol-item"><div class="dl-sol-label">Solopgang</div><div class="dl-sol-val">'+fH(rs.ri)+'</div></div>'+
-  '<div class="dl-sol-item"><div class="dl-sol-label">Solnedgang</div><div class="dl-sol-val">'+fH(rs.se)+'</div></div>'+
-  '<div class="dl-sol-item"><div class="dl-sol-label">Solh\u00f8jde nu</div><div class="dl-sol-val">'+sunP.alt.toFixed(1)+'&#176;</div></div>'+
-  '<div class="dl-sol-item"><div class="dl-sol-label">Retning</div><div class="dl-sol-val">'+azN(sunP.az)+'</div></div>'+
+var sg='<div class="dl-section"><div class="dl-section-title">Sol i dag</div><div class="dl-sol-grid">'+
+'<div class="dl-sol-item"><div class="dl-sol-label">Solopgang</div><div class="dl-sol-val">'+fH(rs.ri)+'</div></div>'+
+'<div class="dl-sol-item"><div class="dl-sol-label">Solnedgang</div><div class="dl-sol-val">'+fH(rs.se)+'</div></div>'+
+'<div class="dl-sol-item"><div class="dl-sol-label">Solh&#248;jde nu</div><div class="dl-sol-val">'+sunP.alt.toFixed(1)+'&#176;</div></div>'+
+'<div class="dl-sol-item"><div class="dl-sol-label">Retning</div><div class="dl-sol-val">'+azN(sunP.az)+'</div></div>'+
 "</div></div>";
-el.innerHTML='<div class="dl-top">'+typeChip+statusBadge+terrace+"</div>"+addrLine+linksHTML+hoursHTML+solGrid;
+el.innerHTML='<div class="dl-top">'+tc+sb+tr+"</div>"+al+lh+hh+sg;
 }
 
 function addTerrasseBadge(p){
