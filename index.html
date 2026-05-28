@@ -896,7 +896,7 @@ function showRecent(){
     el.addEventListener('touchend',function(e){go(e);});
   });
 }
-document.getElementById('sinp').addEventListener('focus',function(){if(!this.value)showRecent();});
+// old search removed});
 document.getElementById('sbtn').addEventListener('click',doSearch);
 document.getElementById('sinp').addEventListener('keydown',function(e){
   if(e.key==='Enter'){document.getElementById('sug').style.display='none';doSearch();}
@@ -1075,7 +1075,7 @@ function showRecent(){
     el.addEventListener('touchend',function(e){e.preventDefault();go(e);});
   });
 }
-document.getElementById('sinp').addEventListener('focus',function(){if(!this.value)showRecent();});
+// old search removed});
      box.style.display='none';
       document.getElementById('scl').style.display='block';
       doSearch();
@@ -1092,8 +1092,7 @@ document.getElementById('sinp').addEventListener('focus',function(){if(!this.val
   });
 }
 // Vis seneste nÃ¥r feltet fokuseres og er tomt
-document.getElementById('sinp').addEventListener('focus',function(){
-  if(!this.value)showRecent();
+// old search removed
 });
 
 
